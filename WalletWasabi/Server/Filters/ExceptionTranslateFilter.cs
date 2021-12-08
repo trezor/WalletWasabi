@@ -6,7 +6,7 @@ using WalletWasabi.WabiSabi.Backend.Models;
 using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Models;
 
-namespace WalletWasabi.Backend.Filters;
+namespace WalletWasabi.Server.Filters;
 
 public class ExceptionTranslateAttribute : ExceptionFilterAttribute
 {
