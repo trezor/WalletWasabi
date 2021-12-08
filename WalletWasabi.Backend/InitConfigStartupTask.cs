@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WalletWasabi.BitcoinCore.Rpc;
 using WalletWasabi.CoinJoin.Coordinator.Rounds;
+using WalletWasabi.Server;
 using WalletWasabi.Logging;
 using WalletWasabi.Userfacing;
 

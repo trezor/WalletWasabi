@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WalletWasabi.Backend.Controllers.WabiSabi;
 using WalletWasabi.Backend.Filters;
+using WalletWasabi.Server.Filters;
 using WalletWasabi.WabiSabi.Backend.PostRequests;
 using WalletWasabi.WabiSabi.Backend.Rounds;
 using WalletWasabi.WabiSabi.Backend.Statistics;

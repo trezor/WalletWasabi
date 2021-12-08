@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WalletWasabi.Backend;
+namespace WalletWasabi.Server;
 
 public interface IStartupTask
 {

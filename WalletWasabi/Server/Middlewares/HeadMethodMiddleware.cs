@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace WalletWasabi.Backend.Middlewares;
+namespace WalletWasabi.Server.Middlewares;
 
 /// <summary>
 /// Source: https://www.tpeczek.com/2017/10/exploring-head-method-behavior-in.html
