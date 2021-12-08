@@ -5,7 +5,8 @@ namespace WalletWasabi.WabiSabi.Crypto;
 
 public record IssuanceValidationData
 {
-	internal IssuanceValidationData(long value, Scalar r, GroupElement ma)
+	[JsonConstructor]
+	internal IssuanceValidationData(long value, Scalar randomness, GroupElement ma)
 	{
 		Value = value;
 		Randomness = r;

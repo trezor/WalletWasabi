@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using WalletWasabi.Crypto.ZeroKnowledge;
+using Newtonsoft.Json;
 
 namespace WalletWasabi.WabiSabi.Crypto.CredentialRequesting;
 
@@ -9,7 +10,8 @@ namespace WalletWasabi.WabiSabi.Crypto.CredentialRequesting;
 /// </summary>
 public record CredentialsResponseValidation
 {
-	internal CredentialsResponseValidation(
+	[JsonConstructor]
+	public CredentialsResponseValidation(
 		Transcript transcript,
 		IEnumerable<Credential> presented,
 		IEnumerable<IssuanceValidationData> requested)
@@ -22,6 +24,7 @@ public record CredentialsResponseValidation
 	/// <summary>
 	/// The transcript in the correct state that must be used to validate the proofs presented by the coordinator.
 	/// </summary>
+	[JsonProperty()]
 	internal Transcript Transcript { get; }
 
 	/// <summary>
