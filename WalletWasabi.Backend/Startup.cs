@@ -12,14 +12,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using WalletWasabi.Backend.Controllers;
 using WalletWasabi.Backend.Controllers.WabiSabi;
-using WalletWasabi.Backend.Middlewares;
+using WalletWasabi.Server.Middlewares;
 using WalletWasabi.Helpers;
 using WalletWasabi.Interfaces;
 using WalletWasabi.Logging;
 using WalletWasabi.WabiSabi;
 using WalletWasabi.WabiSabi.Models.Serialization;
 using WalletWasabi.WebClients;
+using WalletWasabi.Server;
 
 [assembly: ApiController]
 
