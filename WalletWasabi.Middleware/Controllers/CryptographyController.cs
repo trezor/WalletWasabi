@@ -24,6 +24,13 @@ namespace WalletWasabi.Middleware
 			SecureRandom = new SecureRandom();
 		}
 
+		[HttpPost("create-request-for-zero-amount")]
+		public CreateRequestForZeroAmountResponse CreateRequestForZeroAmountAsync(CreateRequestForZeroAmountRequest request)
+		{
+			WabiSabiClient wabiSabiClient = new WabiSabiClient(request.CredentialIssuerParameters, SecureRandom, MaxAmountCredentialValue);
+			var ZeroCredentialsRequestData = wabiSabiClient.CreateRequestForZeroAmount();
+			return new CreateRequestForZeroAmountResponse(ZeroCredentialsRequestData);
+		}
 
 		[HttpPost("create-request")]
 		public CreateRequestResponse CreateRequestAsync(CreateRequestRequest request)
