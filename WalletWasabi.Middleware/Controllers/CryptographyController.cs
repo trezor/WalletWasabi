@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using NBitcoin;
@@ -30,6 +31,14 @@ namespace WalletWasabi.Middleware
 			WabiSabiClient wabiSabiClient = new WabiSabiClient(request.CredentialIssuerParameters, SecureRandom, request.MaxCredentialValue);
 			var RealCredentialsRequestData = wabiSabiClient.CreateRequest(request.AmountsToRequest, request.CredentialsToPresent, CancellationToken.None);
 			return new CreateRequestResponse(RealCredentialsRequestData);
+		}
+
+		[HttpPost("handle-response")]
+		public HandleResponseResponse CreateRequestAsync(HandleResponseRequest request)
+		{
+			WabiSabiClient wabiSabiClient = new WabiSabiClient(request.CredentialIssuerParameters, SecureRandom, MaxAmountCredentialValue);
+			var credentials = wabiSabiClient.HandleResponse(request.RegistrationResponse, request.RegistrationValidationData);
+			return new HandleResponseResponse(credentials.ToArray());
 		}
 	}
 }
