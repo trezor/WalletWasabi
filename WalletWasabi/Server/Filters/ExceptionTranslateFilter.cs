@@ -5,6 +5,7 @@ using WalletWasabi.WabiSabi;
 using WalletWasabi.WabiSabi.Backend.Models;
 using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Models;
+using WalletWasabi.Logging;
 
 namespace WalletWasabi.Server.Filters;
 
@@ -13,6 +14,8 @@ public class ExceptionTranslateAttribute : ExceptionFilterAttribute
 	public override void OnException(ExceptionContext context)
 	{
 		var exception = context.Exception.InnerException ?? context.Exception;
+
+		Logger.LogError(exception);
 
 		context.Result = exception switch
 		{
