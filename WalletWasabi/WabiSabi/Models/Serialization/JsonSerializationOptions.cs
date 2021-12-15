@@ -27,6 +27,7 @@ public class JsonSerializationOptions
 				new ExceptionDataJsonConverter(),
 				new ExtPubKeyJsonConverter(),
 				new TimeSpanJsonConverter(),
+				new CoinWithOwnershipProofJsonConverter(),
 				new CoinJsonConverter(),
 				new CoinJoinEventJsonConverter(),
 			}
