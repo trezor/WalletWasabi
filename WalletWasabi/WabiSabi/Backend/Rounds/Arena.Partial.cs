@@ -56,13 +56,15 @@ public partial class Arena : IWabiSabiApiRequestHandler
 				throw new WabiSabiProtocolException(WabiSabiProtocolErrorCode.InputNotWhitelisted);
 			}
 
+			var coinWithOwnershipProof = new CoinWithOwnershipProof(coin, request.OwnershipProof);
+
 			// Compute but don't commit updated coinjoin to round state, it will
 			// be re-calculated on input confirmation. This is computed in here
 			// for validation purposes.
-			_ = round.Assert<ConstructionState>().AddInput(coin);
+			_ = round.Assert<ConstructionState>().AddInput(coinWithOwnershipProof);
 
 			var coinJoinInputCommitmentData = new CoinJoinInputCommitmentData(Config.CoordinatorIdentifier, round.Id);
-			if (!OwnershipProof.VerifyCoinJoinInputProof(request.OwnershipProof, coin.TxOut.ScriptPubKey, coinJoinInputCommitmentData))
+			if (!OwnershipProof.VerifyCoinJoinInputProof(coinWithOwnershipProof.OwnershipProof, coin.TxOut.ScriptPubKey, coinJoinInputCommitmentData))
 			{
 				throw new WabiSabiProtocolException(WabiSabiProtocolErrorCode.WrongOwnershipProof);
 			}

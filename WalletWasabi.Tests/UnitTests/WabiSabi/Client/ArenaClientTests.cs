@@ -254,7 +254,7 @@ public class ArenaClientTests
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
 				await apiClient.SignTransactionAsync(round.Id, alice2.CoinWithOwnershipProof, coins[1].OwnershipProof, keyChain, oneInput.CreateUnsignedTransaction(), CancellationToken.None));
 
-		var twoInputs = emptyState.AddInput(alice1.CoinWithOwnershipProof).AddInput(alice2.CoinWithOwnershipProof).Finalize();
+		var twoInputs = emptyState.AddInput(alice1.CoinWithOwnershipProof, commitmentData).AddInput(alice2.CoinWithOwnershipProof, commitmentData).Finalize();
 		round.CoinjoinState = twoInputs;
 
 		Assert.False(round.Assert<SigningState>().IsFullySigned);
