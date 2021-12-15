@@ -1,6 +1,7 @@
 using NBitcoin;
 using System.Collections.Immutable;
 using System.Linq;
+using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi.Backend.Models;
 using WalletWasabi.WabiSabi.Models;
 using WalletWasabi.WabiSabi.Models.MultipartyTransaction;
@@ -324,8 +325,8 @@ public class MultipartyTransactionTests
 		Assert.Equal(output, Assert.Single(updated.Outputs));
 	}
 
-	private Coin CreateCoin(Money? amount = null, Script? script = null)
-		=> new Coin(
+	private CoinWithOwnershipProof CreateCoin(Money? amount = null, Script? script = null)
+		=> new CoinWithOwnershipProof(new Coin(
 			BitcoinFactory.CreateOutPoint(),
-			new TxOut(amount ?? Money.Coins(1), script ?? BitcoinFactory.CreateScript()));
+			new TxOut(amount ?? Money.Coins(1), script ?? BitcoinFactory.CreateScript())), null);
 }
