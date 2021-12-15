@@ -26,6 +26,7 @@ public class JsonSerializationOptions
 				new MultipartyTransactionStateJsonConverter(),
 				new ExtPubKeyJsonConverter(),
 				new TimeSpanJsonConverter(),
+				new CoinWithOwnershipProofJsonConverter(),
 				new CoinJsonConverter(),
 				new CoinJoinEventJsonConverter(),
 			}
