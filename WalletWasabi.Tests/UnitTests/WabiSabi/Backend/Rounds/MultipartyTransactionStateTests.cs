@@ -1,4 +1,5 @@
 using NBitcoin;
+using WalletWasabi.Backend.Models;
 using WalletWasabi.Tests.Helpers;
 using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Models.MultipartyTransaction;
@@ -14,13 +15,13 @@ public class MultipartyTransactionStateTests
 		var cfg = new WabiSabiConfig();
 		var round = WabiSabiFactory.CreateRound(cfg);
 
-		static Coin CreateCoin()
+		static CoinWithOwnershipProof CreateCoin()
 		{
 			using var key = new Key();
-			return WabiSabiFactory.CreateCoin(key);
+			return new CoinWithOwnershipProof(WabiSabiFactory.CreateCoin(key), null);
 		}
 
-		Coin coin1, coin2, coin3;
+		CoinWithOwnershipProof coin1, coin2, coin3;
 
 		// Three events / three states
 		var state0 = round.Assert<ConstructionState>();

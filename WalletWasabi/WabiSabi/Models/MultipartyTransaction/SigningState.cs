@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using WalletWasabi.Backend.Models;
+using WalletWasabi.Crypto;
 using WalletWasabi.Helpers;
 using WalletWasabi.WabiSabi.Backend.Models;
 
@@ -24,7 +26,7 @@ public record SigningState : MultipartyTransactionState
 	public IEnumerable<Coin> UnsignedInputs => SortedInputs.Where((_, i) => !IsInputSigned(i));
 
 	[JsonIgnore]
-	public List<Coin> SortedInputs => Inputs
+	public List<CoinWithOwnershipProof> SortedInputs => Inputs
 			.OrderByDescending(x => x.Amount)
 			.ThenBy(x => x.Outpoint.ToBytes(), ByteArrayComparer.Comparer)
 			.ToList();

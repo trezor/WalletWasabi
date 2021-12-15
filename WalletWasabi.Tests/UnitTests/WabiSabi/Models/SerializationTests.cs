@@ -8,6 +8,7 @@ using WalletWasabi.Crypto.Groups;
 using WalletWasabi.Crypto.Randomness;
 using WalletWasabi.Crypto.ZeroKnowledge;
 using WalletWasabi.Tests.Helpers;
+using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Crypto.CredentialRequesting;
 using WalletWasabi.WabiSabi.Models;
@@ -186,9 +187,9 @@ public class SerializationTests
 			new[] { MAC.ComputeMAC(IssuerKey, Points.First(), Scalars.First()) },
 			new[] { new Proof(new GroupElementVector(Points.Take(2)), new ScalarVector(Scalars.Take(2))) });
 
-	private static Coin CreateCoin()
+	private static CoinWithOwnershipProof CreateCoin()
 	{
 		using var key = new Key();
-		return WabiSabiFactory.CreateCoin(key);
+		return new CoinWithOwnershipProof(WabiSabiFactory.CreateCoin(key), null);
 	}
 }

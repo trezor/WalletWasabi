@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WalletWasabi.Tests.Helpers;
+using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Backend.Models;
 using WalletWasabi.WabiSabi.Backend.Rounds;
@@ -22,7 +23,7 @@ public class SignTransactionTests
 		using Key key = new();
 		Alice alice = WabiSabiFactory.CreateAlice(key: key, round: round);
 		round.Alices.Add(alice);
-		round.CoinjoinState = round.AddInput(alice.Coin).Finalize();
+		round.CoinjoinState = round.AddInput(new CoinWithOwnershipProof(alice.Coin, null)).Finalize();
 		round.SetPhase(Phase.TransactionSigning);
 		using Arena arena = await ArenaBuilder.From(cfg).CreateAndStartAsync(round);
 

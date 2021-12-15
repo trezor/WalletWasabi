@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WalletWasabi.Blockchain.TransactionOutputs;
 using WalletWasabi.Tests.Helpers;
+using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi;
 using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Backend.Banning;
@@ -194,7 +195,7 @@ public class StepTransactionSigningTests
 		var alice3 = WabiSabiFactory.CreateAlice(round);
 		alice3.ConfirmedConnection = true;
 		round.Alices.Add(alice3);
-		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(alice3.Coin);
+		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(new CoinWithOwnershipProof(alice3.Coin, null));
 		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(21));
 		Assert.Equal(Phase.TransactionSigning, round.Phase);
 

@@ -13,6 +13,7 @@ using WalletWasabi.Crypto.Randomness;
 using WalletWasabi.Crypto.ZeroKnowledge;
 using WalletWasabi.Helpers;
 using WalletWasabi.Tests.Helpers;
+using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi;
 using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Backend.Models;
@@ -239,14 +240,14 @@ public class ArenaClientTests
 		await Assert.ThrowsAsync<ArgumentException>(async () =>
 				await apiClient.SignTransactionAsync(round.Id, alice1.Coin, coins[0].OwnershipProof, keyChain, finalizedEmptyState.CreateUnsignedTransaction(), CancellationToken.None));
 
-		var oneInput = emptyState.AddInput(alice1.Coin).Finalize();
+		var oneInput = emptyState.AddInput(new CoinWithOwnershipProof(alice1.Coin, null)).Finalize();
 		round.CoinjoinState = oneInput;
 
 		// Trying to sign coins those are not in the coinjoin.
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
 				await apiClient.SignTransactionAsync(round.Id, alice2.Coin, coins[1].OwnershipProof, keyChain, oneInput.CreateUnsignedTransaction(), CancellationToken.None));
 
-		var twoInputs = emptyState.AddInput(alice1.Coin).AddInput(alice2.Coin).Finalize();
+		var twoInputs = emptyState.AddInput(new CoinWithOwnershipProof(alice1.Coin, null)).AddInput(new CoinWithOwnershipProof(alice2.Coin, null)).Finalize();
 		round.CoinjoinState = twoInputs;
 
 		Assert.False(round.Assert<SigningState>().IsFullySigned);

@@ -1,6 +1,8 @@
 using NBitcoin;
 using System.Linq;
 using WalletWasabi.WabiSabi.Backend.Models;
+using WalletWasabi.Backend.Models;
+using WalletWasabi.Crypto;
 
 namespace WalletWasabi.WabiSabi.Models.MultipartyTransaction;
 
@@ -13,7 +15,7 @@ public record ConstructionState : MultipartyTransactionState
 	}
 
 	// TODO ownership proofs and spend status also in scope
-	public ConstructionState AddInput(Coin coin)
+	public ConstructionState AddInput(CoinWithOwnershipProof coin)
 	{
 		var prevout = coin.TxOut;
 

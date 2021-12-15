@@ -1,6 +1,7 @@
 using NBitcoin;
 using System.Collections.Generic;
 using WalletWasabi.Crypto;
+using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi.Backend.Models;
 using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Models;
@@ -114,7 +115,7 @@ public class Round
 		return InputRegistrationTimeFrame.HasExpired;
 	}
 
-	public ConstructionState AddInput(Coin coin)
+	public ConstructionState AddInput(CoinWithOwnershipProof coin)
 		=> Assert<ConstructionState>().AddInput(coin);
 
 	public ConstructionState AddOutput(TxOut output)
