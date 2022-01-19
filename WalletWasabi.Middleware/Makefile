@@ -18,12 +18,15 @@ endif
 RUNTIME=$(SYSTEM)-$(ARCH)
 DOTNETVER=6.0
 
+BINARY=bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.Middleware
+OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
+
 all:
-	dotnet publish --runtime $(RUNTIME) --self-contained --configuration Release
-	ls -lh bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.Middleware
+	dotnet publish --runtime $(RUNTIME) --self-contained --configuration Release $(OPTS)
+	ls -lh $(BINARY)
 
 run:
-	./bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.Middleware
+	$(BINARY)
 
 clean:
 	rm -rf bin/ obj/
