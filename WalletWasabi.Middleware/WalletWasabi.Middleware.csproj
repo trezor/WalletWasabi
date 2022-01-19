@@ -1,12 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-
 		<OutputType>Exe</OutputType>
-		<PublishTrimmed>true</PublishTrimmed>
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<PublishSingleFile>true</PublishSingleFile>
-
 		<TargetFramework>net6.0</TargetFramework>
 		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
 		<AnalysisLevel>latest</AnalysisLevel>
