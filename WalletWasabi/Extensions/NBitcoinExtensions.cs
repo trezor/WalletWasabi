@@ -18,6 +18,20 @@ namespace NBitcoin;
 
 public static class NBitcoinExtensions
 {
+	public class PayToTaprootScriptSigParameters
+	{
+		public TaprootSignature TransactionSignature
+		{
+			get;
+			set;
+		}
+		public byte[] Annex
+		{
+			get;
+			set;
+		}
+	}
+
 	private static NumberFormatInfo CurrencyNumberFormat = new()
 	{
 		NumberGroupSeparator = " ",
@@ -354,6 +368,36 @@ public static class NBitcoinExtensions
 			}
 			nodes = parentCounter.Where(x => x.Value == 0).Select(x => x.Key).Distinct().ToArray();
 		}
+	}
+
+	public static Script GenerateWitScript(this PayToTaprootTemplate template, TaprootSignature signature)
+	{
+		return template.GenerateScriptSig(signature);
+	}
+
+	private static bool CheckAnnex(byte[] annex)
+	{
+		return annex.Length > 0 && annex[0] == 0x50;
+	}
+
+	public static PayToTaprootScriptSigParameters ExtractWitScriptParameters(this PayToTaprootTemplate template, WitScript witScript)
+	{
+		if (witScript.PushCount != 1 && witScript.PushCount != 2)
+			return null;
+		var hasAnex = false;
+		if (witScript.PushCount == 2)
+		{
+			if (!CheckAnnex(witScript[1]))
+				return null;
+			hasAnex = true;
+		}
+		if (!TaprootSignature.TryParse(witScript[0], out var sig))
+			return null;
+		return new PayToTaprootScriptSigParameters()
+		{
+			TransactionSignature = sig,
+			Annex = hasAnex ? witScript[1] : null,
+		};
 	}
 
 	public static ScriptPubKeyType? GetInputScriptPubKeyType(this PSBTInput i)
