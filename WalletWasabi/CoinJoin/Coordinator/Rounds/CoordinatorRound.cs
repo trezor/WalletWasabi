@@ -798,7 +798,7 @@ public class CoordinatorRound
 			await TryOptimizeConfirmationTargetAsync(spentCoins.Select(x => x.Outpoint.Hash).ToHashSet()).ConfigureAwait(false);
 
 			// 7.1. Estimate the current FeeRate. Note, there are no signatures yet!
-			int estimatedSigSizeBytes = transaction.Inputs.Count * Constants.P2wpkhInputSizeInBytes;
+			int estimatedSigSizeBytes = transaction.Inputs.Count * Constants.InputBaseSizeInBytes;
 			int estimatedFinalTxSize = transaction.GetSerializedSize() + estimatedSigSizeBytes;
 			Money fee = transaction.GetFee(spentCoins.ToArray());
 
@@ -887,8 +887,8 @@ public class CoordinatorRound
 
 		Money? feePerInputs = null;
 		Money? feePerOutputs = null;
-		var inputSizeInBytes = (int)Math.Ceiling(((3 * Constants.P2wpkhInputSizeInBytes) + Constants.P2pkhInputSizeInBytes) / 4m);
-		var outputSizeInBytes = Constants.OutputSizeInBytes;
+		var inputSizeInBytes = Constants.P2wpkhInputMaximumVirtualSize;
+		var outputSizeInBytes = Constants.P2wpkhOutputVirtualSize;
 		try
 		{
 			var feeRate = (await rpc.EstimateSmartFeeAsync(confirmationTarget, EstimateSmartFeeMode.Conservative, simulateIfRegTest: true).ConfigureAwait(false)).FeeRate;
