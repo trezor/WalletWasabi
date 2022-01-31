@@ -2,6 +2,7 @@ using Moq;
 using NBitcoin;
 using NBitcoin.Crypto;
 using NBitcoin.RPC;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -60,12 +61,12 @@ public static class WabiSabiFactory
 			Money.Coins(Constants.MaximumNumberOfBitcoins));
 
 	public static Round CreateRound(RoundParameters parameters) =>
-		new(parameters,	new InsecureRandom());
+		new(parameters, new InsecureRandom());
 
 	public static Round CreateRound(WabiSabiConfig cfg) =>
 		CreateRound(CreateRoundParameters(cfg) with
 		{
-			MaxVsizeAllocationPerAlice = 11 + 31 + MultipartyTransactionParameters.SharedOverhead
+			MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2wpkhOutputVirtualSize
 		});
 
 	public static Mock<IRPCClient> CreatePreconfiguredRpcClient(params Coin[] coins)
@@ -321,15 +322,15 @@ public static class WabiSabiFactory
 		mockRoundParameterFactory.Setup(x => x.CreateRoundParameter(It.IsAny<FeeRate>(), It.IsAny<int>()))
 			.Returns(WabiSabiFactory.CreateRoundParameters(cfg)
 				with
-				{
-					MaxVsizeAllocationPerAlice = maxVsizeAllocationPerAlice
-				});
+			{
+				MaxVsizeAllocationPerAlice = maxVsizeAllocationPerAlice
+			});
 		mockRoundParameterFactory.Setup(x => x.CreateBlameRoundParameter(It.IsAny<FeeRate>(), It.IsAny<Round>()))
 			.Returns(WabiSabiFactory.CreateRoundParameters(cfg)
 				with
-				{
-					MaxVsizeAllocationPerAlice = maxVsizeAllocationPerAlice
-				});
+			{
+				MaxVsizeAllocationPerAlice = maxVsizeAllocationPerAlice
+			});
 		return mockRoundParameterFactory.Object;
 	}
 }

@@ -1,7 +1,9 @@
 using NBitcoin;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WalletWasabi.Helpers;
 using WalletWasabi.Tests.Helpers;
 using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Backend.Models;
@@ -47,7 +49,8 @@ public class RegisterOutputTests
 	{
 		WabiSabiConfig cfg = new();
 		RoundParameters parameters = WabiSabiFactory.CreateRoundParameters(cfg)
-			with { MaxVsizeAllocationPerAlice = 11 + 34 + MultipartyTransactionParameters.SharedOverhead };
+			with
+		{ MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2pkhOutputVirtualSize };
 		var round = WabiSabiFactory.CreateRound(parameters);
 
 		using Arena arena = await ArenaBuilder.From(cfg).CreateAndStartAsync(round);
@@ -66,16 +69,17 @@ public class RegisterOutputTests
 	[Fact]
 	public async Task NonStandardOutputAsync()
 	{
+		var sha256Bounty = Script.FromHex("aa20000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f87");
 		WabiSabiConfig cfg = new();
 		RoundParameters parameters = WabiSabiFactory.CreateRoundParameters(cfg)
-			with { MaxVsizeAllocationPerAlice = 11 + 31 + MultipartyTransactionParameters.SharedOverhead + 13 };
+			with
+		{ MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + sha256Bounty.EstimateOutputVsize() };
 		var round = WabiSabiFactory.CreateRound(parameters);
 		using Arena arena = await ArenaBuilder.From(cfg).CreateAndStartAsync(round);
 
 		round.SetPhase(Phase.OutputRegistration);
 		round.Alices.Add(WabiSabiFactory.CreateAlice(Money.Coins(1), round));
 
-		var sha256Bounty = Script.FromHex("aa20000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f87");
 		var req = WabiSabiFactory.CreateOutputRegistrationRequest(round, sha256Bounty);
 		var ex = await Assert.ThrowsAsync<WabiSabiProtocolException>(async () => await arena.RegisterOutputAsync(req, CancellationToken.None));
 

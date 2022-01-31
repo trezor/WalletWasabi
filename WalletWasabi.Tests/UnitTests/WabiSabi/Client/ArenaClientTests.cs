@@ -81,7 +81,7 @@ public class ArenaClientTests
 		var (inputRegistrationResponse, _) = await aliceArenaClient.RegisterInputAsync(round.Id, outpoint, ownershipProof, CancellationToken.None);
 		var aliceId = inputRegistrationResponse.Value;
 
-		var inputVsize = Constants.P2wpkhInputVirtualSize;
+		var inputVsize = Constants.P2wpkhInputMaximumVirtualSize;
 		var amountsToRequest = new[]
 		{
 			Money.Coins(.75m) - round.Parameters.MiningFeeRate.GetFee(inputVsize) - round.Parameters.CoordinationFeeRate.GetFee(Money.Coins(1m)),

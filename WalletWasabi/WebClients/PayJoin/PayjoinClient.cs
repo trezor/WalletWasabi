@@ -49,7 +49,7 @@ public class PayjoinClient : IPayjoinClient
 
 		var originalFee = originalTx.GetFee();
 		// By default, we want to keep same fee rate and a single additional input
-		optionalParameters.MaxAdditionalFeeContribution = originalFeeRate.GetFee(Helpers.Constants.P2wpkhInputVirtualSize);
+		optionalParameters.MaxAdditionalFeeContribution = originalFeeRate.GetFee(Helpers.Constants.P2wpkhInputMaximumVirtualSize);
 		optionalParameters.DisableOutputSubstitution = false;
 
 		var sentBefore = -originalTx.GetBalance(ScriptPubKeyType.Segwit, accountKey, rootedKeyPath);

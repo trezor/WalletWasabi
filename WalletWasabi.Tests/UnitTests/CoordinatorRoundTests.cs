@@ -72,8 +72,8 @@ public class CoordinatorRoundTests
 	{
 		const double DefaultMinMempoolFee = 0.00001000; // 1 s/b (default value)
 		const double HighestMinMempoolFee = 0.00200000; // 200 s/b
-		const int InputSizeInBytes = 67;
-		const int OutputSizeInBytes = 33;
+		const int InputSizeInBytes = 68;
+		const int OutputSizeInBytes = 31;
 
 		var rpc = new MockRpcClient();
 		rpc.Network = Network.Main;

@@ -14,6 +14,7 @@ using WalletWasabi.WabiSabi.Client.RoundStateAwaiters;
 using WalletWasabi.WabiSabi.Models;
 using WalletWasabi.WabiSabi.Models.MultipartyTransaction;
 using Xunit;
+using System;
 
 namespace WalletWasabi.Tests.UnitTests.WabiSabi.Backend.PhaseStepping;
 
@@ -140,7 +141,7 @@ public class StepOutputRegistrationTests
 		// the remaining amount after deducting the fees needs to be less
 		// than the minimum.
 		var txParams = round.Parameters;
-		var extraAlice = WabiSabiFactory.CreateAlice(round.Parameters.MiningFeeRate.GetFee(Constants.P2wpkhInputVirtualSize) + txParams.AllowedOutputAmounts.Min - new Money(1L), round);
+		var extraAlice = WabiSabiFactory.CreateAlice(txParams.MiningFeeRate.GetFee(Constants.P2wpkhInputMaximumVirtualSize) + txParams.AllowedOutputAmounts.Min - new Money(1L), round);
 		round.Alices.Add(extraAlice);
 		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(new CoinWithOwnershipProof(extraAlice.Coin, null));
 
