@@ -60,7 +60,7 @@ public static class WabiSabiFactory
 			new FeeRate(100m),
 			new CoordinationFeeRate(0.003m, Money.Zero),
 			Money.Coins(Constants.MaximumNumberOfBitcoins)));
-		round.MaxVsizeAllocationPerAlice = 11 + 31 + MultipartyTransactionParameters.SharedOverhead;
+		round.MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2wpkhOutputVirtualSize;
 		return round;
 	}
 
