@@ -60,7 +60,7 @@ public class TestWallet : IKeyChain, IDestinationProvider, IDisposable
 	{
 		ThrowIfDisposed();
 		var (tx, spendingCoin) = CreateTemplateTransaction();
-		tx.Outputs.Add(spendingCoin.Amount - feeRate.GetFee(Constants.P2wpkhOutputSizeInBytes), Address);
+		tx.Outputs.Add(spendingCoin.Amount - feeRate.GetFee(Constants.P2wpkhOutputVirtualSize), Address);
 		return tx;
 	}
 

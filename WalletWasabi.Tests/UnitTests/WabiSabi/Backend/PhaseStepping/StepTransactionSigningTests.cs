@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WalletWasabi.Blockchain.TransactionOutputs;
+using WalletWasabi.Helpers;
 using WalletWasabi.Tests.Helpers;
 using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi;
@@ -228,7 +229,7 @@ public class StepTransactionSigningTests
 		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(21));
 
 		var round = Assert.Single(arena.Rounds);
-		round.MaxVsizeAllocationPerAlice = 11 + 31 + MultipartyTransactionParameters.SharedOverhead;
+		round.MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2wpkhOutputVirtualSize;
 		var arenaClient = WabiSabiFactory.CreateArenaClient(arena);
 
 		// Register Alices.

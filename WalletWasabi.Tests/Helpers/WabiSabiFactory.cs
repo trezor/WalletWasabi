@@ -11,6 +11,7 @@ using WalletWasabi.Blockchain.TransactionOutputs;
 using WalletWasabi.Crypto;
 using WalletWasabi.Crypto.Randomness;
 using WalletWasabi.Crypto.ZeroKnowledge;
+using WalletWasabi.Helpers;
 using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Backend.Banning;
 using WalletWasabi.WabiSabi.Backend.Models;
@@ -56,7 +57,7 @@ public static class WabiSabiFactory
 			new InsecureRandom(),
 			new FeeRate(100m),
 			new CoordinationFeeRate(0.003m, Money.Zero)));
-		round.MaxVsizeAllocationPerAlice = 11 + 31 + MultipartyTransactionParameters.SharedOverhead;
+		round.MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2wpkhOutputVirtualSize;
 		return round;
 	}
 

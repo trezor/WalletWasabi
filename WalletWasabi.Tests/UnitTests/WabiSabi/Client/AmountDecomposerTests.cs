@@ -29,13 +29,13 @@ public class AmountDecomposerTests
 	[InlineData(5000, 0, 8)]
 	public void DecompositionsInvariantTest(decimal feeRateDecimal, long minOutputAmount, int maxAvailableOutputs)
 	{
-		var availableVsize = maxAvailableOutputs * Constants.P2wpkhOutputSizeInBytes;
+		var availableVsize = maxAvailableOutputs * Constants.P2wpkhOutputVirtualSize;
 		var feeRate = new FeeRate(feeRateDecimal);
-		var feePerOutput = feeRate.GetFee(Constants.P2wpkhOutputSizeInBytes);
+		var feePerOutput = feeRate.GetFee(Constants.P2wpkhOutputVirtualSize);
 		var registeredCoinEffectiveValues = GenerateRandomCoins().Take(3).Select(c => c.EffectiveValue(feeRate, CoordinationFeeRate.Zero)).ToList();
 		var theirCoinEffectiveValues = GenerateRandomCoins().Take(30).Select(c => c.EffectiveValue(feeRate, CoordinationFeeRate.Zero)).ToList();
 
-		var amountDecomposer = new AmountDecomposer(feeRate, minOutputAmount, Constants.P2wpkhOutputSizeInBytes, availableVsize);
+		var amountDecomposer = new AmountDecomposer(feeRate, minOutputAmount, Constants.P2wpkhOutputVirtualSize, availableVsize);
 		var outputValues = amountDecomposer.Decompose(registeredCoinEffectiveValues, theirCoinEffectiveValues);
 
 		var totalEffectiveValue = registeredCoinEffectiveValues.Sum(x => x);

@@ -137,7 +137,7 @@ public class CoinJoinClient
 			// Calculate outputs values
 			constructionState = roundState.Assert<ConstructionState>();
 
-			AmountDecomposer amountDecomposer = new(roundState.FeeRate, roundState.CoinjoinState.Parameters.AllowedOutputAmounts.Min, Constants.P2wpkhOutputSizeInBytes, (int)availableVsize);
+			AmountDecomposer amountDecomposer = new(roundState.FeeRate, roundState.CoinjoinState.Parameters.AllowedOutputAmounts.Min, Constants.P2wpkhOutputVirtualSize, (int)availableVsize);
 			var theirCoins = constructionState.Inputs.Except(registeredCoins);
 			var registeredCoinEffectiveValues = registeredAliceClients.Select(x => x.EffectiveValue);
 			var theirCoinEffectiveValues = theirCoins.Select(x => x.EffectiveValue(roundState.FeeRate, roundState.CoordinationFeeRate));
@@ -380,7 +380,7 @@ public class CoinJoinClient
 			}
 
 			var inSum = group.Sum(x => x.EffectiveValue(parameters.FeeRate, parameters.CoordinationFeeRate));
-			var outFee = parameters.FeeRate.GetFee(Constants.P2wpkhOutputSizeInBytes);
+			var outFee = parameters.FeeRate.GetFee(Constants.P2wpkhOutputVirtualSize);
 			if (inSum >= outFee + parameters.AllowedOutputAmounts.Min)
 			{
 				groups.Add(group);

@@ -137,7 +137,7 @@ public class StepOutputRegistrationTests
 		// the remaining amount after deducting the fees needs to be less
 		// than the minimum.
 		var txParams = round.Assert<ConstructionState>().Parameters;
-		var extraAlice = WabiSabiFactory.CreateAlice(txParams.FeeRate.GetFee(Constants.P2wpkhInputVirtualSize) + txParams.AllowedOutputAmounts.Min - new Money(1L), round);
+		var extraAlice = WabiSabiFactory.CreateAlice(txParams.FeeRate.GetFee(Constants.P2wpkhInputMaximumVirtualSize) + txParams.AllowedOutputAmounts.Min - new Money(1L), round);
 		round.Alices.Add(extraAlice);
 		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(new CoinWithOwnershipProof(extraAlice.Coin, null));
 
@@ -189,7 +189,7 @@ public class StepOutputRegistrationTests
 		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(21));
 		var arenaClient = WabiSabiFactory.CreateArenaClient(arena);
 		var round = Assert.Single(arena.Rounds);
-		round.MaxVsizeAllocationPerAlice = 11 + 31 + MultipartyTransactionParameters.SharedOverhead;
+		round.MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2wpkhOutputVirtualSize;
 
 		using RoundStateUpdater roundStateUpdater = new(TimeSpan.FromSeconds(2), arena);
 		await roundStateUpdater.StartAsync(CancellationToken.None);

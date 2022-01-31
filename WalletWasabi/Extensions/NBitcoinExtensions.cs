@@ -518,7 +518,7 @@ public static class NBitcoinExtensions
 	public static int EstimateInputVsize(this Script scriptPubKey) =>
 		scriptPubKey.GetScriptType() switch
 		{
-			ScriptType.P2WPKH => Constants.P2wpkhInputVirtualSize,
+			ScriptType.P2WPKH => Constants.P2wpkhInputMaximumVirtualSize,
 			_ => throw new NotImplementedException($"Size estimation isn't implemented for provided script type.")
 		};
 

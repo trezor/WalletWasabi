@@ -17,15 +17,31 @@ public static class Constants
 
 	public const uint ProtocolVersionWitnessVersion = 70012;
 
-	public const int P2wpkhInputSizeInBytes = 41;
-	public const int P2wpkhInputVirtualSize = 69;
-	public const int P2pkhInputSizeInBytes = 145;
-	public const int P2wpkhOutputSizeInBytes = 31;
+	public const int NonSegwitByteInWeightUnits = 4;
+	public const int SegwitByteInWeightUnits = 1;
+	public const int VirtualByteInWeightUnits = 4;
+	public static int WeightUnitsToVirtualSize(int VirtualSize) => VirtualSize / VirtualByteInWeightUnits + (VirtualSize % VirtualByteInWeightUnits == 0 ? 0 : 1); // ceiling(VirtualSize / VirtualByteInWeightUnits)
 
-	/// <summary>
-	/// OBSOLATED, USE SPECIFIC TYPE
-	/// </summary>
-	public const int OutputSizeInBytes = 33;
+	// txid (32) + vout (4) + scriptSig length (1 if the length is at most 252) + sequence (4)
+	public const int InputBaseSizeInBytes = 41;
+
+	// value (8) + scriptPubKey size (1 if the length is at most 252)
+	public const int OutputBaseSizeInBytes = 9;
+
+	public const int P2wpkhScriptSigSizeInBytes = 0;
+	// version (1) + OP_PUSHDATA (1) + public key hash (20)
+	public const int P2wpkhScriptPubkeySizeInBytes = 22;
+	// OP_PUSHDATA (1) + signature (at most 73) + OP_PUSHDATA (1) + compressed public key (33)
+	public const int P2wpkhWitnessMaximumSizeInBytes = 108;
+	public const int P2wpkhInputMaximumSizeInWeightUnits = SegwitByteInWeightUnits * P2wpkhWitnessMaximumSizeInBytes + NonSegwitByteInWeightUnits * (InputBaseSizeInBytes + P2wpkhScriptSigSizeInBytes); // 272
+	public const int P2wpkhOutputSizeInWeightUnits = NonSegwitByteInWeightUnits * (OutputBaseSizeInBytes + P2wpkhScriptPubkeySizeInBytes); // 124
+	public static readonly int P2wpkhInputMaximumVirtualSize = WeightUnitsToVirtualSize(P2wpkhInputMaximumSizeInWeightUnits); // 68
+	public static readonly int P2wpkhOutputVirtualSize = WeightUnitsToVirtualSize(P2wpkhOutputSizeInWeightUnits); // 31
+
+	// OP_DUP (1) + OP_HASH160 (1) + OP_PUSHDATA (1) + pubkey_hash (20) + OP_EQUALVERIFY (1) + OP_CHECKSIG (1)
+	public const int P2pkhScriptPubkeySizeInBytes = 25;
+	public const int P2pkhOutputSizeInWeightUnits = NonSegwitByteInWeightUnits * (OutputBaseSizeInBytes + P2pkhScriptPubkeySizeInBytes); // 136
+	public static readonly int P2pkhOutputVirtualSize = WeightUnitsToVirtualSize(P2pkhOutputSizeInWeightUnits); // 34
 
 	// https://en.bitcoin.it/wiki/Bitcoin
 	// There are a maximum of 2,099,999,997,690,000 Bitcoin elements (called satoshis), which are currently most commonly measured in units of 100,000,000 known as BTC. Stated another way, no more than 21 million BTC can ever be created.

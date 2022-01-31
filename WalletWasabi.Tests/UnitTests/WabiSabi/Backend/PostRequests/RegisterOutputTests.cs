@@ -2,6 +2,7 @@ using NBitcoin;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WalletWasabi.Helpers;
 using WalletWasabi.Tests.Helpers;
 using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Backend.Models;
@@ -47,7 +48,7 @@ public class RegisterOutputTests
 	{
 		WabiSabiConfig cfg = new();
 		var round = WabiSabiFactory.CreateRound(cfg);
-		round.MaxVsizeAllocationPerAlice = 11 + 34 + MultipartyTransactionParameters.SharedOverhead;
+		round.MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2pkhOutputVirtualSize;
 
 		using Arena arena = await ArenaBuilder.From(cfg).CreateAndStartAsync(round);
 		using Key key = new();
@@ -141,7 +142,7 @@ public class RegisterOutputTests
 		using Arena arena = await ArenaBuilder.From(cfg).CreateAndStartAsync();
 		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(21));
 		var round = arena.Rounds.First();
-		round.MaxVsizeAllocationPerAlice = 11 + 31 + MultipartyTransactionParameters.SharedOverhead;
+		round.MaxVsizeAllocationPerAlice = Constants.P2wpkhInputMaximumVirtualSize + Constants.P2wpkhOutputVirtualSize;
 
 		round.Alices.Add(WabiSabiFactory.CreateAlice(round));
 
