@@ -20,6 +20,8 @@ public class MultipartyTransactionTests
 		CoordinationFeeRate.Zero,
 		DefaultAllowedAmounts,
 		DefaultAllowedAmounts,
+		ImmutableSortedSet.Create<ScriptType>(ScriptType.P2WPKH),
+		ImmutableSortedSet.Create<ScriptType>(ScriptType.P2WPKH),
 		Network.Main,
 		Money.Coins(Constants.MaximumNumberOfBitcoins));
 

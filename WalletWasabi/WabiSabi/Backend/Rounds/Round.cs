@@ -24,6 +24,8 @@ public class Round
 			roundParameters.CoordinationFeeRate,
 			allowedAmounts,
 			allowedAmounts,
+			roundParameters.AllowedInputScriptTypes,
+			roundParameters.AllowedOutputScriptTypes,
 			roundParameters.Network,
 			roundParameters.MaxSuggestedAmount);
 		CoinjoinState = new ConstructionState(txParams);

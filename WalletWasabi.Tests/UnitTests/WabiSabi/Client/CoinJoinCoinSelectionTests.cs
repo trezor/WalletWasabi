@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Moq;
 using NBitcoin;
@@ -7,6 +8,7 @@ using WalletWasabi.Blockchain.TransactionOutputs;
 using WalletWasabi.Crypto.Randomness;
 using WalletWasabi.Helpers;
 using WalletWasabi.Tests.Helpers;
+using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Client;
 using WalletWasabi.WabiSabi.Models;
 using WalletWasabi.WabiSabi.Models.MultipartyTransaction;
@@ -155,6 +157,8 @@ public class CoinJoinCoinSelectionTests
 			CoordinationFeeRate.Zero,
 			reasonableRange,
 			reasonableRange,
+			ImmutableSortedSet.Create<ScriptType>(ScriptType.P2WPKH),
+			ImmutableSortedSet.Create<ScriptType>(ScriptType.P2WPKH),
 			Network.Main,
 			Money.Coins(Constants.MaximumNumberOfBitcoins));
 		return txParams;
