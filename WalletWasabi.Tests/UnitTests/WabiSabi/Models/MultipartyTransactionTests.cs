@@ -24,8 +24,8 @@ public class MultipartyTransactionTests
 		using Key key1 = new();
 		using Key key2 = new();
 
-		var alice1Coin = CreateCoin(script: key1.PubKey.WitHash.ScriptPubKey);
-		var alice2Coin = CreateCoin(script: key2.PubKey.WitHash.ScriptPubKey);
+		var alice1Coin = CreateCoin(script: key1.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit));
+		var alice2Coin = CreateCoin(script: key2.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit));
 
 		var state = new ConstructionState(DefaultParameters);
 
@@ -121,8 +121,8 @@ public class MultipartyTransactionTests
 		using Key key1 = new();
 		using Key key2 = new();
 
-		var alice1Coin = CreateCoin(script: key1.PubKey.WitHash.ScriptPubKey);
-		var alice2Coin = CreateCoin(script: key2.PubKey.WitHash.ScriptPubKey);
+		var alice1Coin = CreateCoin(script: key1.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit));
+		var alice2Coin = CreateCoin(script: key2.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit));
 
 		var state = new ConstructionState(DefaultParameters).AddInput(alice1Coin).AddInput(alice2Coin);
 
@@ -175,8 +175,8 @@ public class MultipartyTransactionTests
 		using Key key1 = new();
 		using Key key2 = new();
 
-		var alice1Coin = CreateCoin(script: key1.PubKey.WitHash.ScriptPubKey);
-		var alice2Coin = CreateCoin(script: key2.PubKey.WitHash.ScriptPubKey);
+		var alice1Coin = CreateCoin(script: key1.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit));
+		var alice2Coin = CreateCoin(script: key2.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit));
 
 		var state = new ConstructionState(DefaultParameters with { FeeRate = feeRate })
 			.AddInput(alice1Coin)
