@@ -11,19 +11,21 @@ public record MultipartyTransactionParameters
 	// version, locktime, two 3 byte varints are non-witness data, marker and flags are witness data.
 	public static int SharedOverhead = 4 * (4 + 4 + 3 + 3) + 1 + 1;
 
-	public static ImmutableSortedSet<ScriptType> OnlyP2WPKH = ImmutableSortedSet.Create<ScriptType>(ScriptType.P2WPKH);
-
 	public MultipartyTransactionParameters(
 		FeeRate feeRate,
 		Models.CoordinationFeeRate coordinationFeeRate,
 		MoneyRange allowedInputAmounts,
 		MoneyRange allowedOutputAmounts,
+		ImmutableSortedSet<ScriptType> allowedInputScriptTypes,
+		ImmutableSortedSet<ScriptType> allowedOutputScriptTypes,
 		Network network)
 	{
 		FeeRate = feeRate;
 		CoordinationFeeRate = coordinationFeeRate;
 		AllowedInputAmounts = allowedInputAmounts;
 		AllowedOutputAmounts = allowedOutputAmounts;
+		AllowedInputScriptTypes = allowedInputScriptTypes;
+		AllowedOutputScriptTypes = allowedOutputScriptTypes;
 		Network = network;
 	}
 

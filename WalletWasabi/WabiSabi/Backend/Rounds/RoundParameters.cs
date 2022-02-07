@@ -1,4 +1,5 @@
 using NBitcoin;
+using System.Collections.Immutable;
 using WalletWasabi.Crypto.Randomness;
 using WalletWasabi.WabiSabi.Models;
 
@@ -29,6 +30,9 @@ public class RoundParameters
 		OutputRegistrationTimeout = wabiSabiConfig.OutputRegistrationTimeout;
 		TransactionSigningTimeout = wabiSabiConfig.TransactionSigningTimeout;
 		BlameInputRegistrationTimeout = wabiSabiConfig.BlameInputRegistrationTimeout;
+
+		AllowedInputScriptTypes = wabiSabiConfig.AllowedInputScriptTypes;
+		AllowedOutputScriptTypes = wabiSabiConfig.AllowedOutputScriptTypes;
 	}
 
 	public WasabiRandom Random { get; }
@@ -44,4 +48,6 @@ public class RoundParameters
 	public TimeSpan OutputRegistrationTimeout { get; }
 	public TimeSpan TransactionSigningTimeout { get; }
 	public TimeSpan BlameInputRegistrationTimeout { get; }
+	public ImmutableSortedSet<ScriptType> AllowedInputScriptTypes { get; }
+	public ImmutableSortedSet<ScriptType> AllowedOutputScriptTypes { get; }
 }

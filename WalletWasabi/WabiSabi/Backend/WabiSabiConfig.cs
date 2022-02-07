@@ -1,5 +1,7 @@
 using NBitcoin;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using WalletWasabi.Bases;
 using WalletWasabi.Helpers;
@@ -91,6 +93,18 @@ public class WabiSabiConfig : ConfigBase
 	[JsonProperty(PropertyName = "CoordinatorExtPubKeyCurrentDepth", DefaultValueHandling = DefaultValueHandling.Populate)]
 	public int CoordinatorExtPubKeyCurrentDepth { get; private set; } = 1;
 
+	[DefaultValue(true)]
+	[JsonProperty(PropertyName = "AllowP2wpkhInputs", DefaultValueHandling = DefaultValueHandling.Populate)]
+	public bool AllowP2wpkhInputs { get; set; } = true;
+
+	public ImmutableSortedSet<ScriptType> AllowedInputScriptTypes => GetScriptTypes(AllowP2wpkhInputs);
+
+	[DefaultValue(true)]
+	[JsonProperty(PropertyName = "AllowP2wpkhOutputs", DefaultValueHandling = DefaultValueHandling.Populate)]
+	public bool AllowP2wpkhOutputs { get; set; } = true;
+
+	public ImmutableSortedSet<ScriptType> AllowedOutputScriptTypes => GetScriptTypes(AllowP2wpkhOutputs);
+
 	/// <summary>
 	/// If money comes to the blame script, then either an attacker lost money or there's a client bug.
 	/// </summary>
@@ -105,5 +119,13 @@ public class WabiSabiConfig : ConfigBase
 	{
 		CoordinatorExtPubKeyCurrentDepth++;
 		ToFile();
+	}
+
+	private static ImmutableSortedSet<ScriptType> GetScriptTypes(bool P2wpkh)
+	{
+		var scriptTypes = new List<ScriptType>();
+		if (P2wpkh)
+			scriptTypes.Add(ScriptType.P2WPKH);
+		return scriptTypes.ToImmutableSortedSet();
 	}
 }
