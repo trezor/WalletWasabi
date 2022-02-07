@@ -18,7 +18,7 @@ public class Round
 		RoundParameters = roundParameters;
 
 		var allowedAmounts = new MoneyRange(roundParameters.MinRegistrableAmount, RoundParameters.MaxRegistrableAmount);
-		var txParams = new MultipartyTransactionParameters(roundParameters.FeeRate, roundParameters.CoordinationFeeRate, allowedAmounts, allowedAmounts, roundParameters.Network);
+		var txParams = new MultipartyTransactionParameters(roundParameters.FeeRate, roundParameters.CoordinationFeeRate, allowedAmounts, allowedAmounts, roundParameters.AllowedInputScriptTypes, roundParameters.AllowedOutputScriptTypes, roundParameters.Network);
 		CoinjoinState = new ConstructionState(txParams);
 
 		InitialInputVsizeAllocation = CoinjoinState.Parameters.MaxTransactionSize - MultipartyTransactionParameters.SharedOverhead;
