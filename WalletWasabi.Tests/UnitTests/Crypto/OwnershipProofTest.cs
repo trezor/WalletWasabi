@@ -18,7 +18,7 @@ public class OwnershipProofTest
 		var identificationKey = identificationMasterKey.DeriveChild("SLIP-0019").DeriveChild("Ownership identification key").Key;
 		using var key = new Key(Encoders.Hex.DecodeData("3460814214450E864EC722FF1F84F96C41746CD6BBE2F1C09B33972761032E9F"));
 
-		var ownershipIdentifier = new OwnershipIdentifier(identificationKey, key.PubKey.WitHash.ScriptPubKey);
+		var ownershipIdentifier = new OwnershipIdentifier(identificationKey, key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit));
 		var commitmentData = Array.Empty<byte>();
 		var ownershipProof = OwnershipProof.Generate(key, ownershipIdentifier, commitmentData, false, ScriptPubKeyType.Segwit);
 		var scriptPubKey = PayToWitPubKeyHashTemplate.Instance.GenerateScriptPubKey(key.PubKey);
@@ -37,7 +37,7 @@ public class OwnershipProofTest
 		using var key = new Key(Encoders.Hex.DecodeData("3460814214450E864EC722FF1F84F96C41746CD6BBE2F1C09B33972761032E9F"));
 		var ownershipIdentifier = new OwnershipIdentifier(Encoders.Hex.DecodeData("A122407EFC198211C81AF4450F40B235D54775EFD934D16B9E31C6CE9BAD5707"));
 		var commitmentData = Encoders.Hex.DecodeData("A42E38EF564D4B05B65575D22553BB1F264332D77F8A61159ABF3E6179B0317C");
-		var scriptPubKey = PayToWitPubKeyHashTemplate.Instance.GenerateScriptPubKey(key.PubKey);
+		var scriptPubKey = key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit);
 
 		OwnershipProof ownershipProof, invalidOwnershipProof;
 
@@ -60,7 +60,7 @@ public class OwnershipProofTest
 		// Valid proof, invalid scriptPubKey
 		// [all all all all all all all all all all all all]/84'/0'/0'/1/1
 		using var invalidKey = new Key(Encoders.Hex.DecodeData("7b041dd735e7202d3c1b9592147894ed24da6355f0cd66573c273c0df1afa78a"));
-		var invalidScriptPubKey = PayToWitPubKeyHashTemplate.Instance.GenerateScriptPubKey(invalidKey.PubKey);
+		var invalidScriptPubKey = invalidKey.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit);
 		Assert.False(ownershipProof.VerifyOwnership(invalidScriptPubKey, commitmentData, false));
 
 		// Invalid proof, modified ownership identifier
