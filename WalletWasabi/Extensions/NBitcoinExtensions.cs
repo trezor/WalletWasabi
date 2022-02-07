@@ -375,19 +375,29 @@ public static class NBitcoinExtensions
 		return annex.Length > 0 && annex[0] == 0x50;
 	}
 
-	public static PayToTaprootScriptSigParameters ExtractWitScriptParameters(this PayToTaprootTemplate template, WitScript witScript)
+	public static PayToTaprootScriptSigParameters? ExtractWitScriptParameters(this PayToTaprootTemplate template, WitScript witScript)
 	{
 		if (witScript.PushCount != 1 && witScript.PushCount != 2)
+		{
 			return null;
+		}
+
 		var hasAnex = false;
 		if (witScript.PushCount == 2)
 		{
 			if (!CheckAnnex(witScript[1]))
+			{
 				return null;
+			}
+
 			hasAnex = true;
 		}
+
 		if (!TaprootSignature.TryParse(witScript[0], out var sig))
+		{
 			return null;
+		}
+
 		return new PayToTaprootScriptSigParameters()
 		{
 			TransactionSignature = sig,
