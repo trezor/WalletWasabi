@@ -33,12 +33,12 @@ public static class WabiSabiFactory
 	public static Coin CreateCoin(Key key, Money amount)
 		=> new(
 			new OutPoint(Hashes.DoubleSHA256(key.PubKey.ToBytes()), 0),
-			new TxOut(amount, key.PubKey.WitHash.ScriptPubKey));
+			new TxOut(amount, key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit)));
 
 	public static OwnershipProof CreateOwnershipProof(Key key, uint256? roundHash = null)
 		=> OwnershipProof.GenerateCoinJoinInputProof(
 			key,
-			GetOwnershipIdentifier(key.PubKey.WitHash.ScriptPubKey),
+			GetOwnershipIdentifier(key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit)),
 			new CoinJoinInputCommitmentData("CoinJoinCoordinatorIdentifier", roundHash ?? BitcoinFactory.CreateUint256()));
 
 	public static OwnershipIdentifier GetOwnershipIdentifier(Script scriptPubKey)

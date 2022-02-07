@@ -415,7 +415,7 @@ public class WabiSabiHttpApiIntegrationTests : IClassFixture<WabiSabiApiApplicat
 		using Key signingKey = new();
 		Coin coinToRegister = new(
 			fromOutpoint: BitcoinFactory.CreateOutPoint(),
-			fromTxOut: new TxOut(Money.Coins(1), signingKey.PubKey.WitHash.ScriptPubKey));
+      fromTxOut: new TxOut(Money.Coins(1), signingKey.GetScriptPubKey(ScriptPubKeyType.Segwit)));
 
 		using HttpClient httpClient = _apiApplicationFactory.WithWebHostBuilder(builder =>
 			builder.ConfigureServices(services =>

@@ -107,11 +107,11 @@ public static class BitcoinFactory
 		if (key is null)
 		{
 			using Key k = new();
-			return k.PubKey.WitHash.ScriptPubKey;
+			return k.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit);
 		}
 		else
 		{
-			return key.PubKey.WitHash.ScriptPubKey;
+			return key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit);
 		}
 	}
 
