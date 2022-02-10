@@ -39,7 +39,8 @@ public static class WabiSabiFactory
 		=> OwnershipProof.GenerateCoinJoinInputProof(
 			key,
 			GetOwnershipIdentifier(key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit)),
-			new CoinJoinInputCommitmentData("CoinJoinCoordinatorIdentifier", roundHash ?? BitcoinFactory.CreateUint256()));
+			new CoinJoinInputCommitmentData("CoinJoinCoordinatorIdentifier", roundHash ?? BitcoinFactory.CreateUint256()),
+			ScriptPubKeyType.Segwit);
 
 	public static OwnershipIdentifier GetOwnershipIdentifier(Script scriptPubKey)
 	{

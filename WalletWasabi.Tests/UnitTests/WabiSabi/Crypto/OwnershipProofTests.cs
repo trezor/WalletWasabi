@@ -39,5 +39,6 @@ public class OwnershipProofTests
 		=> OwnershipProof.GenerateCoinJoinInputProof(
 			key,
 			new OwnershipIdentifier(key, key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit)),
-			new CoinJoinInputCommitmentData("CoinJoinCoordinatorIdentifier", roundHash));
+			new CoinJoinInputCommitmentData("CoinJoinCoordinatorIdentifier", roundHash),
+			ScriptPubKeyType.Segwit);
 }
