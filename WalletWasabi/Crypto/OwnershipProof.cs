@@ -36,14 +36,14 @@ public record OwnershipProof : IBitcoinSerializable
 	public static OwnershipProof Generate(Key key, IEnumerable<OwnershipIdentifier> ownershipIdentifiers, byte[] commitmentData, bool userConfirmation, ScriptPubKeyType scriptPubKeyType) =>
 		scriptPubKeyType switch
 		{
-			ScriptPubKeyType.Segwit => GenerateOwnershipProofSegwit(key, commitmentData, new ProofBody(userConfirmation ? ProofBodyFlags.UserConfirmation : 0, ownershipIdentifiers.ToArray())),
-			_ => throw new NotImplementedException()
+			ScriptPubKeyType.Segwit => GenerateOwnershipProof(key, commitmentData, new ProofBody(userConfirmation ? ProofBodyFlags.UserConfirmation : 0, ownershipIdentifiers.ToArray()), scriptPubKeyType),
+			_ => throw new NotImplementedException("Only P2WPKH scripts are supported."),
 		};
 
-	private static OwnershipProof GenerateOwnershipProofSegwit(Key key, byte[] commitmentData, ProofBody proofBody) =>
+	private static OwnershipProof GenerateOwnershipProof(Key key, byte[] commitmentData, ProofBody proofBody, ScriptPubKeyType scriptPubKeyType) =>
 		new(
 			proofBody,
-			Bip322Signature.Generate(key, proofBody.SignatureHash(key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit), commitmentData), ScriptPubKeyType.Segwit));
+			Bip322Signature.Generate(key, proofBody.SignatureHash(key.PubKey.GetScriptPubKey(scriptPubKeyType), commitmentData), scriptPubKeyType));
 
 	public bool VerifyOwnership(Script scriptPubKey, byte[] commitmentData, bool requireUserConfirmation) =>
 		scriptPubKey.GetScriptType() switch
@@ -52,7 +52,7 @@ public record OwnershipProof : IBitcoinSerializable
 			_ => throw new NotImplementedException("Only P2WPKH scripts are supported."),
 		};
 
-	private bool VerifyOwnershipProofSegwit(Script scriptPubKey, byte[] commitmentData, bool requireUserConfirmation)
+	private bool VerifyOwnershipProof(Script scriptPubKey, byte[] commitmentData, bool requireUserConfirmation)
 	{
 		if (requireUserConfirmation && !_proofBody.Flags.HasFlag(ProofBodyFlags.UserConfirmation))
 		{
@@ -64,11 +64,11 @@ public record OwnershipProof : IBitcoinSerializable
 		return _proofSignature.Verify(hash, scriptPubKey);
 	}
 
-	public static OwnershipProof GenerateCoinJoinInputProof(Key key, OwnershipIdentifier ownershipIdentifier, CoinJoinInputCommitmentData coinJoinInputsCommitmentData) =>
-		Generate(key, new[] { ownershipIdentifier }, coinJoinInputsCommitmentData.ToBytes(), true, ScriptPubKeyType.Segwit);
+	public static OwnershipProof GenerateCoinJoinInputProof(Key key, OwnershipIdentifier ownershipIdentifier, CoinJoinInputCommitmentData coinJoinInputsCommitmentData, ScriptPubKeyType scriptPubKeyType) =>
+		Generate(key, new[] { ownershipIdentifier }, coinJoinInputsCommitmentData.ToBytes(), true, scriptPubKeyType);
 
-	public static OwnershipProof GenerateCoinJoinInputProof(Key key, IEnumerable<OwnershipIdentifier> ownershipIdentifiers, CoinJoinInputCommitmentData coinJoinInputsCommitmentData) =>
-		Generate(key, ownershipIdentifiers, coinJoinInputsCommitmentData.ToBytes(), true, ScriptPubKeyType.Segwit);
+	public static OwnershipProof GenerateCoinJoinInputProof(Key key, IEnumerable<OwnershipIdentifier> ownershipIdentifiers, CoinJoinInputCommitmentData coinJoinInputsCommitmentData, ScriptPubKeyType scriptPubKeyType) =>
+		Generate(key, ownershipIdentifiers, coinJoinInputsCommitmentData.ToBytes(), true, scriptPubKeyType);
 
 	public static bool VerifyCoinJoinInputProof(OwnershipProof ownershipProofBytes, Script scriptPubKey, CoinJoinInputCommitmentData coinJoinInputsCommitmentData) =>
 		ownershipProofBytes.VerifyOwnership(scriptPubKey, coinJoinInputsCommitmentData.ToBytes(), true);
