@@ -31,8 +31,8 @@ public record MultipartyTransactionParameters
 	// the NBitcoin supplied default values, hence the private static property
 	private static StandardTransactionPolicy StandardTransactionPolicy { get; } = new();
 
-	public ImmutableSortedSet<ScriptType> AllowedInputTypes { get; init; } = OnlyP2WPKH;
-	public ImmutableSortedSet<ScriptType> AllowedOutputTypes { get; init; } = OnlyP2WPKH;
+	public ImmutableSortedSet<ScriptType> AllowedInputScriptTypes { get; init; }
+	public ImmutableSortedSet<ScriptType> AllowedOutputScriptTypes { get; init; }
 
 	public int MaxTransactionSize { get; init; } = StandardTransactionPolicy.MaxTransactionSize!.Value;
 	public FeeRate MinRelayTxFee { get; init; } = StandardTransactionPolicy.MinRelayTxFee;
