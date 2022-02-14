@@ -6,6 +6,7 @@ using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi.Backend.Models;
 using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Models.MultipartyTransaction;
+using System;
 
 namespace WalletWasabi.WabiSabi.Backend.Rounds;
 
@@ -137,9 +138,9 @@ public class Round
 				OutputRegistrationTimeFrame.Duration,
 				TransactionSigningTimeFrame.Duration,
 				Parameters.AllowedInputAmounts,
-				Parameters.AllowedInputTypes,
+				Parameters.AllowedInputScriptTypes,
 				Parameters.AllowedOutputAmounts,
-				Parameters.AllowedOutputTypes,
+				Parameters.AllowedOutputScriptTypes,
 				Parameters.Network,
 				Parameters.MiningFeeRate.FeePerK,
 				Parameters.CoordinationFeeRate,
