@@ -43,6 +43,16 @@ public static class Constants
 	public const int P2pkhOutputSizeInWeightUnits = NonSegwitByteInWeightUnits * (OutputBaseSizeInBytes + P2pkhScriptPubkeySizeInBytes); // 136
 	public static readonly int P2pkhOutputVirtualSize = WeightUnitsToVirtualSize(P2pkhOutputSizeInWeightUnits); // 34
 
+	public const int P2trScriptSigSizeInBytes = 0;
+	// version (1) + OP_PUSHDATA (1) + public key hash (32)
+	public const int P2trScriptPubkeySizeInBytes = 34;
+	// OP_PUSHDATA (1) + signature (at most 65 bytes)
+	public const int P2trWitnessMaximumSizeInBytes = 66;
+	public const int P2trInputMaximumSizeInWeightUnits = SegwitByteInWeightUnits * P2trWitnessMaximumSizeInBytes + NonSegwitByteInWeightUnits * (InputBaseSizeInBytes + P2trScriptSigSizeInBytes); // 230
+	public const int P2trOutputSizeInWeightUnits = NonSegwitByteInWeightUnits * (OutputBaseSizeInBytes + P2trScriptPubkeySizeInBytes); // 172
+	public static readonly int P2trInputMaximumVirtualSize = WeightUnitsToVirtualSize(P2trInputMaximumSizeInWeightUnits); // 58
+	public static readonly int P2trOutputVirtualSize = WeightUnitsToVirtualSize(P2trOutputSizeInWeightUnits); // 43
+
 	// https://en.bitcoin.it/wiki/Bitcoin
 	// There are a maximum of 2,099,999,997,690,000 Bitcoin elements (called satoshis), which are currently most commonly measured in units of 100,000,000 known as BTC. Stated another way, no more than 21 million BTC can ever be created.
 	public const long MaximumNumberOfSatoshis = 2099999997690000;
