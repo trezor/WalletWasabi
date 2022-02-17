@@ -13,7 +13,7 @@ namespace WalletWasabi.Tests.UnitTests.WabiSabi.Models;
 public class MultipartyTransactionTests
 {
 	private static MoneyRange DefaultAllowedAmounts = new(Money.Zero, Money.Coins(1));
-	private static MultipartyTransactionParameters DefaultParameters = new(FeeRate.Zero, CoordinationFeeRate.Zero, DefaultAllowedAmounts, DefaultAllowedAmounts, Network.Main);
+	private static MultipartyTransactionParameters DefaultParameters = new(FeeRate.Zero, CoordinationFeeRate.Zero, DefaultAllowedAmounts, DefaultAllowedAmounts, ImmutableSortedSet.Create(ScriptType.P2WPKH), ImmutableSortedSet.Create(ScriptType.P2WPKH), Network.Main);
 
 	private static void ThrowsProtocolException(WabiSabiProtocolErrorCode expectedError, Action action) =>
 		Assert.Equal(expectedError, Assert.Throws<WabiSabiProtocolException>(action).ErrorCode);

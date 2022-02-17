@@ -170,6 +170,146 @@ public class ArenaClientTests
 	}
 
 	[Fact]
+	public async Task FullTaprootCoinjoinAsyncTestAsync()
+	{
+		var config = new WabiSabiConfig { MaxInputCountByRound = 1, AllowP2trInputs = true, AllowP2trOutputs = true };
+		var round = WabiSabiFactory.CreateRound(config);
+		round.MaxVsizeAllocationPerAlice = 255;
+		using var key = new Key();
+		var outpoint = BitcoinFactory.CreateOutPoint();
+		var mockRpc = new Mock<IRPCClient>();
+		mockRpc.Setup(rpc => rpc.GetTxOutAsync(outpoint.Hash, (int)outpoint.N, true, It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new NBitcoin.RPC.GetTxOutResponse
+			{
+				IsCoinBase = false,
+				Confirmations = 200,
+				TxOut = new TxOut(Money.Coins(1m), key.PubKey.GetAddress(ScriptPubKeyType.TaprootBIP86, Network.Main)),
+			});
+		mockRpc.Setup(rpc => rpc.EstimateSmartFeeAsync(It.IsAny<int>(), It.IsAny<EstimateSmartFeeMode>(), It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new EstimateSmartFeeResponse
+			{
+				Blocks = 1000,
+				FeeRate = new FeeRate(10m)
+			});
+		mockRpc.Setup(rpc => rpc.GetMempoolInfoAsync(It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new MemPoolInfo
+			{
+				MinRelayTxFee = 1
+			});
+		mockRpc.Setup(rpc => rpc.PrepareBatch()).Returns(mockRpc.Object);
+		mockRpc.Setup(rpc => rpc.SendBatchAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+		mockRpc.Setup(rpc => rpc.GetRawTransactionAsync(It.IsAny<uint256>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(BitcoinFactory.CreateTransaction());
+
+		using Arena arena = await ArenaBuilder.From(config).With(mockRpc).CreateAndStartAsync(round);
+		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromMinutes(1));
+
+		using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+		var idempotencyRequestCache = new IdempotencyRequestCache(memoryCache);
+		var wabiSabiApi = new WabiSabiController(idempotencyRequestCache, arena);
+
+		var insecureRandom = new InsecureRandom();
+		var roundState = RoundState.FromRound(round);
+		var aliceArenaClient = new ArenaClient(
+			roundState.CreateAmountCredentialClient(insecureRandom),
+			roundState.CreateVsizeCredentialClient(insecureRandom),
+			wabiSabiApi);
+		var ownershipProof = WabiSabiFactory.CreateTaprootOwnershipProof(key, round.Id);
+
+		var (inputRegistrationResponse, _) = await aliceArenaClient.RegisterInputAsync(round.Id, outpoint, ownershipProof, CancellationToken.None);
+		var aliceId = inputRegistrationResponse.Value;
+
+		var inputVsize = Constants.P2trInputMaximumVirtualSize;
+		var amountsToRequest = new[]
+		{
+			Money.Coins(.75m) - round.FeeRate.GetFee(inputVsize) - round.CoordinationFeeRate.GetFee(Money.Coins(1m)),
+			Money.Coins(.25m),
+		}.Select(x => x.Satoshi).ToArray();
+
+		using var destinationKey1 = new Key();
+		using var destinationKey2 = new Key();
+		var p2trScriptSize = (long)destinationKey1.PubKey.GetScriptPubKey(ScriptPubKeyType.TaprootBIP86).EstimateOutputVsize();
+
+		var vsizesToRequest = new[] { roundState.MaxVsizeAllocationPerAlice - (inputVsize + 2 * p2trScriptSize), 2 * p2trScriptSize };
+
+		// Phase: Input Registration
+		Assert.Equal(Phase.InputRegistration, round.Phase);
+
+		var connectionConfirmationResponse1 = await aliceArenaClient.ConfirmConnectionAsync(
+			round.Id,
+			aliceId,
+			amountsToRequest,
+			vsizesToRequest,
+			inputRegistrationResponse.IssuedAmountCredentials,
+			inputRegistrationResponse.IssuedVsizeCredentials,
+			CancellationToken.None);
+
+		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromMinutes(1));
+		Assert.Equal(Phase.ConnectionConfirmation, round.Phase);
+
+		// Phase: Connection Confirmation
+		var connectionConfirmationResponse2 = await aliceArenaClient.ConfirmConnectionAsync(
+			round.Id,
+			aliceId,
+			amountsToRequest,
+			vsizesToRequest,
+			connectionConfirmationResponse1.IssuedAmountCredentials,
+			connectionConfirmationResponse1.IssuedVsizeCredentials,
+			CancellationToken.None);
+
+		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(1));
+
+		// Phase: Output Registration
+		Assert.Equal(Phase.OutputRegistration, round.Phase);
+
+		var bobArenaClient = new ArenaClient(
+			roundState.CreateAmountCredentialClient(insecureRandom),
+			roundState.CreateVsizeCredentialClient(insecureRandom),
+			wabiSabiApi);
+
+		var reissuanceResponse = await bobArenaClient.ReissueCredentialAsync(
+			round.Id,
+			amountsToRequest,
+			Enumerable.Repeat(p2trScriptSize, 2),
+			connectionConfirmationResponse2.IssuedAmountCredentials.Take(ProtocolConstants.CredentialNumber),
+			connectionConfirmationResponse2.IssuedVsizeCredentials.Skip(1).Take(ProtocolConstants.CredentialNumber), // first amount is the leftover value
+			CancellationToken.None);
+
+		Credential amountCred1 = reissuanceResponse.IssuedAmountCredentials.ElementAt(0);
+		Credential amountCred2 = reissuanceResponse.IssuedAmountCredentials.ElementAt(1);
+		Credential zeroAmountCred1 = reissuanceResponse.IssuedAmountCredentials.ElementAt(2);
+		Credential zeroAmountCred2 = reissuanceResponse.IssuedAmountCredentials.ElementAt(3);
+
+		Credential vsizeCred1 = reissuanceResponse.IssuedVsizeCredentials.ElementAt(0);
+		Credential vsizeCred2 = reissuanceResponse.IssuedVsizeCredentials.ElementAt(1);
+		Credential zeroVsizeCred1 = reissuanceResponse.IssuedVsizeCredentials.ElementAt(2);
+		Credential zeroVsizeCred2 = reissuanceResponse.IssuedVsizeCredentials.ElementAt(3);
+
+		await bobArenaClient.RegisterOutputAsync(
+			round.Id,
+			destinationKey1.PubKey.GetScriptPubKey(ScriptPubKeyType.TaprootBIP86),
+			new[] { amountCred1, zeroAmountCred1 },
+			new[] { vsizeCred1, zeroVsizeCred1 },
+			CancellationToken.None);
+
+		await bobArenaClient.RegisterOutputAsync(
+			round.Id,
+			destinationKey2.PubKey.GetScriptPubKey(ScriptPubKeyType.TaprootBIP86),
+			new[] { amountCred2, zeroAmountCred2 },
+			new[] { vsizeCred2, zeroVsizeCred2 },
+			CancellationToken.None);
+
+		await aliceArenaClient.ReadyToSignAsync(round.Id, aliceId, CancellationToken.None);
+
+		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromMinutes(1));
+		Assert.Equal(Phase.TransactionSigning, round.Phase);
+
+		var tx = round.Assert<SigningState>().CreateTransaction();
+		Assert.Single(tx.Inputs);
+		Assert.Equal(2 + 1, tx.Outputs.Count); // +1 because it pays coordination fees
+	}
+
+	[Fact]
 	public async Task RemoveInputAsyncTestAsync()
 	{
 		var config = new WabiSabiConfig();

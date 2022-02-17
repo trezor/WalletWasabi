@@ -36,12 +36,27 @@ public static class WabiSabiFactory
 			new OutPoint(Hashes.DoubleSHA256(key.PubKey.ToBytes()), 0),
 			new TxOut(amount, key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit)));
 
+	public static Coin CreateTaprootCoin(Key key)
+		=> CreateTaprootCoin(key, Money.Coins(1));
+
+	public static Coin CreateTaprootCoin(Key key, Money amount)
+		=> new(
+			new OutPoint(Hashes.DoubleSHA256(key.PubKey.GetTaprootFullPubKey().ToBytes()), 0),
+			new TxOut(amount, key.PubKey.GetScriptPubKey(ScriptPubKeyType.TaprootBIP86)));
+
 	public static OwnershipProof CreateOwnershipProof(Key key, uint256? roundHash = null)
 		=> OwnershipProof.GenerateCoinJoinInputProof(
 			key,
 			GetOwnershipIdentifier(key.PubKey.GetScriptPubKey(ScriptPubKeyType.Segwit)),
 			new CoinJoinInputCommitmentData("CoinJoinCoordinatorIdentifier", roundHash ?? BitcoinFactory.CreateUint256()),
 			ScriptPubKeyType.Segwit);
+
+	public static OwnershipProof CreateTaprootOwnershipProof(Key key, uint256? roundHash = null)
+		=> OwnershipProof.GenerateCoinJoinInputProof(
+			key,
+			GetOwnershipIdentifier(key.PubKey.GetScriptPubKey(ScriptPubKeyType.TaprootBIP86)),
+			new CoinJoinInputCommitmentData("CoinJoinCoordinatorIdentifier", roundHash ?? BitcoinFactory.CreateUint256()),
+			ScriptPubKeyType.TaprootBIP86);
 
 	public static OwnershipIdentifier GetOwnershipIdentifier(Script scriptPubKey)
 	{
