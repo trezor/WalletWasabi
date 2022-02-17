@@ -311,6 +311,28 @@ public class RegisterInputFailureTests
 	}
 
 	[Fact]
+	public async Task TaprootNotAllowed()
+	{
+		WabiSabiConfig cfg = new() { AllowP2trInputs = false };
+		var round = WabiSabiFactory.CreateRound(cfg);
+
+		using Key key = new();
+		var coin = WabiSabiFactory.CreateTaprootCoin(key);
+		var rpc = WabiSabiFactory.CreatePreconfiguredRpcClient(coin);
+		using Arena arena = await ArenaBuilder.From(cfg).With(rpc).CreateAndStartAsync(round);
+
+		var minAliceDeadline = DateTimeOffset.UtcNow + cfg.ConnectionConfirmationTimeout * 0.9;
+		var arenaClient = WabiSabiFactory.CreateArenaClient(arena);
+		var ownershipProof = WabiSabiFactory.CreateTaprootOwnershipProof(key, round.Id);
+
+		var ex = await Assert.ThrowsAsync<WabiSabiProtocolException>(
+			async () => await arenaClient.RegisterInputAsync(round.Id, coin.Outpoint, ownershipProof, CancellationToken.None));
+		Assert.Equal(WabiSabiProtocolErrorCode.ScriptNotAllowed, ex.ErrorCode);
+
+		await arena.StopAsync(CancellationToken.None);
+	}
+
+	[Fact]
 	public async Task WrongOwnershipProofAsync()
 	{
 		using Key key = new();
