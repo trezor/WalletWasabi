@@ -124,6 +124,9 @@ public static class WabiSabiFactory
 	public static Alice CreateAlice(Key key, Money amount, Round round)
 		=> CreateAlice(CreateCoin(key, amount), CreateOwnershipProof(key), round);
 
+	public static Alice CreateTaprootAlice(Key key, Money amount, Round round)
+		=> CreateAlice(CreateTaprootCoin(key, amount), CreateTaprootOwnershipProof(key), round);
+
 	public static Alice CreateAlice(Money amount, Round round)
 	{
 		using var key = new Key();
@@ -133,7 +136,16 @@ public static class WabiSabiFactory
 	public static Alice CreateAlice(Key key, Round round)
 		=> CreateAlice(key, Money.Coins(1), round);
 
+	public static Alice CreateTaprootAlice(Key key, Round round)
+		=> CreateTaprootAlice(key, Money.Coins(1), round);
+
 	public static Alice CreateAlice(Round round)
+	{
+		using var key = new Key();
+		return CreateAlice(key, Money.Coins(1), round);
+	}
+
+	public static Alice CreateTaprootAlice(Round round)
 	{
 		using var key = new Key();
 		return CreateAlice(key, Money.Coins(1), round);
