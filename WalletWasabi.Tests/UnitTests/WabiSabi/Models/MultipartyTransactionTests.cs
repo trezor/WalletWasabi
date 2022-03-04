@@ -31,8 +31,8 @@ public class MultipartyTransactionTests
 		using Key key1 = new();
 		using Key key2 = new();
 
-		var alice1Coin = CreateCoin(script: key1.PubKey.WitHash.ScriptPubKey);
-		var alice2Coin = CreateCoin(script: key2.PubKey.WitHash.ScriptPubKey);
+		var alice1Coin = CreateCoin(key1);
+		var alice2Coin = CreateCoin(key2);
 
 		var state = new ConstructionState(DefaultParameters);
 
@@ -128,8 +128,8 @@ public class MultipartyTransactionTests
 		using Key key1 = new();
 		using Key key2 = new();
 
-		var alice1Coin = CreateCoin(script: key1.PubKey.WitHash.ScriptPubKey);
-		var alice2Coin = CreateCoin(script: key2.PubKey.WitHash.ScriptPubKey);
+		var alice1Coin = CreateCoin(key1);
+		var alice2Coin = CreateCoin(key2);
 
 		var state = new ConstructionState(DefaultParameters).AddInput(alice1Coin).AddInput(alice2Coin);
 
@@ -182,8 +182,8 @@ public class MultipartyTransactionTests
 		using Key key1 = new();
 		using Key key2 = new();
 
-		var alice1Coin = CreateCoin(script: key1.PubKey.WitHash.ScriptPubKey);
-		var alice2Coin = CreateCoin(script: key2.PubKey.WitHash.ScriptPubKey);
+		var alice1Coin = CreateCoin(key1);
+		var alice2Coin = CreateCoin(key2);
 
 		var state = new ConstructionState(DefaultParameters with { MiningFeeRate = feeRate })
 			.AddInput(alice1Coin)
@@ -273,8 +273,8 @@ public class MultipartyTransactionTests
 	[Fact]
 	public void UneconomicalInputs()
 	{
-		var alice1Coin = CreateCoin(new Money(1000L));
-		var alice2Coin = CreateCoin(new Money(1001L));
+		var alice1Coin = CreateCoin(amount: new Money(1000L));
+		var alice2Coin = CreateCoin(amount: new Money(1001L));
 
 		// requires 1k sats per input in sat/vKB
 		var inputVsize = alice1Coin.ScriptPubKey.EstimateInputVsize();
@@ -332,8 +332,6 @@ public class MultipartyTransactionTests
 		Assert.Equal(output, Assert.Single(updated.Outputs));
 	}
 
-	private Coin CreateCoin(Money? amount = null, Script? script = null)
-		=> new Coin(
-			BitcoinFactory.CreateOutPoint(),
-			new TxOut(amount ?? Money.Coins(1), script ?? BitcoinFactory.CreateScript()));
+	private Coin CreateCoin(Key? key = null, Money? amount = null)
+		=> WabiSabiFactory.CreateCoin(key ?? new(), amount ?? Money.Coins(1));
 }
