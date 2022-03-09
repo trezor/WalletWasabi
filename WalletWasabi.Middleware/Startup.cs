@@ -96,6 +96,8 @@ namespace WalletWasabi.Middleware
 
 			app.UseResponseCompression();
 
+			app.UseCors(builder => builder.WithOrigins("*"));
+
 			app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 			var applicationLifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
