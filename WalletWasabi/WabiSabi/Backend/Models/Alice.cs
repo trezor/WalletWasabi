@@ -7,12 +7,11 @@ namespace WalletWasabi.WabiSabi.Backend.Models;
 
 public class Alice
 {
-	public Alice(Coin coin, OwnershipProof ownershipProof, Round round, Guid id, bool isPayingZeroCoordinationFee)
+	public Alice(CoinWithOwnershipProof coinWithOwnershipProof, Round round, Guid id, bool isPayingZeroCoordinationFee)
 	{
 		// TODO init syntax?
 		Round = round;
-		Coin = coin;
-		OwnershipProof = ownershipProof;
+		Coin = coinWithOwnershipProof;
 		Id = id;
 		IsPayingZeroCoordinationFee = isPayingZeroCoordinationFee;
 	}
@@ -20,7 +19,7 @@ public class Alice
 	public Round Round { get; }
 	public Guid Id { get; }
 	public DateTimeOffset Deadline { get; set; } = DateTimeOffset.UtcNow;
-	public Coin Coin { get; }
+	public CoinWithOwnershipProof Coin { get; }
 	public OwnershipProof OwnershipProof { get; }
 	public Money TotalInputAmount => Coin.Amount;
 	public int TotalInputVsize => Coin.ScriptPubKey.EstimateInputVsize();

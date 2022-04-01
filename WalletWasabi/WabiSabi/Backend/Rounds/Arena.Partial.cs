@@ -88,7 +88,7 @@ public partial class Arena : IWabiSabiApiRequestHandler
 				}
 			}
 
-			var alice = new Alice(coin, request.OwnershipProof, round, id, isPayingZeroCoordinationFee);
+			var alice = new Alice(new CoinWithOwnershipProof(coin, request.OwnershipProof), round, id, isPayingZeroCoordinationFee);
 
 			if (alice.CalculateRemainingAmountCredentials(round.Parameters.MiningFeeRate, round.Parameters.CoordinationFeeRate) <= Money.Zero)
 			{
