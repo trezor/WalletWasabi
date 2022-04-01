@@ -1,5 +1,6 @@
 using NBitcoin;
 using System.Collections.Immutable;
+using WalletWasabi.Crypto;
 using System.Linq;
 using WalletWasabi.Backend.Models;
 using WalletWasabi.WabiSabi.Backend.Models;
@@ -22,6 +23,7 @@ public class MultipartyTransactionTests
 		MaxRegistrableAmount = DefaultAllowedAmounts.Max,
 		MaxSuggestedAmountBase = Money.Coins(Constants.MaximumNumberOfBitcoins)
 	}) with { MiningFeeRate = new FeeRate(0m)};
+	private static CoinJoinInputCommitmentData commitmentData = WabiSabiFactory.CreateCommitmentData();
 
 	private static void ThrowsProtocolException(WabiSabiProtocolErrorCode expectedError, Action action) =>
 		Assert.Equal(expectedError, Assert.Throws<WabiSabiProtocolException>(action).ErrorCode);
@@ -40,7 +42,7 @@ public class MultipartyTransactionTests
 		Assert.Empty(state.Inputs);
 		Assert.Empty(state.Outputs);
 
-		var oneInput = state.AddInput(alice1Coin);
+		var oneInput = state.AddInput(alice1Coin, commitmentData);
 
 		Assert.Single(oneInput.Inputs);
 		Assert.Empty(oneInput.Outputs);
@@ -49,14 +51,14 @@ public class MultipartyTransactionTests
 		Assert.Empty(state.Inputs);
 		Assert.Empty(state.Outputs);
 
-		var differentInput = state.AddInput(alice2Coin);
+		var differentInput = state.AddInput(alice2Coin, commitmentData);
 
 		Assert.Single(differentInput.Inputs);
 		Assert.Empty(differentInput.Outputs);
 		Assert.NotEqual(oneInput.Inputs, differentInput.Inputs);
 		Assert.Equal(oneInput.Outputs, differentInput.Outputs);
 
-		var twoInputs = oneInput.AddInput(alice2Coin);
+		var twoInputs = oneInput.AddInput(alice2Coin, commitmentData);
 
 		Assert.Equal(2, twoInputs.Inputs.Count());
 		Assert.Empty(twoInputs.Outputs);
@@ -110,7 +112,7 @@ public class MultipartyTransactionTests
 	{
 		var coin = CreateCoinWithOwnershipProof();
 
-		var state = new ConstructionState(DefaultParameters).AddInput(coin);
+		var state = new ConstructionState(DefaultParameters).AddInput(coin, commitmentData);
 
 		var script = BitcoinFactory.CreateScript();
 		var bob = new TxOut(coin.Amount / 2, script);
@@ -126,13 +128,14 @@ public class MultipartyTransactionTests
 	[Fact]
 	public void WitnessValidation()
 	{
+
 		using Key key1 = new();
 		using Key key2 = new();
 
 		var alice1Coin = CreateCoinWithOwnershipProof(key1);
 		var alice2Coin = CreateCoinWithOwnershipProof(key2);
 
-		var state = new ConstructionState(DefaultParameters).AddInput(alice1Coin).AddInput(alice2Coin);
+		var state = new ConstructionState(DefaultParameters).AddInput(alice1Coin, commitmentData).AddInput(alice2Coin, commitmentData);
 
 		// address reuse bad
 		var bob1 = new TxOut(Money.Coins(1), alice1Coin.ScriptPubKey);
@@ -187,8 +190,8 @@ public class MultipartyTransactionTests
 		var alice2Coin = CreateCoinWithOwnershipProof(key2);
 
 		var state = new ConstructionState(DefaultParameters with { MiningFeeRate = feeRate })
-			.AddInput(alice1Coin)
-			.AddInput(alice2Coin);
+			.AddInput(alice1Coin, commitmentData)
+			.AddInput(alice2Coin, commitmentData);
 
 		var bob1 = new TxOut(Money.Coins(1), alice1Coin.ScriptPubKey);
 		var withOutput = state.AddOutput(bob1);
@@ -240,8 +243,8 @@ public class MultipartyTransactionTests
 	public void NoDuplicateInputs()
 	{
 		var coin = CreateCoinWithOwnershipProof();
-		var state = new ConstructionState(DefaultParameters).AddInput(coin);
-		ThrowsProtocolException(WabiSabiProtocolErrorCode.NonUniqueInputs, () => state.AddInput(coin));
+		var state = new ConstructionState(DefaultParameters).AddInput(coin, commitmentData);
+		ThrowsProtocolException(WabiSabiProtocolErrorCode.NonUniqueInputs, () => state.AddInput(coin, commitmentData));
 		Assert.Single(state.Inputs);
 	}
 
@@ -252,7 +255,7 @@ public class MultipartyTransactionTests
 	{
 		var legacyOnly = new ConstructionState(DefaultParameters with { AllowedInputTypes = ImmutableSortedSet.Create<ScriptType>(ScriptType.P2PKH) });
 		var coin = CreateCoinWithOwnershipProof();
-		ThrowsProtocolException(WabiSabiProtocolErrorCode.ScriptNotAllowed, () => legacyOnly.AddInput(coin));
+		ThrowsProtocolException(WabiSabiProtocolErrorCode.ScriptNotAllowed, () => legacyOnly.AddInput(coin, commitmentData));
 	}
 
 	[Fact]
@@ -264,11 +267,11 @@ public class MultipartyTransactionTests
 		var above = new ConstructionState(DefaultParameters with { AllowedInputAmounts = new MoneyRange(2 * coin.Amount, 3 * coin.Amount) });
 		var below = new ConstructionState(DefaultParameters with { AllowedInputAmounts = new MoneyRange(coin.Amount - Money.Coins(0.001m), coin.Amount - Money.Coins(0.0001m)) });
 
-		ThrowsProtocolException(WabiSabiProtocolErrorCode.NotEnoughFunds, () => above.AddInput(coin));
-		ThrowsProtocolException(WabiSabiProtocolErrorCode.TooMuchFunds, () => below.AddInput(coin));
+		ThrowsProtocolException(WabiSabiProtocolErrorCode.NotEnoughFunds, () => above.AddInput(coin, commitmentData));
+		ThrowsProtocolException(WabiSabiProtocolErrorCode.TooMuchFunds, () => below.AddInput(coin, commitmentData));
 
 		// Allowed range is inclusive:
-		Assert.Equal(coin.Amount, Assert.Single(exact.AddInput(coin).Inputs).Amount);
+		Assert.Equal(coin.Amount, Assert.Single(exact.AddInput(coin, commitmentData).Inputs).Amount);
 	}
 
 	[Fact]
@@ -284,9 +287,9 @@ public class MultipartyTransactionTests
 
 		var state = new ConstructionState(DefaultParameters with { MiningFeeRate = feeRate });
 
-		ThrowsProtocolException(WabiSabiProtocolErrorCode.UneconomicalInput, () => state.AddInput(alice1Coin));
+		ThrowsProtocolException(WabiSabiProtocolErrorCode.UneconomicalInput, () => state.AddInput(alice1Coin, commitmentData));
 
-		Assert.Equal(alice2Coin.Amount, Assert.Single(state.AddInput(alice2Coin).Inputs).Amount);
+		Assert.Equal(alice2Coin.Amount, Assert.Single(state.AddInput(alice2Coin, commitmentData).Inputs).Amount);
 	}
 
 	[Fact]
@@ -337,7 +340,7 @@ public class MultipartyTransactionTests
 	{
 		key = key ?? new();
 		var coin = WabiSabiFactory.CreateCoin(key, amount ?? Money.Coins(1));
-		var ownershipProof = WabiSabiFactory.CreateOwnershipProof(key);
+		var ownershipProof = WabiSabiFactory.CreateOwnershipProof(key, uint256.One);
 		return new CoinWithOwnershipProof(coin, ownershipProof);
 	}
 }

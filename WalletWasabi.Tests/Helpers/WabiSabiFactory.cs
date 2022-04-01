@@ -30,6 +30,9 @@ namespace WalletWasabi.Tests.Helpers;
 
 public static class WabiSabiFactory
 {
+	public static CoinJoinInputCommitmentData CreateCommitmentData(uint256? RoundId = null)
+		=> new CoinJoinInputCommitmentData("wasabiwallet.io", RoundId ?? uint256.One);
+
 	public static Coin CreateCoin(Key key)
 		=> CreateCoin(key, Money.Coins(1));
 
@@ -113,7 +116,7 @@ public static class WabiSabiFactory
 		=> new(new CoinWithOwnershipProof(coin, ownershipProof), round, Guid.NewGuid(), false) { Deadline = DateTimeOffset.UtcNow + TimeSpan.FromHours(1) };
 
 	public static Alice CreateAlice(Key key, Money amount, Round round)
-		=> CreateAlice(CreateCoin(key, amount), CreateOwnershipProof(key), round);
+		=> CreateAlice(CreateCoin(key, amount), CreateOwnershipProof(key, round.Id), round);
 
 	public static Alice CreateAlice(Money amount, Round round)
 	{
