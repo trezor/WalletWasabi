@@ -27,6 +27,8 @@ public class JsonSerializationOptions
 				new ExceptionDataJsonConverter(),
 				new ExtPubKeyJsonConverter(),
 				new TimeSpanJsonConverter(),
+                                // Since CoinWithOwnershipProof is child of Coin, CoinWithOwnershipProofJsonConverter must be before CoinJsonConverter
+				new CoinWithOwnershipProofJsonConverter(),
 				new CoinJsonConverter(),
 				new CoinJoinEventJsonConverter(),
 			}
