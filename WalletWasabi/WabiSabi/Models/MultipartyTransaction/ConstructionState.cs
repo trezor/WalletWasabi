@@ -15,7 +15,7 @@ public record ConstructionState : MultipartyTransactionState
 	}
 
 	// TODO ownership proofs and spend status also in scope
-	public ConstructionState AddInput(CoinWithOwnershipProof coinWithOwnershipProof)
+	public ConstructionState AddInput(CoinWithOwnershipProof coinWithOwnershipProof, CoinJoinInputCommitmentData coinJoinInputCommitmentData)
 	{
 		var prevout = coinWithOwnershipProof.TxOut;
 
@@ -60,6 +60,11 @@ public record ConstructionState : MultipartyTransactionState
 		if (Inputs.Any(x => x.Outpoint == coinWithOwnershipProof.Outpoint))
 		{
 			throw new WabiSabiProtocolException(WabiSabiProtocolErrorCode.NonUniqueInputs);
+		}
+
+		if (!OwnershipProof.VerifyCoinJoinInputProof(coinWithOwnershipProof.OwnershipProof, coinWithOwnershipProof.TxOut.ScriptPubKey, coinJoinInputCommitmentData))
+		{
+			throw new WabiSabiProtocolException(WabiSabiProtocolErrorCode.WrongOwnershipProof);
 		}
 
 		return this with { Events = Events.Add(new InputAdded(coinWithOwnershipProof)) };

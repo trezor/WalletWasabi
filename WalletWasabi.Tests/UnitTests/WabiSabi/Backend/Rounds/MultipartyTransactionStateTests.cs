@@ -15,19 +15,21 @@ public class MultipartyTransactionStateTests
 		var cfg = new WabiSabiConfig();
 		var round = WabiSabiFactory.CreateRound(cfg);
 
-		static CoinWithOwnershipProof CreateCoinWithOwnershipProof()
+		CoinWithOwnershipProof CreateCoinWithOwnershipProof()
 		{
 			using var key = new Key();
-			return new CoinWithOwnershipProof(WabiSabiFactory.CreateCoin(key), WabiSabiFactory.CreateOwnershipProof(key));
+			return new CoinWithOwnershipProof(WabiSabiFactory.CreateCoin(key), WabiSabiFactory.CreateOwnershipProof(key, round.Id));
 		}
+
+                var commitmentData = WabiSabiFactory.CreateCommitmentData(round.Id);
 
 		CoinWithOwnershipProof coin1, coin2, coin3;
 
 		// Three events / three states
 		var state0 = round.Assert<ConstructionState>();
-		var state1 = state0.AddInput(coin1 = CreateCoinWithOwnershipProof());
-		var state2 = state1.AddInput(coin2 = CreateCoinWithOwnershipProof());
-		var state3 = state2.AddInput(coin3 = CreateCoinWithOwnershipProof());
+		var state1 = state0.AddInput(coin1 = CreateCoinWithOwnershipProof(), commitmentData);
+		var state2 = state1.AddInput(coin2 = CreateCoinWithOwnershipProof(), commitmentData);
+		var state3 = state2.AddInput(coin3 = CreateCoinWithOwnershipProof(), commitmentData);
 
 		// Unknown state. Assumes full state is required
 		var diffd30 = state3.GetStateFrom(-1);
