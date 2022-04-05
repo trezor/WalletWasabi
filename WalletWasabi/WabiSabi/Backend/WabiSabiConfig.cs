@@ -95,6 +95,10 @@ public class WabiSabiConfig : ConfigBase
 	[JsonProperty(PropertyName = "CoordinatorExtPubKeyCurrentDepth", DefaultValueHandling = DefaultValueHandling.Populate)]
 	public int CoordinatorExtPubKeyCurrentDepth { get; private set; } = 1;
 
+	[DefaultValue("wasabiwallet.io")]
+	[JsonProperty(PropertyName = "CoordinatorIdentifier", DefaultValueHandling = DefaultValueHandling.Populate)]
+	public string CoordinatorIdentifier { get; set; } = "wasabiwallet.io";
+
 	public Script GetNextCleanCoordinatorScript() => DeriveCoordinatorScript(CoordinatorExtPubKeyCurrentDepth);
 
 	public Script DeriveCoordinatorScript(int index) => CoordinatorExtPubKey.Derive(0, false).Derive(index, false).PubKey.WitHash.ScriptPubKey;
