@@ -131,7 +131,8 @@ public static class WabiSabiFactory
 		return new ArenaClient(
 			roundState.CreateAmountCredentialClient(random),
 			roundState.CreateVsizeCredentialClient(random),
-			arena);
+			arena,
+			"wasabiwallet.io");
 	}
 
 	public static InputRegistrationRequest CreateInputRegistrationRequest(Round round, Key? key = null, OutPoint? prevout = null)
@@ -294,6 +295,7 @@ public static class WabiSabiFactory
 			keyChain,
 			destinationProvider,
 			roundStateUpdater,
+			"wasabiwallet.io",
 			int.MaxValue,
 			true,
 			TimeSpan.Zero,

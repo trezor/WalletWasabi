@@ -12,16 +12,19 @@ public class CoinJoinTrackerFactory
 	public CoinJoinTrackerFactory(
 		IWasabiHttpClientFactory httpClientFactory,
 		RoundStateUpdater roundStatusUpdater,
-		CancellationToken cancellationToken)
+		CancellationToken cancellationToken,
+		string coordinatorIdentifier)
 	{
 		HttpClientFactory = httpClientFactory;
 		RoundStatusUpdater = roundStatusUpdater;
 		CancellationToken = cancellationToken;
+		coordinatorIdentifier = coordinatorIdentifier;
 	}
 
 	private IWasabiHttpClientFactory HttpClientFactory { get; }
 	private RoundStateUpdater RoundStatusUpdater { get; }
 	private CancellationToken CancellationToken { get; }
+	private string coordinatorIdentifier { get; }
 
 	public CoinJoinTracker CreateAndStart(Wallet wallet, IEnumerable<SmartCoin> coinCandidates, bool restartAutomatically)
 	{
@@ -30,6 +33,7 @@ public class CoinJoinTrackerFactory
 			new KeyChain(wallet.KeyManager, wallet.Kitchen),
 			new InternalDestinationProvider(wallet.KeyManager),
 			RoundStatusUpdater,
+			coordinatorIdentifier,
 			wallet.KeyManager.MinAnonScoreTarget,
 			feeRateMedianTimeFrame: TimeSpan.FromHours(wallet.KeyManager.FeeRateMedianTimeFrameHours),
 			doNotRegisterInLastMinuteTimeLimit: TimeSpan.FromMinutes(1));

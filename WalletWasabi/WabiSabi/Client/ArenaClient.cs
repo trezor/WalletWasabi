@@ -17,16 +17,19 @@ public class ArenaClient
 	public ArenaClient(
 		WabiSabiClient amountCredentialClient,
 		WabiSabiClient vsizeCredentialClient,
-		IWabiSabiApiRequestHandler requestHandler)
+		IWabiSabiApiRequestHandler requestHandler,
+		string coordinatorIdentifier)
 	{
 		AmountCredentialClient = amountCredentialClient;
 		VsizeCredentialClient = vsizeCredentialClient;
 		RequestHandler = requestHandler;
+		CoordinatorIdentifier = coordinatorIdentifier;
 	}
 
 	public WabiSabiClient AmountCredentialClient { get; }
 	public WabiSabiClient VsizeCredentialClient { get; }
 	public IWabiSabiApiRequestHandler RequestHandler { get; }
+	public string CoordinatorIdentifier { get; }
 
 	public async Task<(ArenaResponse<Guid> ArenaResponse, bool IsPayingZeroCoordinationFee)> RegisterInputAsync(
 		uint256 roundId,

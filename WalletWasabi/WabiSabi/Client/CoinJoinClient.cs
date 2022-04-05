@@ -38,6 +38,7 @@ public class CoinJoinClient
 		IKeyChain keyChain,
 		IDestinationProvider destinationProvider,
 		RoundStateUpdater roundStatusUpdater,
+		string coordinatorIdentifier,
 		int minAnonScoreTarget = int.MaxValue,
 		bool consolidationMode = false,
 		TimeSpan feeRateMedianTimeFrame = default,
@@ -47,6 +48,7 @@ public class CoinJoinClient
 		KeyChain = keyChain;
 		DestinationProvider = destinationProvider;
 		RoundStatusUpdater = roundStatusUpdater;
+		CoordinatorIdentifier = coordinatorIdentifier;
 		MinAnonScoreTarget = minAnonScoreTarget;
 		ConsolidationMode = consolidationMode;
 		FeeRateMedianTimeFrame = feeRateMedianTimeFrame;
@@ -59,6 +61,7 @@ public class CoinJoinClient
 	private IKeyChain KeyChain { get; }
 	private IDestinationProvider DestinationProvider { get; }
 	private RoundStateUpdater RoundStatusUpdater { get; }
+	public string CoordinatorIdentifier { get; }
 	public int MinAnonScoreTarget { get; }
 	private TimeSpan DoNotRegisterInLastMinuteTimeLimit { get; }
 
@@ -210,7 +213,8 @@ public class CoinJoinClient
 				var aliceArenaClient = new ArenaClient(
 					roundState.CreateAmountCredentialClient(SecureRandom),
 					roundState.CreateVsizeCredentialClient(SecureRandom),
-					arenaRequestHandler);
+					arenaRequestHandler,
+					CoordinatorIdentifier);
 
 				var aliceClient = await AliceClient.CreateRegisterAndConfirmInputAsync(roundState, aliceArenaClient, coin, KeyChain, RoundStatusUpdater, cancellationToken).ConfigureAwait(false);
 
@@ -266,7 +270,8 @@ public class CoinJoinClient
 			new(
 				roundState.CreateAmountCredentialClient(SecureRandom),
 				roundState.CreateVsizeCredentialClient(SecureRandom),
-				arenaRequestHandler));
+				arenaRequestHandler,
+				CoordinatorIdentifier));
 	}
 
 	private bool SanityCheck(IEnumerable<TxOut> expectedOutputs, Transaction unsignedCoinJoinTransaction)

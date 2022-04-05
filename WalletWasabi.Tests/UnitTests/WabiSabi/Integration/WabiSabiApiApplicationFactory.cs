@@ -81,7 +81,8 @@ public class WabiSabiApiApplicationFactory<TStartup> : WebApplicationFactory<TSt
 		var arenaClient = new ArenaClient(
 			round.CreateAmountCredentialClient(insecureRandom),
 			round.CreateVsizeCredentialClient(insecureRandom),
-			wabiSabiHttpApiClient);
+			wabiSabiHttpApiClient,
+			"wasabiwallet.io");
 		return arenaClient;
 	}
 

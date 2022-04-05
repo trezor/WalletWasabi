@@ -46,11 +46,13 @@ public class BobClientTests
 		var aliceArenaClient = new ArenaClient(
 			roundState.CreateAmountCredentialClient(insecureRandom),
 			roundState.CreateVsizeCredentialClient(insecureRandom),
-			wabiSabiApi);
+			wabiSabiApi,
+			"wasabiwallet.io");
 		var bobArenaClient = new ArenaClient(
 			roundState.CreateAmountCredentialClient(insecureRandom),
 			roundState.CreateVsizeCredentialClient(insecureRandom),
-			wabiSabiApi);
+			wabiSabiApi,
+			"wasabiwallet.io");
 		Assert.Equal(Phase.InputRegistration, round.Phase);
 
 		using RoundStateUpdater roundStateUpdater = new(TimeSpan.FromSeconds(2), wabiSabiApi);
