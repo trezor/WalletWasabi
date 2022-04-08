@@ -196,7 +196,7 @@ public class StepTransactionSigningTests
 		var alice3 = WabiSabiFactory.CreateAlice(round);
 		alice3.ConfirmedConnection = true;
 		round.Alices.Add(alice3);
-		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(alice3.Coin);
+		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(alice3.CoinWithOwnershipProof);
 		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(21));
 		Assert.Equal(Phase.TransactionSigning, round.Phase);
 
@@ -206,7 +206,7 @@ public class StepTransactionSigningTests
 		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(21));
 		Assert.DoesNotContain(round, arena.Rounds.Where(x => x.Phase != Phase.Ended));
 		Assert.Single(arena.Rounds.Where(x => x is BlameRound));
-		var badOutpoint = alice3.Coin.Outpoint;
+		var badOutpoint = alice3.CoinWithOwnershipProof.Outpoint;
 		Assert.Contains(badOutpoint, prison.GetInmates().Select(x => x.Utxo));
 
 		var onlyRound = arena.Rounds.Single(x => x is BlameRound);

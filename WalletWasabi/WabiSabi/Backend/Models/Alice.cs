@@ -11,7 +11,7 @@ public class Alice
 	{
 		// TODO init syntax?
 		Round = round;
-		Coin = coinWithOwnershipProof;
+		CoinWithOwnershipProof = coinWithOwnershipProof;
 		Id = id;
 		IsPayingZeroCoordinationFee = isPayingZeroCoordinationFee;
 	}
@@ -19,10 +19,10 @@ public class Alice
 	public Round Round { get; }
 	public Guid Id { get; }
 	public DateTimeOffset Deadline { get; set; } = DateTimeOffset.UtcNow;
-	public CoinWithOwnershipProof Coin { get; }
+	public CoinWithOwnershipProof CoinWithOwnershipProof { get; }
 	public OwnershipProof OwnershipProof { get; }
-	public Money TotalInputAmount => Coin.Amount;
-	public int TotalInputVsize => Coin.ScriptPubKey.EstimateInputVsize();
+	public Money TotalInputAmount => CoinWithOwnershipProof.Amount;
+	public int TotalInputVsize => CoinWithOwnershipProof.ScriptPubKey.EstimateInputVsize();
 
 	public bool ConfirmedConnection { get; set; } = false;
 	public bool ReadyToSign { get; set; }
@@ -31,7 +31,7 @@ public class Alice
 	public long CalculateRemainingVsizeCredentials(int maxRegistrableSize) => maxRegistrableSize - TotalInputVsize;
 
 	public Money CalculateRemainingAmountCredentials(FeeRate feeRate, CoordinationFeeRate coordinationFeeRate) =>
-		Coin.EffectiveValue(feeRate, IsPayingZeroCoordinationFee ? CoordinationFeeRate.Zero : coordinationFeeRate);
+		CoinWithOwnershipProof.EffectiveValue(feeRate, IsPayingZeroCoordinationFee ? CoordinationFeeRate.Zero : coordinationFeeRate);
 
 	public void SetDeadlineRelativeTo(TimeSpan connectionConfirmationTimeout)
 	{

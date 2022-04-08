@@ -141,7 +141,7 @@ public class StepOutputRegistrationTests
 		var txParams = round.Assert<ConstructionState>().Parameters;
 		var extraAlice = WabiSabiFactory.CreateAlice(txParams.FeeRate.GetFee(Constants.P2wpkhInputVirtualSize) + txParams.AllowedOutputAmounts.Min - new Money(1L), round);
 		round.Alices.Add(extraAlice);
-		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(extraAlice.Coin);
+		round.CoinjoinState = round.Assert<ConstructionState>().AddInput(extraAlice.CoinWithOwnershipProof);
 
 		await arena.TriggerAndWaitRoundAsync(TimeSpan.FromSeconds(21));
 		Assert.Equal(Phase.TransactionSigning, round.Phase);

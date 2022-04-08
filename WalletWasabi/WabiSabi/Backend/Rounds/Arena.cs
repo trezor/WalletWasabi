@@ -215,7 +215,7 @@ public partial class Arena : PeriodicRunner
 
 					// Logging.
 					round.LogInfo("Trying to broadcast coinjoin.");
-					Coin[]? spentCoins = round.Alices.Select(x => x.Coin).ToArray();
+					Coin[]? spentCoins = round.Alices.Select(x => x.CoinWithOwnershipProof).ToArray();
 					Money networkFee = coinjoin.GetFee(spentCoins);
 					uint256 roundId = round.Id;
 					FeeRate feeRate = coinjoin.GetFeeRate(spentCoins);
@@ -289,7 +289,7 @@ public partial class Arena : PeriodicRunner
 			var batchedRpc = Rpc.PrepareBatch();
 
 			var aliceCheckingTaskPairs = chunckOfAlices
-				.Select(x => (Alice: x, StatusTask: Rpc.GetTxOutAsync(x.Coin.Outpoint.Hash, (int)x.Coin.Outpoint.N, includeMempool: true, cancellationToken)))
+				.Select(x => (Alice: x, StatusTask: Rpc.GetTxOutAsync(x.CoinWithOwnershipProof.Outpoint.Hash, (int)x.CoinWithOwnershipProof.Outpoint.N, includeMempool: true, cancellationToken)))
 				.ToList();
 
 			await batchedRpc.SendBatchAsync(cancellationToken).ConfigureAwait(false);
@@ -307,7 +307,7 @@ public partial class Arena : PeriodicRunner
 		var unsignedPrevouts = state.UnsignedInputs.Select(coin => coin.Outpoint).ToHashSet();
 
 		var alicesWhoDidntSign = round.Alices
-			.Where(x => unsignedPrevouts.Contains(x.Coin.Outpoint))
+			.Where(x => unsignedPrevouts.Contains(x.CoinWithOwnershipProof.Outpoint))
 			.ToHashSet();
 
 		foreach (var alice in alicesWhoDidntSign)
@@ -329,7 +329,7 @@ public partial class Arena : PeriodicRunner
 		var feeRate = (await Rpc.EstimateSmartFeeAsync((int)Config.ConfirmationTarget, EstimateSmartFeeMode.Conservative, simulateIfRegTest: true, cancellationToken).ConfigureAwait(false)).FeeRate;
 		RoundParameters parameters = new(Config, Network, Random, feeRate, round.CoordinationFeeRate);
 		var blameWhitelist = round.Alices
-			.Select(x => x.Coin.Outpoint)
+			.Select(x => x.CoinWithOwnershipProof.Outpoint)
 			.Where(x => !Prison.IsBanned(x))
 			.ToHashSet();
 
@@ -414,7 +414,7 @@ public partial class Arena : PeriodicRunner
 
 	private ConstructionState AddCoordinationFee(Round round, ConstructionState coinjoin, Script coordinatorScriptPubKey)
 	{
-		var coordinationFee = round.Alices.Where(a => !a.IsPayingZeroCoordinationFee).Sum(x => round.CoordinationFeeRate.GetFee(x.Coin.Amount));
+		var coordinationFee = round.Alices.Where(a => !a.IsPayingZeroCoordinationFee).Sum(x => round.CoordinationFeeRate.GetFee(x.CoinWithOwnershipProof.Amount));
 		if (coordinationFee == 0)
 		{
 			round.LogInfo($"Coordination fee wasn't taken, because it was free for everyone. Hurray!");

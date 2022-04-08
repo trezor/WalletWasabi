@@ -245,14 +245,14 @@ public class ArenaClientTests
 
 		// No inputs in the coinjoin.
 		await Assert.ThrowsAsync<ArgumentException>(async () =>
-				await apiClient.SignTransactionAsync(round.Id, alice1.Coin, coins[0].OwnershipProof, keyChain, finalizedEmptyState.CreateUnsignedTransaction(), CancellationToken.None));
+				await apiClient.SignTransactionAsync(round.Id, alice1.CoinWithOwnershipProof, coins[0].OwnershipProof, keyChain, finalizedEmptyState.CreateUnsignedTransaction(), CancellationToken.None));
 
-		var oneInput = emptyState.AddInput(alice1.Coin).Finalize();
+		var oneInput = emptyState.AddInput(alice1.CoinWithOwnershipProof).Finalize();
 		round.CoinjoinState = oneInput;
 
 		// Trying to sign coins those are not in the coinjoin.
 		await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-				await apiClient.SignTransactionAsync(round.Id, alice2.Coin, coins[1].OwnershipProof, keyChain, oneInput.CreateUnsignedTransaction(), CancellationToken.None));
+				await apiClient.SignTransactionAsync(round.Id, alice2.CoinWithOwnershipProof, coins[1].OwnershipProof, keyChain, oneInput.CreateUnsignedTransaction(), CancellationToken.None));
 
 		var twoInputs = emptyState.AddInput(alice1.CoinWithOwnershipProof).AddInput(alice2.CoinWithOwnershipProof).Finalize();
 		round.CoinjoinState = twoInputs;
@@ -260,14 +260,14 @@ public class ArenaClientTests
 		Assert.False(round.Assert<SigningState>().IsFullySigned);
 		var unsigned = round.Assert<SigningState>().CreateUnsignedTransaction();
 
-		await apiClient.SignTransactionAsync(round.Id, alice1.Coin, coins[0].OwnershipProof, keyChain, unsigned, CancellationToken.None);
-		Assert.True(round.Assert<SigningState>().IsInputSigned(alice1.Coin.Outpoint));
-		Assert.False(round.Assert<SigningState>().IsInputSigned(alice2.Coin.Outpoint));
+		await apiClient.SignTransactionAsync(round.Id, alice1.CoinWithOwnershipProof, coins[0].OwnershipProof, keyChain, unsigned, CancellationToken.None);
+		Assert.True(round.Assert<SigningState>().IsInputSigned(alice1.CoinWithOwnershipProof.Outpoint));
+		Assert.False(round.Assert<SigningState>().IsInputSigned(alice2.CoinWithOwnershipProof.Outpoint));
 
 		Assert.False(round.Assert<SigningState>().IsFullySigned);
 
-		await apiClient.SignTransactionAsync(round.Id, alice2.Coin, coins[1].OwnershipProof, keyChain, unsigned, CancellationToken.None);
-		Assert.True(round.Assert<SigningState>().IsInputSigned(alice2.Coin.Outpoint));
+		await apiClient.SignTransactionAsync(round.Id, alice2.CoinWithOwnershipProof, coins[1].OwnershipProof, keyChain, unsigned, CancellationToken.None);
+		Assert.True(round.Assert<SigningState>().IsInputSigned(alice2.CoinWithOwnershipProof.Outpoint));
 
 		Assert.True(round.Assert<SigningState>().IsFullySigned);
 	}
