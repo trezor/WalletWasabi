@@ -116,8 +116,8 @@ public class Round
 		return InputRegistrationTimeFrame.HasExpired;
 	}
 
-	public ConstructionState AddInput(CoinWithOwnershipProof coin)
-		=> Assert<ConstructionState>().AddInput(coin);
+	public ConstructionState AddInput(CoinWithOwnershipProof coinWithOwnershipProof)
+		=> Assert<ConstructionState>().AddInput(coinWithOwnershipProof);
 
 	public ConstructionState AddOutput(TxOut output)
 		=> Assert<ConstructionState>().AddOutput(output);
