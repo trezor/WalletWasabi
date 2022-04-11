@@ -19,7 +19,7 @@ using WalletWasabi.WabiSabi.Models.Serialization;
 
 [assembly: ApiController]
 
-namespace WalletWasabi.Middleware;
+namespace WalletWasabi.WabiSabiClientLibrary;
 
 public class Startup
 {
@@ -59,7 +59,7 @@ public class Startup
 
 			// Set the comments path for the Swagger JSON and UI.
 			var basePath = AppContext.BaseDirectory;
-			var xmlPath = Path.Combine(basePath, "WalletWasabi.Middleware.xml");
+			var xmlPath = Path.Combine(basePath, "WalletWasabi.WabiSabiClientLibrary.xml");
 			c.IncludeXmlComments(xmlPath);
 		});
 
@@ -104,7 +104,7 @@ public class Startup
 
 	private Task CleanupAsync(Global global)
 	{
-		Logger.LogSoftwareStopped("Wasabi Middlware");
+		Logger.LogSoftwareStopped(nameof(WabiSabiClientLibrary));
 		return Task.CompletedTask;
 	}
 }

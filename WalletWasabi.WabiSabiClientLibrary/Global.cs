@@ -2,13 +2,13 @@ using System.IO;
 using WalletWasabi.Helpers;
 using WalletWasabi.WabiSabi.Backend;
 
-namespace WalletWasabi.Middleware;
+namespace WalletWasabi.WabiSabiClientLibrary;
 
 public class Global
 {
 	public Global(string dataDir)
 	{
-		DataDir = dataDir ?? EnvironmentHelpers.GetDataDir(Path.Combine("WalletWasabi", "Middleware"));
+		DataDir = dataDir ?? EnvironmentHelpers.GetDataDir(Path.Combine(nameof(WalletWasabi), nameof(WabiSabiClientLibrary)));
 		WabiSabiConfig = new(DataDir);
 	}
 

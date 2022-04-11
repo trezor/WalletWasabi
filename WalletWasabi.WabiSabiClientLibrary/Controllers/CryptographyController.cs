@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading;
 using WalletWasabi.Crypto.Randomness;
-using WalletWasabi.Middleware.Models;
+using WalletWasabi.WabiSabiClientLibrary.Models;
 using WalletWasabi.Server.Filters;
 using WalletWasabi.WabiSabi.Crypto;
 
-namespace WalletWasabi.Middleware;
+namespace WalletWasabi.WabiSabiClientLibrary;
 
 [ApiController]
 [ExceptionTranslate]
