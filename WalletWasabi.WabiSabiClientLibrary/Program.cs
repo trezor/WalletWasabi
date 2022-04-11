@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using WalletWasabi.Logging;
 using WalletWasabi.Server;
 
-namespace WalletWasabi.Middleware;
+namespace WalletWasabi.WabiSabiClientLibrary;
 
 public static class Program
 {

@@ -14,7 +14,7 @@
 		<RepositoryUrl>https://github.com/zkSNACKs/WalletWasabi/</RepositoryUrl>
 		<Nullable>enable</Nullable>
 		<InvariantGlobalization>true</InvariantGlobalization>
-		<PathMap>$(MSBuildProjectDirectory)\=WalletWasabi.Middleware</PathMap>
+		<PathMap>$(MSBuildProjectDirectory)\=WalletWasabi.WabiSabiClientLibrary</PathMap>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,12 +26,12 @@
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DocumentationFile>bin\Debug\net6.0\WalletWasabi.Middleware.xml</DocumentationFile>
+		<DocumentationFile>bin\Debug\net6.0\WalletWasabi.WabiSabiClientLibrary.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<!-- Needed for Swagger! -->
-		<DocumentationFile>bin\Release\net6.0\WalletWasabi.Middleware.xml</DocumentationFile>
+		<DocumentationFile>bin\Release\net6.0\WalletWasabi.WabiSabiClientLibrary.xml</DocumentationFile>
 		<DebugType>none</DebugType>
 		<DebugSymbols>false</DebugSymbols>
 		<ErrorReport>none</ErrorReport>

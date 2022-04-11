@@ -1,6 +1,6 @@
 using WalletWasabi.Crypto;
 
-namespace WalletWasabi.Middleware.Models;
+namespace WalletWasabi.WabiSabiClientLibrary.Models;
 
 public record CreateRequestForZeroAmountRequest(
 	CredentialIssuerParameters CredentialIssuerParameters

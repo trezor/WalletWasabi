@@ -1,6 +1,6 @@
 using WalletWasabi.WabiSabi.Crypto.CredentialRequesting;
 
-namespace WalletWasabi.Middleware.Models;
+namespace WalletWasabi.WabiSabiClientLibrary.Models;
 
 public record CreateRequestForZeroAmountResponse(
 	ZeroCredentialsRequestData zeroCredentialsRequestData

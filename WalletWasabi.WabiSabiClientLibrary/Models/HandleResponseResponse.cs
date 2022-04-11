@@ -1,6 +1,6 @@
 using WalletWasabi.Crypto.ZeroKnowledge;
 
-namespace WalletWasabi.Middleware.Models;
+namespace WalletWasabi.WabiSabiClientLibrary.Models;
 
 public record HandleResponseResponse(
 		Credential[] credentials
