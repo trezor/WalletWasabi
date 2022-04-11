@@ -18,6 +18,16 @@ public class Controller : ControllerBase, IDisposable
 		_secureRandom = new SecureRandom();
 	}
 
+	/// <summary>
+	/// Given a set of effective input amounts registered by a participant and a set of effective input amounts
+	/// registered by other participants, decompose the amounts registered by the participant into output amounts.
+	/// </summary>
+	[HttpPost("get-outputs-amounts")]
+	public GetOutputAmountsResponse GetOutputAmounts(GetOutputAmountsRequest request)
+	{
+		return GetOutputAmountsHelper.GetOutputAmounts(request);
+	}
+
 	[HttpPost("get-zero-credential-requests")]
 	public GetZeroCredentialRequestsResponse GetZeroCredentialRequests(GetZeroCredentialRequestsRequest request)
 	{
