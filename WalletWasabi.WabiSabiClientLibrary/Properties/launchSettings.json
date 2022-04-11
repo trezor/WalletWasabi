@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "WalletWasabi.Middleware": {
+    "WalletWasabi.WabiSabiClientLibrary": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

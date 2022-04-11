@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using WalletWasabi.Logging;
 using WalletWasabi.Server;
 
-namespace WalletWasabi.Middleware;
+namespace WalletWasabi.WabiSabiClientLibrary;
 
 public class InitConfigStartupTask : IStartupTask
 {
@@ -19,7 +19,7 @@ public class InitConfigStartupTask : IStartupTask
 	public Task ExecuteAsync(CancellationToken cancellationToken)
 	{
 		Logger.InitializeDefaults(Path.Combine(Global.DataDir, "Logs.txt"));
-		Logger.LogSoftwareStarted("Middleware");
+		Logger.LogSoftwareStarted(nameof(WabiSabiClientLibrary));
 		return Task.CompletedTask;
 	}
 

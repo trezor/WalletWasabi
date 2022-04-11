@@ -18,7 +18,7 @@ endif
 RUNTIME=$(SYSTEM)-$(ARCH)
 DOTNETVER=6.0
 
-BINARY=bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.Middleware
+BINARY=bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary
 OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
 
 all:
