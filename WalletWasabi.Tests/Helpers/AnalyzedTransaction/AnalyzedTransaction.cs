@@ -20,19 +20,25 @@ public class AnalyzedTransaction : SmartTransaction
 	private static Key CreateKey(string? label = null)
 	{
 		if (label is null)
+		{
 			return new Key();
+		}
 		else
+		{
 			return new Key(Hashes.DoubleSHA256(Encoders.ASCII.DecodeData(label)).ToBytes());
+		}
 	}
 
 	private static Script CreateScript(string? label = null)
 	{
-		return CreateKey(label).PubKey.WitHash.ScriptPubKey;
+		using var k = CreateKey(label);
+		return k.PubKey.WitHash.ScriptPubKey;
 	}
 
 	private static HdPubKey CreateHdPubKey(string? label = null)
 	{
-		return new HdPubKey(CreateKey(label).PubKey, new KeyPath("0/0/0/0/0"), SmartLabel.Empty, KeyState.Clean);
+		using var k = CreateKey(label);
+		return new HdPubKey(k.PubKey, new KeyPath("0/0/0/0/0"), SmartLabel.Empty, KeyState.Clean);
 	}
 
 	public void AddForeignInput(ForeignOutput output)
@@ -69,7 +75,7 @@ public class AnalyzedTransaction : SmartTransaction
 
 	public WalletOutput AddWalletInput(decimal amount = 1, string? label = null, int anonymity = 1)
 	{
-		AnalyzedTransaction coinjoinTransaction = AnalyzedTransaction.CreateCoinjoin(anonymity - 1, anonymity - 1);
+		AnalyzedTransaction coinjoinTransaction = CreateCoinjoin(anonymity - 1, anonymity - 1);
 		coinjoinTransaction.AddWalletInput(WalletOutput.Create(new Money(amount, MoneyUnit.BTC), CreateHdPubKey()));
 		WalletOutput walletOutput = coinjoinTransaction.AddWalletOutput(amount, label);
 		AddWalletInput(walletOutput);
@@ -78,8 +84,8 @@ public class AnalyzedTransaction : SmartTransaction
 
 	public ForeignOutput AddForeignOutput(decimal amount = 1, string? label = null)
 	{
-		uint index = (uint)Transaction.Outputs.Count();
-		TxOut txOut = Transaction.Outputs.Add(new Money(amount, MoneyUnit.BTC), CreateScript(label));
+		uint index = (uint)Transaction.Outputs.Count;
+		Transaction.Outputs.Add(new Money(amount, MoneyUnit.BTC), CreateScript(label));
 		return new ForeignOutput(Transaction, index);
 	}
 
@@ -103,7 +109,10 @@ public class AnalyzedTransaction : SmartTransaction
 			{
 				analyzedTransactions.Add(transaction);
 				foreach (SmartCoin walletInput in transaction.WalletInputs)
+				{
 					AnalyzeRecursivelyHelper(walletInput.Transaction);
+				}
+
 				analyser.Analyze(transaction);
 			}
 		}
