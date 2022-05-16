@@ -19,8 +19,8 @@ public class HdPubKey : IEquatable<HdPubKey>
 	{
 		PubKey = Guard.NotNull(nameof(pubKey), pubKey);
 		FullKeyPath = Guard.NotNull(nameof(fullKeyPath), fullKeyPath);
-		Cluster = new Cluster(this);
-		SetLabel(label, null);
+		Label = label;
+		Cluster.UpdateLabels();
 		KeyState = keyState;
 
 		P2pkScript = PubKey.ScriptPubKey;
