@@ -21,9 +21,19 @@ DOTNETVER=6.0
 BINARY=bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary
 OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
 
-all:
+all: compile
+
+ifneq (,$(wildcard /etc/NIXOS))
+INTERPRETER=$(shell cat ${NIX_CC}/nix-support/dynamic-linker)
+all: patchelf
+endif
+
+compile:
 	dotnet publish --runtime $(RUNTIME) --self-contained --configuration Release $(OPTS)
 	ls -lh $(BINARY)
+
+patchelf:
+	nix-shell -p patchelf --run 'patchelf --set-interpreter "$(INTERPRETER)" "$(BINARY)"'
 
 run:
 	$(BINARY)
