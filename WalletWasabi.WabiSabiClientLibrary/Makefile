@@ -23,7 +23,7 @@ OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
 
 all: compile
 
-ifeq (,$(wildcard /etc/NIXOS))
+ifneq (,$(wildcard /etc/NIXOS))
 INTERPRETER=$(shell cat ${NIX_CC}/nix-support/dynamic-linker)
 all: patchelf
 endif
