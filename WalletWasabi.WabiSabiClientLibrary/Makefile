@@ -1,6 +1,5 @@
 UNAME_S = $(shell uname -s)
 UNAME_M = $(shell uname -m)
-UNAME_N = $(shell uname -n)
 
 ifeq ($(UNAME_S),Darwin)
   SYSTEM = osx
@@ -24,7 +23,7 @@ OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
 
 all: compile
 
-ifeq ($(UNAME_N),nixos)
+ifeq (,$(wildcard /etc/NIXOS))
 INTERPRETER=$(shell cat ${NIX_CC}/nix-support/dynamic-linker)
 all: patchelf
 endif
