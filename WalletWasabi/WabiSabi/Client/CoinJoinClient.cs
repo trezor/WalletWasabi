@@ -434,7 +434,7 @@ public class CoinJoinClient
 		roundState.LogDebug(string.Join(Environment.NewLine, summary));
 	}
 
-	public static ImmutableList<TCoin> SelectCoinsForRound<TCoin>(IEnumerable<TCoin> coins, RoundParameters parameters, bool consolidationMode, int anonScoreTarget, WasabiRandom rnd)
+	public static ImmutableList<TCoin> SelectCoinsForRound<TCoin>(IEnumerable<TCoin> coins, IUtxoSelectionParameters parameters, bool consolidationMode, int anonScoreTarget, WasabiRandom rnd)
 		where TCoin : class, ISmartCoin
 	{
 		TCoin[] filteredCoins = coins
@@ -531,7 +531,7 @@ public class CoinJoinClient
 		return finalCandidate?.ToShuffled()?.ToImmutableList() ?? ImmutableList<TCoin>.Empty;
 	}
 
-	private static bool TryAddGroup<TCoin>(RoundParameters parameters, Dictionary<int, IEnumerable<TCoin>> groups, IEnumerable<TCoin> group)
+	private static bool TryAddGroup<TCoin>(IUtxoSelectionParameters parameters, Dictionary<int, IEnumerable<TCoin>> groups, IEnumerable<TCoin> group)
 		where TCoin : ISmartCoin
 	{
 		var inSum = group.Sum(x => x.EffectiveValue(parameters.MiningFeeRate, parameters.CoordinationFeeRate));

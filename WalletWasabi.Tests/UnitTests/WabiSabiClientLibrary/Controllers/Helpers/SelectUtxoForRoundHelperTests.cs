@@ -1,0 +1,82 @@
+using NBitcoin;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using WalletWasabi.WabiSabi.Models;
+using WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
+using WalletWasabi.WabiSabiClientLibrary.Models;
+using WalletWasabi.WabiSabiClientLibrary.Models.SelectUtxoForRound;
+using Xunit;
+
+namespace WalletWasabi.Tests.UnitTests.WabiSabiClientLibrary.Controllers.Helpers;
+
+/// <summary>
+/// Tests for <see cref="SelectUtxoForRoundHelper"/>
+/// </summary>
+public class SelectUtxoForRoundHelperTests
+{
+	[Fact]
+	public void NoUtxoTest()
+	{
+		Utxo[] utxos = Array.Empty<Utxo>();
+
+		SelectUtxoForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants());
+		SelectUtxoForRoundResponse response = SelectUtxoForRoundHelper.Select(request);
+		Assert.Empty(response.Indices);
+	}
+
+	[Fact]
+	public void SingleNonPrivateUtxoTest()
+	{
+		Utxo[] utxos = new Utxo[]
+		{
+			// Not allowed script type.
+			new(TxId: "06d0e3ae26dc6a98da5ea16d19eb6ad2817aab3f510d91c13de2ea9457124258", Index: 0, Value: Money.Coins(0.02m), ScriptType.Witness, AnonymitySet: 10, LastCoinjoinTimestamp: 1653421698),
+
+			// Anonymity set is higher than target 50. Might and might not be in the result.
+			new(TxId: "f35481573468b5e4f4a4fce6afb2c3efb5e7f9b18ad5413e45ce07a1de315d7c", Index: 0, Value: Money.Coins(0.02m), ScriptType.P2WPKH, AnonymitySet: 60, LastCoinjoinTimestamp: 1653421698),
+
+			// 0.009 is not sufficient amount, minimum allowed value is 0.01.
+			new(TxId: "dfb38af06d063128af9c4483bf944cc38c6608749cc145be2b9912ef7e185450", Index: 0, Value: Money.Coins(0.009m), ScriptType.P2WPKH, AnonymitySet: 10, LastCoinjoinTimestamp: 1653421698),
+
+			// Ok.
+			new(TxId: "6a8cb2d81062ef93ae5d58b5cbe78d5fc5159f609e0d06f767d2f8eae5ead907", Index: 0, Value: Money.Coins(0.015m), ScriptType.P2WPKH, AnonymitySet: 10, LastCoinjoinTimestamp: 1653421698),
+		};
+
+		SelectUtxoForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants());
+		SelectUtxoForRoundResponse response = SelectUtxoForRoundHelper.Select(request);
+
+		Array.Sort(response.Indices);
+
+		// The first possible result and the second possible result.
+		if (response.Indices.Length == 1)
+		{
+			Assert.Equal(ImmutableArray.Create(3), response.Indices);
+		}
+		else
+		{
+			Assert.Equal(ImmutableArray.Create(1, 3), response.Indices);
+		}
+	}
+
+	[Fact]
+	public void TwoUtxoWithHighAnonScoreTargetTest()
+	{
+		Utxo[] utxos = new Utxo[]
+		{
+			new(TxId: "dfb38af06d063128af9c4483bf944cc38c6608749cc145be2b9912ef7e185450", Index: 0, Value: Money.Coins(0.01m), ScriptType.P2WPKH, AnonymitySet: 90, LastCoinjoinTimestamp: 1653421698),
+			new(TxId: "f35481573468b5e4f4a4fce6afb2c3efb5e7f9b18ad5413e45ce07a1de315d7c", Index: 1, Value: Money.Coins(0.01m), ScriptType.P2WPKH, AnonymitySet: 90, LastCoinjoinTimestamp: 1653421698),
+		};
+
+		SelectUtxoForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants());
+		SelectUtxoForRoundResponse response = SelectUtxoForRoundHelper.Select(request);
+		Assert.Empty(response.Indices);
+	}
+
+	private static Constants MakeDefaultConstants()
+		=> new(
+			AllowedInputAmounts: new MoneyRange(Money.Coins(0.01m), Money.Coins(0.05m)),
+			AllowedOutputAmounts: new MoneyRange(Money.Coins(0.01m), Money.Coins(0.05m)),
+			AllowedInputTypes: new List<string>() { $"{ScriptType.P2WPKH}" },
+			CoordinationFeeRate: CoordinationFeeRate.Zero,
+			MiningFeeRate: new FeeRate(5m));
+}

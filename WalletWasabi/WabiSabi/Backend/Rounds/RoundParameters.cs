@@ -8,7 +8,7 @@ using WalletWasabi.WabiSabi.Models.MultipartyTransaction;
 
 namespace WalletWasabi.WabiSabi.Backend.Rounds;
 
-public record RoundParameters
+public record RoundParameters : IUtxoSelectionParameters
 {
 	public static ImmutableSortedSet<ScriptType> OnlyP2WPKH = ImmutableSortedSet.Create(ScriptType.P2WPKH);
 
