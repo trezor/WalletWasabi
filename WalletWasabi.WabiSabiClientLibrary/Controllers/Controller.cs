@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WalletWasabi.Crypto.Randomness;
-using WalletWasabi.WabiSabiClientLibrary.Models;
 using WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
+using WalletWasabi.WabiSabiClientLibrary.Models;
+using WalletWasabi.WabiSabi.Client;
 using WalletWasabi.WabiSabiClientLibrary.Filters;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Controllers;
@@ -16,6 +17,16 @@ public class Controller : ControllerBase, IDisposable
 	public Controller()
 	{
 		_secureRandom = new SecureRandom();
+	}
+
+	/// <summary>
+	/// Given a set of unspent transaction outputs, choose a subset of the outputs that are best to register in a single CoinJoin round according to the given strategy.
+	/// </summary>
+	/// <seealso cref="CoinJoinClient.SelectCoinsForRound"/>
+	[HttpPost("select-utxo-for-round")]
+	public SelectUtxoForRoundResponse SelectUtxoForRound(SelectUtxoForRoundRequest request)
+	{
+		return SelectUtxoForRoundHelper.Select(request);
 	}
 
 	/// <summary>
