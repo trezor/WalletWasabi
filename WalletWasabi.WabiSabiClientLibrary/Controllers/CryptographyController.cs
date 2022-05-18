@@ -11,7 +11,7 @@ using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Crypto.CredentialRequesting;
 
 
-namespace WalletWasabi.WabiSabiClientLibrary;
+namespace WalletWasabi.WabiSabiClientLibrary.Controllers;
 
 [ApiController]
 [ExceptionTranslate]
