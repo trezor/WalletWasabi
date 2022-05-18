@@ -527,7 +527,10 @@ public static class NBitcoinExtensions
 		new TxOut(Money.Zero, scriptPubKey).GetSerializedSize();
 
 	public static int EstimateInputVsize(this Script scriptPubKey) =>
-		scriptPubKey.GetScriptType() switch
+		scriptPubKey.GetScriptType().EstimateInputVsize();
+
+	public static int EstimateInputVsize(this ScriptType? scriptType) =>
+		scriptType switch
 		{
 			ScriptType.P2WPKH => Constants.P2wpkhInputMaximumVirtualSize,
 			ScriptType.Taproot => Constants.P2trInputMaximumVirtualSize,
@@ -538,11 +541,17 @@ public static class NBitcoinExtensions
 		output.Value + feeRate.GetFee(output.ScriptPubKey.EstimateOutputVsize());
 
 	public static Money EffectiveValue(this Coin coin, FeeRate feeRate, CoordinationFeeRate coordinationFeeRate)
-	{
-		var netFee = feeRate.GetFee(coin.ScriptPubKey.EstimateInputVsize());
-		var coordFee = coordinationFeeRate.GetFee(coin.Amount);
+		=> EffectiveValue(coin.Amount, coin.ScriptPubKey.GetScriptType(), feeRate, coordinationFeeRate);
 
-		return coin.Amount - netFee - coordFee;
+	public static Money EffectiveValue(this ISmartCoin coin, FeeRate feeRate, CoordinationFeeRate coordinationFeeRate)
+		=> EffectiveValue(coin.Amount, coin.ScriptType, feeRate, coordinationFeeRate);
+
+	private static Money EffectiveValue(Money amount, ScriptType? scriptType, FeeRate feeRate, CoordinationFeeRate coordinationFeeRate)
+	{
+		var netFee = feeRate.GetFee(scriptType.EstimateInputVsize());
+		var coordFee = coordinationFeeRate.GetFee(amount);
+
+		return amount - netFee - coordFee;
 	}
 
 	public static Money EffectiveValue(this SmartCoin coin, FeeRate feeRate, CoordinationFeeRate coordinationFeeRate) =>
@@ -550,6 +559,9 @@ public static class NBitcoinExtensions
 
 	public static Money EffectiveValue(this SmartCoin coin, FeeRate feeRate) =>
 		EffectiveValue(coin.Coin, feeRate, CoordinationFeeRate.Zero);
+
+	public static Money EffectiveValue(this ISmartCoin coin, FeeRate feeRate) =>
+		EffectiveValue(coin, feeRate, CoordinationFeeRate.Zero);
 
 	public static T FromBytes<T>(byte[] input) where T : IBitcoinSerializable, new()
 	{
