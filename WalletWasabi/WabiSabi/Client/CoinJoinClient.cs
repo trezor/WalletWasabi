@@ -434,25 +434,26 @@ public class CoinJoinClient
 		roundState.LogDebug(string.Join(Environment.NewLine, summary));
 	}
 
-	internal static ImmutableList<SmartCoin> SelectCoinsForRound(IEnumerable<SmartCoin> coins, RoundParameters parameters, bool consolidationMode, int anonScoreTarget, WasabiRandom rnd)
+	public static ImmutableList<TCoin> SelectCoinsForRound<TCoin>(IEnumerable<TCoin> coins, RoundParameters parameters, bool consolidationMode, int anonScoreTarget, WasabiRandom rnd)
+		where TCoin : class, ISmartCoin
 	{
-		var filteredCoins = coins
+		TCoin[] filteredCoins = coins
 			.Where(x => parameters.AllowedInputAmounts.Contains(x.Amount))
-			.Where(x => parameters.AllowedInputScriptTypes.Any(t => x.ScriptPubKey.IsScriptType(t)))
+			.Where(x => parameters.AllowedInputScriptTypes.Contains(x.ScriptType))
 			.Where(x => x.EffectiveValue(parameters.MiningFeeRate) > Money.Zero)
 			.ToShuffled()
 			.ToArray();
 
-		var privateCoins = filteredCoins
-			.Where(x => x.HdPubKey.AnonymitySet >= anonScoreTarget)
+		TCoin[] privateCoins = filteredCoins
+			.Where(x => x.AnonymitySet >= anonScoreTarget)
 			.ToArray();
-		var nonPrivateCoins = filteredCoins
-			.Where(x => x.HdPubKey.AnonymitySet < anonScoreTarget)
+		TCoin[] nonPrivateCoins = filteredCoins
+			.Where(x => x.AnonymitySet < anonScoreTarget)
 			.ToArray();
 
 		// Make sure it's ordered by 1 private and 1 non-private coins.
 		// Otherwise we'd keep mixing private coins too much during the end of our mixing sessions.
-		var organizedCoins = new List<SmartCoin>();
+		var organizedCoins = new List<TCoin>();
 		for (int i = 0; i < Math.Max(privateCoins.Length, nonPrivateCoins.Length); i++)
 		{
 			if (i < nonPrivateCoins.Length)
@@ -473,13 +474,13 @@ public class CoinJoinClient
 			consolidationMode ? MaxInputsRegistrableByWallet : GetInputTarget(nonPrivateCoins.Length, privateCoins.Length, rnd));
 
 		// Always use the largest amounts, so we do not participate with insignificant amounts and fragment wallet needlessly.
-		var largestAmounts = nonPrivateCoins
+		TCoin[] largestAmounts = nonPrivateCoins
 			.OrderByDescending(x => x.Amount)
 			.Take(3)
 			.ToArray();
 
 		// Select a group of coins those are close to each other by anonymity score.
-		Dictionary<int, IEnumerable<SmartCoin>> groups = new();
+		Dictionary<int, IEnumerable<TCoin>> groups = new();
 
 		// Create a bunch of combinations.
 		var sw1 = Stopwatch.StartNew();
@@ -490,7 +491,7 @@ public class CoinJoinClient
 
 			var sw2 = Stopwatch.StartNew();
 			foreach (var group in organizedCoins
-				.Except(new[] { coin })
+				.Except(new TCoin[] { coin })
 				.CombinationsWithoutRepetition(inputCount - 1)
 				.Select(x => x.Concat(new[] { coin })))
 			{
@@ -512,7 +513,7 @@ public class CoinJoinClient
 
 		if (!groups.Any())
 		{
-			return ImmutableList<SmartCoin>.Empty;
+			return ImmutableList<TCoin>.Empty;
 		}
 
 		// Select the group where the less coins coming from the same tx.
@@ -527,10 +528,11 @@ public class CoinJoinClient
 			.Where(x => x.OrderByDescending(x => x.Amount).First() == largestAmount)
 			.RandomElement();
 
-		return finalCandidate?.ToShuffled()?.ToImmutableList() ?? ImmutableList<SmartCoin>.Empty;
+		return finalCandidate?.ToShuffled()?.ToImmutableList() ?? ImmutableList<TCoin>.Empty;
 	}
 
-	private static bool TryAddGroup(RoundParameters parameters, Dictionary<int, IEnumerable<SmartCoin>> groups, IEnumerable<SmartCoin> group)
+	private static bool TryAddGroup<TCoin>(RoundParameters parameters, Dictionary<int, IEnumerable<TCoin>> groups, IEnumerable<TCoin> group)
+		where TCoin : ISmartCoin
 	{
 		var inSum = group.Sum(x => x.EffectiveValue(parameters.MiningFeeRate, parameters.CoordinationFeeRate));
 		var outFee = parameters.MiningFeeRate.GetFee(Constants.P2wpkhOutputVirtualSize);
@@ -543,7 +545,8 @@ public class CoinJoinClient
 		return false;
 	}
 
-	private static int GetReps(IEnumerable<SmartCoin> group)
+	private static int GetReps<TCoin>(IEnumerable<TCoin> group)
+		where TCoin : ISmartCoin
 		=> group.GroupBy(x => x.TransactionId).Sum(coinsInTxGroup => coinsInTxGroup.Count() - 1);
 
 	public bool IsRoundEconomic(FeeRate roundFeeRate)

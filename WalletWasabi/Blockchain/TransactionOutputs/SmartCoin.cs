@@ -12,7 +12,7 @@ namespace WalletWasabi.Blockchain.TransactionOutputs;
 /// An UTXO that knows more.
 /// </summary>
 [DebuggerDisplay("{Amount}BTC {Confirmed} {HdPubKey.Label} OutPoint={Coin.Outpoint}")]
-public class SmartCoin : NotifyPropertyChangedBase, IEquatable<SmartCoin>, IDestination
+public class SmartCoin : NotifyPropertyChangedBase, IEquatable<SmartCoin>, IDestination, ISmartCoin
 {
 	private Height _height;
 	private SmartTransaction? _spenderTransaction;
@@ -60,7 +60,9 @@ public class SmartCoin : NotifyPropertyChangedBase, IEquatable<SmartCoin>, IDest
 	public Coin Coin => _coin.Value;
 
 	public Script ScriptPubKey => TxOut.ScriptPubKey;
+	public ScriptType ScriptType => ScriptPubKey.GetScriptType() ?? throw new NotSupportedException("Unknown script type.");
 	public Money Amount => TxOut.Value;
+	public int AnonymitySet => HdPubKey.AnonymitySet;
 
 	public Height Height
 	{
