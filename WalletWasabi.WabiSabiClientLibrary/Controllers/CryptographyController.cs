@@ -9,7 +9,7 @@ using WalletWasabi.WabiSabiClientLibrary.Models;
 using WalletWasabi.Server.Filters;
 using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Crypto.CredentialRequesting;
-
+using WalletWasabi.WabiSabi.Client;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Controllers;
 
@@ -28,6 +28,16 @@ public class CryptographyController : ControllerBase, IDisposable
 	}
 
 	private long MaxAmountCredentialValue { get; }
+
+	/// <summary>
+	/// Given a set of unspent transaction outputs, choose a subset of the outputs that are best to register in a single CoinJoin round according to the given strategy.
+	/// </summary>
+	/// <seealso cref="CoinJoinClient.SelectCoinsForRound"/>
+	[HttpPost("select-utxo-for-round")]
+	public SelectUtxoForRoundResponse SelectUtxoForRound(SelectUtxoForRoundRequest request)
+	{
+		return SelectUtxoForRoundHelper.Select(request);
+	}
 
 	/// <summary>
 	/// Given a set of effective input amounts registered by a participant and a set of effective input amounts
