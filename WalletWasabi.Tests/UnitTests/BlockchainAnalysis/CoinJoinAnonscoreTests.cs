@@ -239,4 +239,33 @@ public class CoinJoinAnonScoreTests
 		// 10 participants, 1 is you, your anonset would be 10 normally and now too:
 		Assert.Equal(10, tx.WalletOutputs.First().HdPubKey.AnonymitySet);
 	}
+
+
+	[Fact]
+	public void CounterintuitiveComputation()
+	{
+		var analyser = ServiceFactory.CreateBlockchainAnalyzer();
+
+		// A - wallet input, value 1 BTC, anonymity 100
+		// B - wallet input, value 1 BTC, anonymity 1
+		// C - foreign input, value 2 BTC
+		// D - wallet output, value 2 BTC
+		// E - foreign output, value 2 BTC
+		var tx = BitcoinFactory.CreateSmartTransaction(
+			1,
+			new[] { Money.Coins(2m) },
+			new[] { (Money.Coins(1m), 1), (Money.Coins(1m), 100) },
+			new[] { (Money.Coins(2m), HdPubKey.DefaultHighAnonymitySet) });
+
+
+		analyser.Analyze(tx);
+
+		// From what the transaction looks like from the attacker's perspective it is clear that either
+		//   * there is only one participant or
+		//   * there are two participants, the inputs A and B belong to one and the input C belongs to the other.
+		// In both cases, it means the inputs A and B belong to one participant. 
+		// This participant should not benefit from the anonymity of the input A since the input is directly linked to the input B which has lower anonymity than A.
+		// Nevertheless, the following assert shows that the output D benefits from the anonymity of the input A, which is counterintuitive.
+		Assert.Equal(50, tx.WalletOutputs.First().HdPubKey.AnonymitySet);
+	}
 }
