@@ -63,6 +63,12 @@ public class CryptographyController : ControllerBase, IDisposable
 		return new HandleResponseResponse(credentials.ToArray());
 	}
 
+	[HttpPost("get-anonymity")]
+	public GetAnonymityResponse GetAnonymity(GetAnonymityRequest request)
+	{
+		return GetAnonymityHelper.GetAnonymity(request);
+	}
+
 	public void Dispose()
 	{
 	}
