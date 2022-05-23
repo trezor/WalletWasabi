@@ -7,7 +7,7 @@ public class GetAnonymityHelper
 {
 	public static GetAnonymityResponse GetAnonymity(GetAnonymityRequest request)
 	{
-		string databaseFilename = "Data Source=database.db";
+		string databaseFilename = "Data Source=/mnt/shared/database.db";
 		using (SQLiteConnection connection = new(databaseFilename))
 		{
 			connection.Open();
