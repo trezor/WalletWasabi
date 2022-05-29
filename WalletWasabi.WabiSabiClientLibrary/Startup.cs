@@ -49,6 +49,8 @@ public class Startup
 		// Register the Swagger generator, defining one or more Swagger documents
 		services.AddSwaggerGen(c =>
 		{
+			c.CustomSchemaIds(type => type.ToString());
+
 			c.SwaggerDoc($"v{Constants.BackendMajorVersion}", new OpenApiInfo
 			{
 				Version = $"v{Constants.BackendMajorVersion}",
