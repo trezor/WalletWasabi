@@ -288,6 +288,16 @@ public class BlockchainController : ControllerBase
 
 		(Height bestHeight, IEnumerable<FilterModel> filters) = Global.IndexBuilderService.GetFilterLinesExcluding(knownHash, count, out bool found);
 
+		foreach (var filter in filters)
+		{
+			Console.WriteLine($"Filter");
+			Console.WriteLine($"M: {filter.Filter.M}");
+			Console.WriteLine($"N: {filter.Filter.N}");
+			Console.WriteLine($"P: {filter.Filter.P}");
+			Console.WriteLine($"Data: {BitConverter.ToString(filter.Filter.Data)}");
+			Console.WriteLine();
+		}
+
 		if (!found)
 		{
 			return NotFound($"Provided {nameof(bestKnownBlockHash)} is not found: {bestKnownBlockHash}.");
