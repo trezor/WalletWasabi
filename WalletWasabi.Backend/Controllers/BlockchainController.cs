@@ -290,12 +290,11 @@ public class BlockchainController : ControllerBase
 
 		foreach (var filter in filters)
 		{
-			Console.WriteLine($"Filter");
-			Console.WriteLine($"M: {filter.Filter.M}");
-			Console.WriteLine($"N: {filter.Filter.N}");
-			Console.WriteLine($"P: {filter.Filter.P}");
-			Console.WriteLine($"Data: {BitConverter.ToString(filter.Filter.Data)}");
-			Console.WriteLine();
+			Logger.LogInfo($"Filter");
+			Logger.LogInfo($"M: {filter.Filter.M}");
+			Logger.LogInfo($"N: {filter.Filter.N}");
+			Logger.LogInfo($"P: {filter.Filter.P}");
+			Logger.LogInfo($"Data: {BitConverter.ToString(filter.Filter.Data)}");
 		}
 
 		if (!found)
