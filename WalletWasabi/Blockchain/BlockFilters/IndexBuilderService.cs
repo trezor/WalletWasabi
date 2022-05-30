@@ -233,6 +233,11 @@ public class IndexBuilderService
 	{
 		var scripts = FetchScripts(block);
 
+		foreach (var script in scripts)
+		{
+			Console.WriteLine($"New script in filter: {BitConverter.ToString(script.ToCompressedBytes())}");
+		}
+
 		if (scripts.Any())
 		{
 			return new GolombRiceFilterBuilder()
