@@ -258,7 +258,7 @@ public class IndexBuilderService
 		{
 			foreach (var input in tx.Inputs)
 			{
-				if (input.PrevOutput is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash })
+				if (input.PrevOutput is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash } || input.PrevOutput is { PubkeyType: RpcPubkeyType.TxWitnessV1Taproot })
 				{
 					scripts.Add(input.PrevOutput.ScriptPubKey);
 				}
@@ -266,7 +266,7 @@ public class IndexBuilderService
 
 			foreach (var output in tx.Outputs)
 			{
-				if (output is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash })
+				if (output is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash } || output is { PubkeyType: RpcPubkeyType.TxWitnessV1Taproot } )
 				{
 					scripts.Add(output.ScriptPubKey);
 				}
