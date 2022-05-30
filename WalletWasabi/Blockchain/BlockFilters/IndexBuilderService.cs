@@ -263,18 +263,12 @@ public class IndexBuilderService
 		{
 			foreach (var input in tx.Inputs)
 			{
-				if (input.PrevOutput is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash })
-				{
-					scripts.Add(input.PrevOutput.ScriptPubKey);
-				}
+				scripts.Add(input.PrevOutput.ScriptPubKey);
 			}
 
 			foreach (var output in tx.Outputs)
 			{
-				if (output is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash })
-				{
-					scripts.Add(output.ScriptPubKey);
-				}
+				scripts.Add(output.ScriptPubKey);
 			}
 		}
 
