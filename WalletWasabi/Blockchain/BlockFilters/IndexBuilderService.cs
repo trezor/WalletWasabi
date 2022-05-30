@@ -235,7 +235,7 @@ public class IndexBuilderService
 
 		foreach (var script in scripts)
 		{
-			Console.WriteLine($"New script in filter: {BitConverter.ToString(script.ToCompressedBytes())}");
+			Logger.LogInfo($"New script in filter: {BitConverter.ToString(script.ToCompressedBytes())}");
 		}
 
 		if (scripts.Any())
