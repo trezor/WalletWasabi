@@ -15,10 +15,8 @@ public class SelectUtxoForRoundHelper
 		rnd ??= SecureRandom.Instance;
 		ImmutableList<ISmartCoin> coins = CoinJoinClient.SelectCoinsForRound<ISmartCoin>(request.Utxos, request.Constants, request.ConsolidationMode, request.AnonScoreTarget, rnd);
 
-		// Build index.
-		int key = 0;
 		Dictionary<ISmartCoin, int> coinIndices = request.Utxos
-			.Select(x => ((ISmartCoin)x, key++))
+			.Select((x, i) => ((ISmartCoin)x, i))
 			.ToDictionary(x => x.Item1, x => x.Item2);
 
 		// Find corresponding indices for the found coins.
