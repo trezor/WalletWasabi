@@ -6,8 +6,6 @@ namespace WalletWasabi.WabiSabi.Models;
 
 public class CoinWithOwnershipProof : Coin
 {
-	public OwnershipProof OwnershipProof { get; set; }
-
 	public CoinWithOwnershipProof(Coin coin, OwnershipProof ownershipProof) : base(coin.Outpoint, coin.TxOut)
 	{
 		OwnershipProof = ownershipProof;
@@ -17,4 +15,6 @@ public class CoinWithOwnershipProof : Coin
 	{
 		OwnershipProof = ownershipProof;
 	}
+
+	public OwnershipProof OwnershipProof { get; set; }
 }
