@@ -58,7 +58,6 @@ public partial class Arena : IWabiSabiApiRequestHandler
 				throw new WabiSabiProtocolException(WabiSabiProtocolErrorCode.InputNotWhitelisted);
 			}
 
-
 			var coinWithOwnershipProof = new CoinWithOwnershipProof(coin, request.OwnershipProof);
 			var coinJoinInputCommitmentData = new CoinJoinInputCommitmentData(Config.CoordinatorIdentifier, request.RoundId);
 
