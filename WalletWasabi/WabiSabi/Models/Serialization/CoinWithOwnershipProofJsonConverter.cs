@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using WalletWasabi.Crypto;
 using WalletWasabi.WabiSabi.Models;
 
-
 namespace WalletWasabi.JsonConverters.Bitcoin;
 
 public class CoinWithOwnershipProofJsonConverter : JsonConverter<CoinWithOwnershipProof>
