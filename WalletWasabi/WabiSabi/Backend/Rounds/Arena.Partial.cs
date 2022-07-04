@@ -41,7 +41,7 @@ public partial class Arena : IWabiSabiApiRequestHandler
 			var round = GetRound(request.RoundId);
 
 			var registeredCoins = Rounds.Where(x => !(x.Phase == Phase.Ended && x.EndRoundState != EndRoundState.TransactionBroadcasted))
-				.SelectMany(r => r.Alices.Select(a => a.Coin));
+				.SelectMany(r => r.Alices.Select(a => a.CoinWithOwnershipProof));
 
 			if (registeredCoins.Any(x => x.Outpoint == coin.Outpoint))
 			{
@@ -160,7 +160,7 @@ public partial class Arena : IWabiSabiApiRequestHandler
 		{
 			var round = GetRound(request.RoundId);
 			var alice = GetAlice(request.AliceId, round);
-			Prison.Ban(alice.Coin.Outpoint, round.Id);
+			Prison.Ban(alice.CoinWithOwnershipProof.Outpoint, round.Id);
 			throw;
 		}
 	}
@@ -236,7 +236,7 @@ public partial class Arena : IWabiSabiApiRequestHandler
 							await vsizeRealCredentialTask.ConfigureAwait(false));
 
 						// Update the coinjoin state, adding the confirmed input.
-						round.CoinjoinState = round.Assert<ConstructionState>().AddInput(alice.Coin);
+						round.CoinjoinState = round.Assert<ConstructionState>().AddInput(alice.CoinWithOwnershipProof);
 						alice.ConfirmedConnection = true;
 
 						return response;
@@ -267,7 +267,7 @@ public partial class Arena : IWabiSabiApiRequestHandler
 				throw new WabiSabiProtocolException(WabiSabiProtocolErrorCode.AlreadyRegisteredScript, $"Round ({request.RoundId}): Already registered script.");
 			}
 
-			var inputScripts = round.Alices.Select(a => a.Coin.ScriptPubKey).ToHashSet();
+			var inputScripts = round.Alices.Select(a => a.CoinWithOwnershipProof.ScriptPubKey).ToHashSet();
 			if (inputScripts.Contains(request.Script))
 			{
 				Logger.LogWarning($"Round ({request.RoundId}): Already registered script in the round.");

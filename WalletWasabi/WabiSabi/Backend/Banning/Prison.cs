@@ -38,12 +38,12 @@ public class Prison
 
 	public void Note(Alice alice, uint256 lastDisruptedRoundId)
 	{
-		Punish(alice.Coin.Outpoint, Punishment.Noted, lastDisruptedRoundId);
+		Punish(alice.CoinWithOwnershipProof.Outpoint, Punishment.Noted, lastDisruptedRoundId);
 	}
 
 	public void Ban(Alice alice, uint256 lastDisruptedRoundId, bool isLongBan = false)
 	{
-		Punish(alice.Coin.Outpoint, isLongBan ? Punishment.LongBanned : Punishment.Banned, lastDisruptedRoundId);
+		Punish(alice.CoinWithOwnershipProof.Outpoint, isLongBan ? Punishment.LongBanned : Punishment.Banned, lastDisruptedRoundId);
 	}
 
 	public void Ban(OutPoint outpoint, uint256 lastDisruptedRoundId)

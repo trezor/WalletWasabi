@@ -266,7 +266,7 @@ public static class WabiSabiFactory
 	}
 
 	public static BlameRound CreateBlameRound(Round round, WabiSabiConfig cfg)
-		=> new(RoundParameters.Create(cfg, round.Parameters.Network, round.Parameters.MiningFeeRate, round.Parameters.CoordinationFeeRate, round.Parameters.MaxSuggestedAmount), round, round.Alices.Select(x => x.Coin.Outpoint).ToHashSet(), new InsecureRandom());
+		=> new(RoundParameters.Create(cfg, round.Parameters.Network, round.Parameters.MiningFeeRate, round.Parameters.CoordinationFeeRate, round.Parameters.MaxSuggestedAmount), round, round.Alices.Select(x => x.CoinWithOwnershipProof.Outpoint).ToHashSet(), new InsecureRandom());
 
 	public static (IKeyChain, SmartCoin, SmartCoin) CreateCoinKeyPairs()
 	{

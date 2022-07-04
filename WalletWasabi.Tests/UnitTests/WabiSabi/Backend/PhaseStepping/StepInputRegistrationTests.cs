@@ -42,7 +42,7 @@ public class StepInputRegistrationTests
 		var offendingAlice = WabiSabiFactory.CreateAlice(round); // this Alice spent the coin after registration
 
 		var mockRpc = WabiSabiFactory.CreatePreconfiguredRpcClient();
-		mockRpc.Setup(rpc => rpc.GetTxOutAsync(offendingAlice.Coin.Outpoint.Hash, (int)offendingAlice.Coin.Outpoint.N, true, It.IsAny<CancellationToken>()))
+		mockRpc.Setup(rpc => rpc.GetTxOutAsync(offendingAlice.CoinWithOwnershipProof.Outpoint.Hash, (int)offendingAlice.CoinWithOwnershipProof.Outpoint.N, true, It.IsAny<CancellationToken>()))
 			.ReturnsAsync((GetTxOutResponse?)null);
 
 		using Arena arena = await ArenaBuilder.From(cfg).With(mockRpc).CreateAndStartAsync(round);
