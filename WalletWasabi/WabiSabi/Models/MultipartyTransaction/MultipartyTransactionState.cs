@@ -11,7 +11,7 @@ namespace WalletWasabi.WabiSabi.Models.MultipartyTransaction;
 public interface IEvent{};
 
 public record RoundCreated(RoundParameters RoundParameters) : IEvent;
-public record InputAdded (CoinWithOwnershipProof Coin) : IEvent;
+public record InputAdded (CoinWithOwnershipProof CoinWithOwnershipProof) : IEvent;
 public record OutputAdded (TxOut Output) : IEvent;
 
 public abstract record MultipartyTransactionState
@@ -27,7 +27,7 @@ public abstract record MultipartyTransactionState
 	public RoundParameters Parameters => Events.OfType<RoundCreated>().Single().RoundParameters;
 
 	[JsonIgnore]
-	public IEnumerable<CoinWithOwnershipProof> Inputs => Events.OfType<InputAdded>().Select(x => x.Coin);
+	public IEnumerable<CoinWithOwnershipProof> Inputs => Events.OfType<InputAdded>().Select((Func<InputAdded, CoinWithOwnershipProof>)(x => x.CoinWithOwnershipProof));
 	[JsonIgnore]
 	public IEnumerable<TxOut> Outputs => Events.OfType<OutputAdded>().Select(x => x.Output);
 
