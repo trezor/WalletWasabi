@@ -263,7 +263,7 @@ public class IndexBuilderService
 				if (input.PrevOutput is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash } || input.PrevOutput is { PubkeyType: RpcPubkeyType.TxWitnessV1Taproot })
 				{
 					scripts.Add(input.PrevOutput.ScriptPubKey);
-					Logger.LogInfo($"Adding input input into filter: {input.PrevOutput.ScriptPubKey}");
+					Logger.LogInfo($"Adding input input into filter: {input.PrevOutput.ScriptPubKey.ToCompressedBytes()}");
 
 				}
 			}
@@ -273,7 +273,7 @@ public class IndexBuilderService
 				if (output is { PubkeyType: RpcPubkeyType.TxWitnessV0Keyhash } || output is { PubkeyType: RpcPubkeyType.TxWitnessV1Taproot })
 				{
 					scripts.Add(output.ScriptPubKey);
-					Logger.LogInfo($"Adding input input into filter: {output.ScriptPubKey}");
+					Logger.LogInfo($"Adding output input into filter: {output.ScriptPubKey.ToCompressedBytes()}");
 				}
 			}
 		}
