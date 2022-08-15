@@ -5,7 +5,7 @@ namespace WalletWasabi.WabiSabi.Client.CredentialDependencies;
 
 public class OutputNode : RequestNode
 {
-	public OutputNode(IEnumerable<long> values) : base(values, DependencyGraph.K, 0, 0)
+	public OutputNode(int id, IEnumerable<long> values) : base(id, values, DependencyGraph.K, 0, 0)
 	{
 	}
 

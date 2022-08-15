@@ -56,6 +56,17 @@ public class CryptographyController : ControllerBase, IDisposable
 		return DecomposeAmountsHelper.Decompose(request);
 	}
 
+	/// <summary>
+	/// Given values of credentials received in the input registration and the connection confirmation phases and
+	/// values needed in the output registration phase, construct a graph that represent a way in which input values
+	/// can be converted to the output values.
+	/// </summary>
+	[HttpPost("get-reissuance-graph")]
+	public GetReissuanceGraphResponse GetReissuanceGraph(GetReissuanceGraphRequest request)
+	{
+		return ReissuanceGraphHelper.GetGraph(request);
+	}
+
 	[HttpPost("create-request-for-zero-amount")]
 	public CreateRequestForZeroAmountResponse CreateRequestForZeroAmountAsync(CreateRequestForZeroAmountRequest request)
 	{

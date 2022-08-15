@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WalletWasabi.WabiSabi;
@@ -21,7 +24,7 @@ public class CredentialDependencyTests
 		await SimulateAsyncRequestsAsync(g);
 	}
 
-	// Demonstrate how to use the dependency grap. Also checks it can be
+	// Demonstrate how to use the dependency graph. Also checks it can be
 	// executed with no deadlocks.
 	private async Task SimulateAsyncRequestsAsync(DependencyGraph g)
 	{
@@ -185,90 +188,91 @@ public class CredentialDependencyTests
 	}
 
 	[Theory]
-	[InlineData("1,1", "1,1", 2)]
-	[InlineData("1,0", "1,0", 2)]
-	[InlineData("2,0", "1,0", 2)]
-	[InlineData("2,2", "1,1", 2)]
-	[InlineData("2,2", "1,2", 2)]
-	[InlineData("2,2", "2,2", 2)]
-	[InlineData("2,2", "1,1 1,1", 3)]
-	[InlineData("1,1 1,1", "2,2", 3)]
+	//[InlineData("1,1", "1,1", 2)]
+	//[InlineData("1,0", "1,0", 2)]
+	//[InlineData("2,0", "1,0", 2)]
+	//[InlineData("2,2", "1,1", 2)]
+	//[InlineData("2,2", "1,2", 2)]
+	//[InlineData("2,2", "2,2", 2)]
+	//[InlineData("2,2", "1,1 1,1", 3)]
+	//[InlineData("1,1 1,1", "2,2", 3)]
 	[InlineData("1,1 1,1 1,1", "3,3", 5)]
-	[InlineData("3,3", "1,1 1,1 1,1", 5)]
-	[InlineData("1,0 1,0 1,0", "3,0", 5)]
-	[InlineData("3,0", "1,0 1,0 1,0", 5)]
-	[InlineData("1,5 1,5 1,5", "3,1", 5)]
-	[InlineData("3,5", "1,1 1,1 1,1", 6)] // Can be improved to 5
-	[InlineData("3,5", "1,1 1,1", 4)]
-	[InlineData("4,0", "1,0 1,0 1,0 1,0", 7)]
-	[InlineData("10,0", "1,0 1,0", 4)]
-	[InlineData("10,0", "1,0 1,0 1,0", 6)]
-	[InlineData("10,0", "1,0 1,0 1,0 1,0", 8)]
-	[InlineData("10,0", "1,0 1,0 1,0 1,0 1,0", 10)]
-	[InlineData("10,0", "1,0 1,0 1,0 1,0 1,0 1,0", 12)]
-	[InlineData("10,0", "1,0 1,0 1,0 1,0 1,0 1,0 1,0 1,0 1,0 1,0", 19)]
-	[InlineData("3,0 3,0", "2,0 2,0 2,0", 5)]
-	[InlineData("5,0 1,0", "2,0 2,0 2,0", 6)]
-	[InlineData("2,0 2,0", "3,0", 3)]
-	[InlineData("3,0 3,0", "2,0 2,0 1,0", 6)]
-	[InlineData("8,0 1,0", "3,0 3,0 3,0", 6)]
-	[InlineData("8,0 2,0", "3,0 3,0 3,0", 6)]
-	[InlineData("8,3 1,0", "3,1 3,1 3,1", 6)]
-	[InlineData("8,3 2,0", "3,1 3,1 3,1", 6)]
-	[InlineData("8,2 2,2", "3,1 3,1 3,1", 6)]
-	[InlineData("3,0 1,0 1,0 1,0", "2,0 2,0 2,0", 7)]
-	[InlineData("3,0 1,1 1,1 1,1", "2,1 2,1 2,1", 7)]
-	[InlineData("3,3 1,0 1,0 1,0", "2,1 2,1 2,1", 8)]
-	[InlineData("3,1 1,1 1,1 1,1", "2,1 2,1 2,1", 7)]
-	[InlineData("3,3 1,1 1,1 1,1", "2,1 2,1 2,1", 7)]
-	[InlineData("3,3 1,3 1,3 1,3", "2,1 2,1 2,1", 7)]
-	[InlineData("3,2 1,0", "2,1 2,1", 4)]
-	[InlineData("3,6 1,0", "2,1 2,1", 5)]
-	[InlineData("3,6 1,6", "2,1 2,1", 4)]
-	[InlineData("4,3", "1,1 1,1 1,1", 6)]
-	[InlineData("3,6 1,0 1,0 1,0", "2,1 2,1 2,1", 9)]
-	[InlineData("2,6 2,6", "1,3 1,3 1,3 1,3", 6)]
-	[InlineData("2,6 2,6", "1,1 1,1 1,1 1,1", 8)]
-	[InlineData("3,6 1,6", "4,1", 3)]
-	[InlineData("3,6 1,6", "2,1 1,1 1,1", 6)] // Can be improved to 5
-	[InlineData("3,6 1,6 1,6 1,6", "2,1 2,1 1,1", 7)]
-	[InlineData("3,6 1,6 1,6 1,6", "2,1 2,1 1,1 1,1", 8)]
-	[InlineData("3,6 1,6 1,6 1,6", "2,1 2,1 2,1", 7)]
-	[InlineData("5,6 1,6 1,6 1,6 1,6 1,6", "2,1 2,1 2,1 2,1 2,1", 12)]
-	[InlineData("5,6 5,6 2,6 1,6 1,6 1,6", "8,1 3,1 2,1 2,1", 10)]
-	[InlineData("6,6 6,6 3,6", "8,1 3,1 2,1 1,1 1,1", 10)]
-	[InlineData("20,1 5,6 5,6 2,6 2,6 1,6 1,6 1,6", "11,1 11,1 8,1 3,1 2,1 2,1", 15)]
-	[InlineData("1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "21,21", 41)]
-	[InlineData("21,21", "1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", 41)]
-	[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,1 10,1 10,1 10,1", 41)]
-	[InlineData("21,10 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
-	[InlineData("21,6 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
-	[InlineData("21,5 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
-	[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
-	[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 11,6", 42)]
-	[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 11,5", 41)]
-	[InlineData("20,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,6", 42)]
-	[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "11,5 10,5 10,5 10,6", 42)]
-	[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,6", 43)]
-	[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 42)]
-	[InlineData("1,255 1,255 1,255 1,255", "4,1", 7)]
-	[InlineData("13,255 1,255 1,255 1,255 1,255 1,255", "3,255 3,255 3,255 3,255 3,255 3,255", 17)]
-	[InlineData("99991099,186 39991099,186 29991099,186 19991099,186 9991099,186", "33558431,31 33558431,31 33558431,31 33558431,31 33558431,31 28701813,31", 14)]
-	[InlineData("99991099,186 39991099,186 29991099,186 19991099,186 9991099,186", "33558431,31 33558431,31 33558431,31 33558431,31 33558431,31 28701813,31 3192645,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 12067,31", 50)]
+	//[InlineData("3,3", "1,1 1,1 1,1", 5)]
+	//[InlineData("1,0 1,0 1,0", "3,0", 5)]
+	//[InlineData("3,0", "1,0 1,0 1,0", 5)]
+	//[InlineData("1,5 1,5 1,5", "3,1", 5)]
+	//[InlineData("3,5", "1,1 1,1 1,1", 6)] // Can be improved to 5
+	//[InlineData("3,5", "1,1 1,1", 4)]
+	//[InlineData("4,0", "1,0 1,0 1,0 1,0", 7)]
+	//[InlineData("10,0", "1,0 1,0", 4)]
+	//[InlineData("10,0", "1,0 1,0 1,0", 6)]
+	//[InlineData("10,0", "1,0 1,0 1,0 1,0", 8)]
+	//[InlineData("10,0", "1,0 1,0 1,0 1,0 1,0", 10)]
+	//[InlineData("10,0", "1,0 1,0 1,0 1,0 1,0 1,0", 12)]
+	//[InlineData("10,0", "1,0 1,0 1,0 1,0 1,0 1,0 1,0 1,0 1,0 1,0", 19)]
+	//[InlineData("3,0 3,0", "2,0 2,0 2,0", 5)]
+	//[InlineData("5,0 1,0", "2,0 2,0 2,0", 6)]
+	//[InlineData("2,0 2,0", "3,0", 3)]
+	//[InlineData("3,0 3,0", "2,0 2,0 1,0", 6)]
+	//[InlineData("8,0 1,0", "3,0 3,0 3,0", 6)]
+	//[InlineData("8,0 2,0", "3,0 3,0 3,0", 6)]
+	//[InlineData("8,3 1,0", "3,1 3,1 3,1", 6)]
+	//[InlineData("8,3 2,0", "3,1 3,1 3,1", 6)]
+	//[InlineData("8,2 2,2", "3,1 3,1 3,1", 6)]
+	//[InlineData("3,0 1,0 1,0 1,0", "2,0 2,0 2,0", 7)]
+	//[InlineData("3,0 1,1 1,1 1,1", "2,1 2,1 2,1", 7)]
+	//[InlineData("3,3 1,0 1,0 1,0", "2,1 2,1 2,1", 8)]
+	//[InlineData("3,1 1,1 1,1 1,1", "2,1 2,1 2,1", 7)]
+	//[InlineData("3,3 1,1 1,1 1,1", "2,1 2,1 2,1", 7)]
+	//[InlineData("3,3 1,3 1,3 1,3", "2,1 2,1 2,1", 7)]
+	//[InlineData("3,2 1,0", "2,1 2,1", 4)]
+	//[InlineData("3,6 1,0", "2,1 2,1", 5)]
+	//[InlineData("3,6 1,6", "2,1 2,1", 4)]
+	//[InlineData("4,3", "1,1 1,1 1,1", 6)]
+	//[InlineData("3,6 1,0 1,0 1,0", "2,1 2,1 2,1", 9)]
+	//[InlineData("2,6 2,6", "1,3 1,3 1,3 1,3", 6)]
+	//[InlineData("2,6 2,6", "1,1 1,1 1,1 1,1", 8)]
+	//[InlineData("3,6 1,6", "4,1", 3)]
+	//[InlineData("3,6 1,6", "2,1 1,1 1,1", 6)] // Can be improved to 5
+	//[InlineData("3,6 1,6 1,6 1,6", "2,1 2,1 1,1", 7)]
+	//[InlineData("3,6 1,6 1,6 1,6", "2,1 2,1 1,1 1,1", 8)]
+	//[InlineData("3,6 1,6 1,6 1,6", "2,1 2,1 2,1", 7)]
+	//[InlineData("5,6 1,6 1,6 1,6 1,6 1,6", "2,1 2,1 2,1 2,1 2,1", 12)]
+	//[InlineData("5,6 5,6 2,6 1,6 1,6 1,6", "8,1 3,1 2,1 2,1", 10)]
+	//[InlineData("6,6 6,6 3,6", "8,1 3,1 2,1 1,1 1,1", 10)]
+	//[InlineData("20,1 5,6 5,6 2,6 2,6 1,6 1,6 1,6", "11,1 11,1 8,1 3,1 2,1 2,1", 15)]
+	//[InlineData("1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "21,21", 41)]
+	//[InlineData("21,21", "1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", 41)]
+	//[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,1 10,1 10,1 10,1", 41)]
+	//[InlineData("21,10 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
+	//[InlineData("21,6 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
+	//[InlineData("21,5 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
+	//[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 41)]
+	//[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 11,6", 42)]
+	//[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 11,5", 41)]
+	//[InlineData("20,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,6", 42)]
+	//[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "11,5 10,5 10,5 10,6", 42)]
+	//[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,6", 43)]
+	//[InlineData("21,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1 1,1", "10,5 10,5 10,5 10,5", 42)]
+	//[InlineData("1,255 1,255 1,255 1,255", "4,1", 7)]
+	//[InlineData("13,255 1,255 1,255 1,255 1,255 1,255", "3,255 3,255 3,255 3,255 3,255 3,255", 17)]
+	//[InlineData("99991099,186 39991099,186 29991099,186 19991099,186 9991099,186", "33558431,31 33558431,31 33558431,31 33558431,31 33558431,31 28701813,31", 14)]
+	////[InlineData("99991099,186 39991099,186 29991099,186 19991099,186 9991099,186", "33558431,31 33558431,31 33558431,31 33558431,31 33558431,31 28701813,31 3192645,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 17121,31 12067,31", 50)]
 	public async void ResolveCredentialDependenciesAsync(string inputs, string outputs, int finalVertexCount)
 	{
 		// blackbox tests (apart from finalVertexCount, which leaks
 		// information about implementation) covering valid range
 		// of inputs with various corner cases that must be handled.
 
-		// Parse values out of strings because InputData can't contain arrays
-		var inputValues = inputs.Split(" ").Select(x => x.Split(",").Select(y => long.Parse(y)));
-		var outputValues = outputs.Split(" ").Select(x => x.Split(",").Select(y => long.Parse(y)));
+		// Parse values out of strings because InputData can't contain arrays.
+		var inputValues = inputs.Split(' ').Select(x => x.Split(',').Select(y => long.Parse(y)));
+		var outputValues = outputs.Split(' ').Select(x => x.Split(',').Select(y => long.Parse(y)));
 
-		var g = DependencyGraph.ResolveCredentialDependencies(inputValues, outputValues);
+		DependencyGraph g = DependencyGraph.ResolveCredentialDependencies(inputValues, outputValues);
 
 		// Useful for debugging:
-		// File.WriteAllText("/tmp/graphs/" + inputs + " -- " + outputs + ".dot", g.Graphviz());
+		File.WriteAllText(@"C:\Temp\graphs\" + inputs + " -- " + outputs + ".dot", g.AsGraphviz());
+		// File.WriteAllText(@"C:\temp\graphs\" + SHA512.HashData(Encoding.ASCII.GetBytes($"{inputs} -- {outputs}")) + ".dot", g.AsGraphviz());
 		// the resulting graph can be rendered with graphviz (dot -Tpng -O *.dot)
 		AssertResolvedGraphInvariants(g, inputValues, outputValues);
 		Assert.Equal(finalVertexCount, g.Vertices.Count);

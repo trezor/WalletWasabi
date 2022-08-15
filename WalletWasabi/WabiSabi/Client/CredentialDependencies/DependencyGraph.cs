@@ -12,7 +12,7 @@ public record DependencyGraph
 {
 	public const int K = ProtocolConstants.CredentialNumber;
 
-	public static IEnumerable<CredentialType> CredentialTypes { get; } = Enum.GetValues<CredentialType>();
+	public static CredentialType[] CredentialTypes { get; } = Enum.GetValues<CredentialType>();
 
 	public ImmutableList<RequestNode> Vertices { get; init; } = ImmutableList<RequestNode>.Empty;
 
@@ -27,8 +27,8 @@ public record DependencyGraph
 
 	// Internal properties used to keep track of effective values and edges
 	public ImmutableSortedDictionary<CredentialType, CredentialEdgeSet> EdgeSets { get; init; } = ImmutableSortedDictionary<CredentialType, CredentialEdgeSet>.Empty
-		.Add(CredentialType.Amount, new() { CredentialType = CredentialType.Amount, MaxCredentialValue = ProtocolConstants.MaxAmountPerAlice })
-		.Add(CredentialType.Vsize, new() { CredentialType = CredentialType.Vsize, MaxCredentialValue = ProtocolConstants.MaxVsizeCredentialValue });
+		.Add(CredentialType.Amount, new CredentialEdgeSet() { CredentialType = CredentialType.Amount, MaxCredentialValue = ProtocolConstants.MaxAmountPerAlice })
+		.Add(CredentialType.Vsize, new CredentialEdgeSet() { CredentialType = CredentialType.Vsize, MaxCredentialValue = ProtocolConstants.MaxVsizeCredentialValue });
 
 	public long Balance(RequestNode node, CredentialType credentialType) => EdgeSets[credentialType].Balance(node);
 
@@ -40,32 +40,46 @@ public record DependencyGraph
 
 	public int OutDegree(RequestNode node, CredentialType credentialType) => EdgeSets[credentialType].OutDegree(node);
 
-	private string AsGraphviz() => DependencyGraphExtensions.AsGraphviz(this);
+	public string AsGraphviz() => DependencyGraphExtensions.AsGraphviz(this);
 
-	/// <summary>Construct a graph from amounts, and resolve the
-	/// credential dependencies.</summary>
-	///
-	/// <remarks>Should only produce valid graphs. The elements of the
+	public static DependencyGraph ResolveCredentialDependencies(IEnumerable<(Money EffectiveValue, int InputSize)> inputEffectiveValuesAndSizes, IEnumerable<TxOut> outputs, FeeRate feerate, CoordinationFeeRate coordinationFeeRate, long vsizeAllocationPerInput)
+	{
+		IEnumerable<int> outputSizes = outputs.Select(x => x.ScriptPubKey.EstimateOutputVsize());
+		IEnumerable<Money> effectiveCosts = Enumerable.Zip(outputs, outputSizes, (txout, size) => txout.EffectiveCost(feerate));
+		IEnumerable<(Money EffectiveValue, int OutputSize)> outputEffectiveValuesAndSizes = effectiveCosts.Zip(outputSizes);
+
+		return ResolveCredentialDependencies(inputEffectiveValuesAndSizes, outputEffectiveValuesAndSizes, vsizeAllocationPerInput);
+	}
+
+	/// <summary>
+	/// Construct a graph from amounts, and resolve the credential dependencies.
+	/// </summary>
+	/// <remarks>
+	/// Should only produce valid graphs. The elements of the
 	/// <see>Vertices</see> property will correspond to the given values in order,
 	/// and may contain additional nodes if reissuance requests are
-	/// required.</remarks>
-	///
-	public static DependencyGraph ResolveCredentialDependencies(IEnumerable<(Money EffectiveValue, int InputSize)> effectiveValuesAndSizes, IEnumerable<TxOut> outputs, FeeRate feerate, CoordinationFeeRate coordinationFeeRate, long vsizeAllocationPerInput)
+	/// required.
+	/// </remarks>
+	public static DependencyGraph ResolveCredentialDependencies(
+		IEnumerable<(Money EffectiveValue, int InputSize)> inputEffectiveValuesAndSizes,
+		IEnumerable<(Money EffectiveValue, int OutputSize)> outputEffectiveValuesAndSizes,
+		long vsizeAllocationPerInput)
 	{
-		var effectiveValues = effectiveValuesAndSizes.Select(x => x.EffectiveValue);
-		var inputSizes = effectiveValuesAndSizes.Select(x => x.InputSize);
+		var effectiveValues = inputEffectiveValuesAndSizes.Select(x => x.EffectiveValue);
+		var inputSizes = inputEffectiveValuesAndSizes.Select(x => x.InputSize);
 
 		if (effectiveValues.Any(x => x <= Money.Zero))
 		{
 			throw new InvalidOperationException($"Not enough funds to pay for the fees.");
 		}
 
-		var outputSizes = outputs.Select(x => x.ScriptPubKey.EstimateOutputVsize());
-		var effectiveCosts = Enumerable.Zip(outputs, outputSizes, (txout, size) => txout.EffectiveCost(feerate));
-
 		return ResolveCredentialDependencies(
-			Enumerable.Zip(effectiveValues.Select(a => a.Satoshi), inputSizes.Select(i => (vsizeAllocationPerInput - i)), ImmutableArray.Create).Cast<IEnumerable<long>>(),
-			Enumerable.Zip(effectiveCosts.Select(a => a.Satoshi), outputSizes.Select(i => (long)i), ImmutableArray.Create).Cast<IEnumerable<long>>()
+			inputValues: Enumerable.Zip(
+				first: effectiveValues.Select(a => a.Satoshi),
+				second: inputSizes.Select(i => (vsizeAllocationPerInput - i)), ImmutableArray.Create).Cast<IEnumerable<long>>(),
+			outputValues: Enumerable.Zip(
+				first: outputEffectiveValuesAndSizes.Select(x => x.EffectiveValue).Select(a => a.Satoshi),
+				second: outputEffectiveValuesAndSizes.Select(x => x.OutputSize).Select(i => (long)i), ImmutableArray.Create).Cast<IEnumerable<long>>()
 		);
 	}
 
@@ -77,12 +91,12 @@ public record DependencyGraph
 		var allValues = Enumerable.Concat(inputValues, outputValues);
 		if (allValues.SelectMany(x => x).Any(x => x < 0))
 		{
-			throw new ArgumentException($"All values must be positive.");
+			throw new ArgumentException("All values must be positive.");
 		}
 
-		if (allValues.Any(x => x.Count() != CredentialTypes.Count()))
+		if (allValues.Any(x => x.Count() != CredentialTypes.Length))
 		{
-			throw new ArgumentException($"Number of credential values must be {CredentialTypes.Count()}");
+			throw new ArgumentException($"Number of credential values must be {CredentialTypes.Length}");
 		}
 
 		foreach (var credentialType in CredentialTypes)
@@ -122,13 +136,13 @@ public record DependencyGraph
 	// approach.
 	private DependencyGraph AddInput(IEnumerable<long> values)
 	{
-		var node = new InputNode(values.Select(y => y));
+		var node = new InputNode(Vertices.Count, values.Select(y => y));
 		return (this with { Inputs = Inputs.Add(node) }).AddNode(node);
 	}
 
 	private DependencyGraph AddOutput(IEnumerable<long> values)
 	{
-		var node = new OutputNode(values.Select(y => -1 * y));
+		var node = new OutputNode(Vertices.Count, values.Select(y => -1 * y));
 		return (this with { Outputs = Outputs.Add(node) }).AddNode(node);
 	}
 	private DependencyGraph AddInputs(IEnumerable<IEnumerable<long>> values) => values.Aggregate(this, (g, v) => g.AddInput(v));
@@ -137,7 +151,7 @@ public record DependencyGraph
 
 	private (DependencyGraph, RequestNode) AddReissuance()
 	{
-		var node = new ReissuanceNode();
+		var node = new ReissuanceNode(id: Vertices.Count);
 		return ((this with { Reissuances = Reissuances.Add(node) }).AddNode(node), node);
 	}
 

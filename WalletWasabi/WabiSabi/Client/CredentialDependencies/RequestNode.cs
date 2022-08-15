@@ -6,13 +6,16 @@ namespace WalletWasabi.WabiSabi.Client.CredentialDependencies;
 
 public abstract class RequestNode
 {
-	public RequestNode(IEnumerable<long> values, int inDegree, int outDegree, int zeroOnlyOutDegree)
+	public RequestNode(int id, IEnumerable<long> values, int inDegree, int outDegree, int zeroOnlyOutDegree)
 	{
+		Id = id;
 		Values = Guard.InRange(nameof(values), values, DependencyGraph.K, DependencyGraph.K).ToImmutableArray();
 		MaxInDegree = inDegree;
 		MaxOutDegree = outDegree;
 		MaxZeroOnlyOutDegree = zeroOnlyOutDegree;
 	}
+
+	public int Id { get; }
 
 	public ImmutableArray<long> Values { get; }
 
