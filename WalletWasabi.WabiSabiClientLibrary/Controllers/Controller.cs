@@ -19,6 +19,12 @@ public class Controller : ControllerBase, IDisposable
 		_secureRandom = new SecureRandom();
 	}
 
+	[HttpPost("get-anonymity-scores")]
+	public GetAnonymityScoresResponse GetAnonymityScores(GetAnonymityScoresRequest request)
+	{
+		return GetAnonymityScoresHelper.GetAnonymityScores(request);
+	}
+
 	/// <summary>
 	/// Given a set of unspent transaction outputs, choose a subset of the outputs that are best to register in a single CoinJoin round according to the given strategy.
 	/// </summary>
