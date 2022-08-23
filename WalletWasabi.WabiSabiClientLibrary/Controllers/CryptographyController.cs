@@ -6,6 +6,7 @@ using WalletWasabi.Crypto.Randomness;
 using WalletWasabi.Crypto.ZeroKnowledge;
 using WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
 using WalletWasabi.WabiSabiClientLibrary.Models;
+using WalletWasabi.WabiSabiClientLibrary.Models.AnalyzeTransactions;
 using WalletWasabi.Server.Filters;
 using WalletWasabi.WabiSabi.Crypto;
 using WalletWasabi.WabiSabi.Crypto.CredentialRequesting;
@@ -28,6 +29,12 @@ public class CryptographyController : ControllerBase, IDisposable
 	}
 
 	private long MaxAmountCredentialValue { get; }
+
+	[HttpPost("analyze-transaction")]
+	public AnalyzeTransactionsResponse CreateRequestAsync(AnalyzeTransactionsRequest request)
+	{
+		return new AnalyzeTransactionsResponse(request.InternalInputs.Select(x => x.PublicKey).Concat(request.InternalOutputs.Select(x => x.PublicKey)).Distinct().Select(x => new PubKeyAnonymity(x, 0)).ToArray());
+	}
 
 	/// <summary>
 	/// Given a set of unspent transaction outputs, choose a subset of the outputs that are best to register in a single CoinJoin round according to the given strategy.
