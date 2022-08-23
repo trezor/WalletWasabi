@@ -19,6 +19,12 @@ public class Controller : ControllerBase, IDisposable
 		_secureRandom = new SecureRandom();
 	}
 
+	[HttpPost("analyze-transaction")]
+	public AnalyzeTransactionsResponse CreateRequestAsync(AnalyzeTransactionsRequest request)
+	{
+		return AnalyzeTransactionsHelper.AnalyzeTransactions(request);
+	}
+
 	/// <summary>
 	/// Given a set of unspent transaction outputs, choose a subset of the outputs that are best to register in a single CoinJoin round according to the given strategy.
 	/// </summary>
