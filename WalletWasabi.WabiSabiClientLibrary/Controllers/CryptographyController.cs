@@ -33,7 +33,7 @@ public class CryptographyController : ControllerBase, IDisposable
 	[HttpPost("analyze-transaction")]
 	public AnalyzeTransactionsResponse CreateRequestAsync(AnalyzeTransactionsRequest request)
 	{
-		return new AnalyzeTransactionsResponse(request.Transactions.SelectMany(x => x.InternalOutputs).Select(x => x.PublicKey).Distinct().Select(x => new PubKeyAnonymity(x, 0)).ToArray());
+		return new AnalyzeTransactionsResponse(request.Transactions.SelectMany(x => x.InternalOutputs).Select(x => x.Address).Distinct().Select(x => new AddressAnonymity(x, 0)).ToArray());
 	}
 
 	/// <summary>

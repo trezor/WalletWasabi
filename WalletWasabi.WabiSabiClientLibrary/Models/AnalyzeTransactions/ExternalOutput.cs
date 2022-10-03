@@ -2,6 +2,6 @@ using NBitcoin;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Models.AnalyzeTransactions;
 
-public record ExternalOutput(string PublicKey, string ScriptPubKey)
+public record ExternalOutput(Money Value, string ScriptPubKey)
 {
 }
