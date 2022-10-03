@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 ifeq ($(RUNTIME),)
   UNAME_S = $(shell uname -s)
   UNAME_M = $(shell uname -m)
