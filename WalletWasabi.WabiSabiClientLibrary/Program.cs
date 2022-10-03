@@ -19,8 +19,17 @@ public static class Program
 		}
 	}
 
-	public static IHostBuilder CreateHostBuilder(string[] args) =>
-		Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => webBuilder
+	public static IHostBuilder CreateHostBuilder(string[] args)
+	{
+		string? portString = Environment.GetEnvironmentVariable("WCL_BIND_PORT");
+		int port = 37128;
+		if (portString is not null)
+		{
+			port = Int32.Parse(portString);
+		}
+
+		return Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => webBuilder
 			.UseStartup<Startup>()
-			.UseUrls("http://localhost:37128/"));
+			.UseUrls($"http://localhost:{port}/"));
+	}
 }
