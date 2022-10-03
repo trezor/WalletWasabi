@@ -18,7 +18,12 @@ endif
 RUNTIME=$(SYSTEM)-$(ARCH)
 DOTNETVER=6.0
 
-BINARY=bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary
+ifeq ($(shell echo $${RUNTIME:0:3}),win)
+  BINARY=bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary.exe
+else
+  BINARY=bin/Release/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary
+endif
+
 OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
 
 all: compile
