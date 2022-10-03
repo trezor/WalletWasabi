@@ -24,8 +24,8 @@ OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
 all: compile
 
 ifneq (,$(wildcard /etc/NIXOS))
-INTERPRETER=$(shell cat ${NIX_CC}/nix-support/dynamic-linker)
-all: patchelf
+  INTERPRETER=$(shell cat ${NIX_CC}/nix-support/dynamic-linker)
+  all: patchelf
 endif
 
 compile:
