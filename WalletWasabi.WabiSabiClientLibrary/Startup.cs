@@ -46,6 +46,7 @@ public class Startup
 			x.SerializerSettings.Converters = JsonSerializationOptions.Default.Settings.Converters;
 		});
 
+#if  (DEBUG)
 		// Register the Swagger generator, defining one or more Swagger documents
 		services.AddSwaggerGen(c =>
 		{
@@ -64,6 +65,7 @@ public class Startup
 			var xmlPath = Path.Combine(basePath, "WalletWasabi.WabiSabiClientLibrary.xml");
 			c.IncludeXmlComments(xmlPath);
 		});
+#endif
 
 		services.AddLogging(logging => logging.AddFilter((s, level) => level >= Microsoft.Extensions.Logging.LogLevel.Warning));
 
