@@ -46,7 +46,7 @@ public class Startup
 			x.SerializerSettings.Converters = JsonSerializationOptions.Default.Settings.Converters;
 		});
 
-#if  (DEBUG)
+#if (DEBUG)
 		// Register the Swagger generator, defining one or more Swagger documents
 		services.AddSwaggerGen(c =>
 		{
@@ -80,11 +80,13 @@ public class Startup
 	{
 		app.UseStaticFiles();
 
+#if (DEBUG)
 		// Enable middleware to serve generated Swagger as a JSON endpoint.
 		app.UseSwagger();
 
 		// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
 		app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/v{Constants.BackendMajorVersion}/swagger.json", $"Wasabi Wallet API V{Constants.BackendMajorVersion}"));
+#endif
 
 		app.UseRouting();
 
