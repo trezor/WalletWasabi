@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := $(shell command -v bash)
 
 ifeq ($(RUNTIME),)
   UNAME_S = $(shell uname -s)
@@ -22,7 +22,7 @@ ifeq ($(RUNTIME),)
 
   ifneq (,$(wildcard /etc/NIXOS))
     INTERPRETER=$(shell cat ${NIX_CC}/nix-support/dynamic-linker)
-    all: patchelf
+    all: compile patchelf
   endif
 endif
 
