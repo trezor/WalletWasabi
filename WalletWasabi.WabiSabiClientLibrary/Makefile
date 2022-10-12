@@ -1,5 +1,3 @@
-SHELL := $(shell command -v bash)
-
 ifeq ($(RUNTIME),)
   UNAME_S = $(shell uname -s)
   UNAME_M = $(shell uname -m)
@@ -29,7 +27,7 @@ endif
 DOTNETVER=6.0
 CONFIGURATION ?= Release
 
-ifeq ($(shell echo $${RUNTIME:0:3}),win)
+ifeq ($(shell echo $(RUNTIME) | cut -c 1-3),win)
   BINARY=bin/$(CONFIGURATION)/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary.exe
 else
   BINARY=bin/$(CONFIGURATION)/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary
