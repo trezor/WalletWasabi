@@ -32,12 +32,15 @@ public class AnalyzeTransactionsHelper
 				analyzedTransactions.Add(transaction);
 				foreach (TransactionLabel label in transaction.InputTransactionLabels)
 				{
-					AnalyzedTransaction? previousTransaction = toAnalyzeTransactions.Where(x => x.OutputTransactionLabels.Contains(label)).SingleOrDefault();
-					if (previousTransaction is null)
+					IEnumerable<AnalyzedTransaction>? previousTransactions = toAnalyzeTransactions.Where(x => x.OutputTransactionLabels.Contains(label));
+					if (previousTransactions.Count() == 0)
 					{
 						throw new Exception("Invalid input: There is an internal input that references a non-existing transaction.");
 					}
-					AnalyzeRecursively(previousTransaction);
+					foreach (var previousTransaction in previousTransactions)
+					{
+						AnalyzeRecursively(previousTransaction);
+					}
 				}
 				analyser.Analyze(transaction);
 			}
