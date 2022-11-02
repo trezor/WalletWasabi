@@ -19,6 +19,12 @@ public class Controller : ControllerBase, IDisposable
 		_secureRandom = new SecureRandom();
 	}
 
+	[HttpPost("get-version")]
+	public GetVersionResponse GetVersionAsync()
+	{
+		return new GetVersionResponse(Global.Version);
+	}
+
 	[HttpPost("get-anonymity-scores")]
 	public GetAnonymityScoresResponse GetAnonymityScores(GetAnonymityScoresRequest request)
 	{
