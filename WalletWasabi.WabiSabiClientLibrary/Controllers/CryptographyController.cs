@@ -30,6 +30,12 @@ public class CryptographyController : ControllerBase, IDisposable
 
 	private long MaxAmountCredentialValue { get; }
 
+	[HttpPost("get-version")]
+	public GetVersionResponse GetVersionAsync()
+	{
+		return new GetVersionResponse(1);
+	}
+
 	[HttpPost("analyze-transaction")]
 	public AnalyzeTransactionsResponse CreateRequestAsync(AnalyzeTransactionsRequest request)
 	{
