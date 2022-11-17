@@ -15,6 +15,7 @@
 		<Nullable>enable</Nullable>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<PathMap>$(MSBuildProjectDirectory)\=WalletWasabi.WabiSabiClientLibrary</PathMap>
+		<ServerGarbageCollection>false</ServerGarbageCollection>
 	</PropertyGroup>
 
 	<ItemGroup>
