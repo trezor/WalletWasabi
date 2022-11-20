@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0": {
+    "net7.0": {
       "Avalonia": {
         "type": "Direct",
         "requested": "[0.10.999-cibuild0020604-beta, )",
@@ -599,7 +599,7 @@
         }
       }
     },
-    "net6.0/linux-x64": {
+    "net7.0/linux-x64": {
       "System.Drawing.Common": {
         "type": "Direct",
         "requested": "[6.0.0, )",
@@ -1001,7 +1001,7 @@
         }
       }
     },
-    "net6.0/osx-arm64": {
+    "net7.0/osx-arm64": {
       "System.Drawing.Common": {
         "type": "Direct",
         "requested": "[6.0.0, )",
@@ -1403,7 +1403,7 @@
         }
       }
     },
-    "net6.0/osx-x64": {
+    "net7.0/osx-x64": {
       "System.Drawing.Common": {
         "type": "Direct",
         "requested": "[6.0.0, )",
@@ -1805,7 +1805,7 @@
         }
       }
     },
-    "net6.0/win7-x64": {
+    "net7.0/win7-x64": {
       "System.Drawing.Common": {
         "type": "Direct",
         "requested": "[6.0.0, )",

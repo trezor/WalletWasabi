@@ -262,8 +262,8 @@ sudo pico /etc/systemd/system/walletwasabi.service
 Description=WalletWasabi Backend API
 
 [Service]
-WorkingDirectory=/home/user/WalletWasabi/WalletWasabi.Backend/bin/Release/net6.0/publish
-ExecStart=/usr/bin/dotnet /home/user/WalletWasabi/WalletWasabi.Backend/bin/Release/net6.0/publish/WalletWasabi.Backend.dll
+WorkingDirectory=/home/user/WalletWasabi/WalletWasabi.Backend/bin/Release/net7.0/publish
+ExecStart=/usr/bin/dotnet /home/user/WalletWasabi/WalletWasabi.Backend/bin/Release/net7.0/publish/WalletWasabi.Backend.dll
 Restart=always
 RestartSec=10  # Restart service after 10 seconds if dotnet service crashes
 SyslogIdentifier=walletwasabi-backend

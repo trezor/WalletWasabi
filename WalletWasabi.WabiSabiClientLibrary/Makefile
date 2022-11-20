@@ -24,7 +24,7 @@ ifeq ($(RUNTIME),)
   endif
 endif
 
-DOTNETVER=6.0
+DOTNETVER=7.0
 CONFIGURATION ?= Release
 
 ifeq ($(shell echo $(RUNTIME) | cut -c 1-3),win)
@@ -33,7 +33,7 @@ else
   BINARY=bin/$(CONFIGURATION)/net$(DOTNETVER)/$(RUNTIME)/publish/WalletWasabi.WabiSabiClientLibrary
 endif
 
-OPTS=-p:PublishSingleFile=True -p:PublishTrimmed=True
+OPTS=-p:PublishAot=True -p:PublishTrimmed=True -p:StripSymbols=True
 
 all: compile
 
