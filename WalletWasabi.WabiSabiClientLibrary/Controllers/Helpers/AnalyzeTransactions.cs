@@ -21,38 +21,17 @@ public class AnalyzeTransactionsHelper
 		TransactionLabelProvider labelProvider = new();
 		BlockchainAnalyzer analyser = new(0);
 
-		HashSet<AnalyzedTransaction> toAnalyzeTransactions = request.Transactions.Select(x => AnalyzedTransaction.FromTransaction(x, labelProvider)).ToHashSet();
-		HashSet<AnalyzedTransaction> analyzedTransactions = new();
+		List<AnalyzedTransaction> transactions = new();
 
-		// Analyze transactions in topological sorting
-		void AnalyzeRecursively(AnalyzedTransaction transaction)
+		foreach (var transaction in request.Transactions.Reverse())
 		{
-			if (!analyzedTransactions.Contains(transaction))
-			{
-				analyzedTransactions.Add(transaction);
-				foreach (TransactionLabel label in transaction.InputTransactionLabels)
-				{
-					IEnumerable<AnalyzedTransaction>? previousTransactions = toAnalyzeTransactions.Where(x => x.OutputTransactionLabels.Contains(label));
-					if (previousTransactions.Count() == 0)
-					{
-						throw new Exception("Invalid input: There is an internal input that references a non-existing transaction.");
-					}
-					foreach (var previousTransaction in previousTransactions)
-					{
-						AnalyzeRecursively(previousTransaction);
-					}
-				}
-				analyser.Analyze(transaction);
-			}
-		}
+			analyser.Analyze(AnalyzedTransaction.FromTransaction(transaction, labelProvider));
 
-		foreach (var transaction in toAnalyzeTransactions)
-		{
-			AnalyzeRecursively(transaction);
 		}
 
 		return new AnalyzeTransactionsResponse(labelProvider.GetAnonymitySets().ToArray());
 	}
+
 	private class TransactionLabelProvider
 	{
 		private Dictionary<string, TransactionLabel> AddressToTransactionLabel { get; }
@@ -66,6 +45,12 @@ public class AnalyzeTransactionsHelper
 		{
 			return AddressToTransactionLabel.Select(x => new AddressAnonymity(x.Key, x.Value.HdPubKey.AnonymitySet));
 		}
+
+		public bool TransactionLabelExist(string address)
+		{
+			return AddressToTransactionLabel.ContainsKey(address);
+		}
+
 
 		public TransactionLabel GetTransactionLabel(string address)
 		{
@@ -112,6 +97,10 @@ public class AnalyzeTransactionsHelper
 
 			foreach (var internalInput in transaction.InternalInputs)
 			{
+				if (!transactionLabelProvider.TransactionLabelExist(internalInput.Address))
+				{
+					throw new Exception("There is an internal input that references a non-existing transaction.");
+				}
 				analyzedTransaction.AddInternalInput(internalInput.Value, transactionLabelProvider.GetTransactionLabel(internalInput.Address));
 			}
 
