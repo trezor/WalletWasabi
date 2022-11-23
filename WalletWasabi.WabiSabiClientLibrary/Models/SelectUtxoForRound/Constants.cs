@@ -15,6 +15,6 @@ public record Constants(
 	FeeRate MiningFeeRate
 ) : IUtxoSelectionParameters
 {
-	public ImmutableSortedSet<ScriptType> AllowedInputScriptTypes
+	public ImmutableSortedSet<ScriptType> AllowedInputTypes
 		=> AllowedInputTypes.Select(scriptType => Enum.Parse<ScriptType>(scriptType)).ToImmutableSortedSet();
 }

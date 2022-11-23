@@ -439,7 +439,7 @@ public class CoinJoinClient
 	{
 		TCoin[] filteredCoins = coins
 			.Where(x => parameters.AllowedInputAmounts.Contains(x.Amount))
-			.Where(x => parameters.AllowedInputScriptTypes.Contains(x.ScriptType))
+			.Where(x => parameters.AllowedInputTypes.Contains(x.ScriptType))
 			.Where(x => x.EffectiveValue(parameters.MiningFeeRate) > Money.Zero)
 			.ToShuffled()
 			.ToArray();

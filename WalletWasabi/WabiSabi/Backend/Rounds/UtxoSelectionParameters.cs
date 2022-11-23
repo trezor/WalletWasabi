@@ -11,5 +11,5 @@ public interface IUtxoSelectionParameters
 	CoordinationFeeRate CoordinationFeeRate { get; }
 	FeeRate MiningFeeRate { get; }
 
-	ImmutableSortedSet<ScriptType> AllowedInputScriptTypes { get; }
+	ImmutableSortedSet<ScriptType> AllowedInputTypes { get; }
 }

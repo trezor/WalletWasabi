@@ -37,8 +37,8 @@ public record RoundParameters : IUtxoSelectionParameters
 		MaxInputCountByRound = maxInputCountByRound;
 		AllowedInputAmounts = allowedInputAmounts;
 		AllowedOutputAmounts = allowedOutputAmounts;
-		AllowedInputScriptTypes = allowedInputScriptTypes;
-		AllowedOutputScriptTypes = allowedOutputScriptTypes;
+		AllowedInputTypes = allowedInputScriptTypes;
+		AllowedOutputTypes = allowedOutputScriptTypes;
 		StandardInputRegistrationTimeout = standardInputRegistrationTimeout;
 		ConnectionConfirmationTimeout = connectionConfirmationTimeout;
 		OutputRegistrationTimeout = outputRegistrationTimeout;
@@ -58,8 +58,8 @@ public record RoundParameters : IUtxoSelectionParameters
 	public int MaxInputCountByRound { get; init; }
 	public MoneyRange AllowedInputAmounts { get; init; }
 	public MoneyRange AllowedOutputAmounts { get; init; }
-	public ImmutableSortedSet<ScriptType> AllowedInputScriptTypes { get; init; }
-	public ImmutableSortedSet<ScriptType> AllowedOutputScriptTypes { get; init; }
+	public ImmutableSortedSet<ScriptType> AllowedInputTypes { get; init; }
+	public ImmutableSortedSet<ScriptType> AllowedOutputTypes { get; init; }
 	public TimeSpan StandardInputRegistrationTimeout { get; init; }
 	public TimeSpan ConnectionConfirmationTimeout { get; init; }
 	public TimeSpan OutputRegistrationTimeout { get; init; }
