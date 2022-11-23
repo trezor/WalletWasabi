@@ -76,7 +76,7 @@ public class SelectUtxoForRoundHelperTests
 		=> new(
 			AllowedInputAmounts: new MoneyRange(Money.Coins(0.01m), Money.Coins(0.05m)),
 			AllowedOutputAmounts: new MoneyRange(Money.Coins(0.01m), Money.Coins(0.05m)),
-			AllowedInputTypes: new List<string>() { $"{ScriptType.P2WPKH}" },
+			AllowedInputTypes: new List<ScriptType>() { ScriptType.P2WPKH }.ToImmutableSortedSet(),
 			CoordinationFeeRate: CoordinationFeeRate.Zero,
 			MiningFeeRate: new FeeRate(5m));
 }
