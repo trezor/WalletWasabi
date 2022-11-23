@@ -10,11 +10,7 @@ namespace WalletWasabi.WabiSabiClientLibrary.Models.SelectUtxoForRound;
 public record Constants(
 	MoneyRange AllowedInputAmounts,
 	MoneyRange AllowedOutputAmounts,
-	IReadOnlyList<string> AllowedInputTypes,
+	ImmutableSortedSet<ScriptType> AllowedInputTypes,
 	CoordinationFeeRate CoordinationFeeRate,
 	FeeRate MiningFeeRate
-) : IUtxoSelectionParameters
-{
-	public ImmutableSortedSet<ScriptType> AllowedInputTypes
-		=> AllowedInputTypes.Select(scriptType => Enum.Parse<ScriptType>(scriptType)).ToImmutableSortedSet();
-}
+) : IUtxoSelectionParameters;

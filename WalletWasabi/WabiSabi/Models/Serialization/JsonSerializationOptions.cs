@@ -30,7 +30,6 @@ public class JsonSerializationOptions
 				new CoinWithOwnershipProofJsonConverter(),
 				new CoinJsonConverter(),
 				new CoinJoinEventJsonConverter(),
-				new ScriptTypeJsonConverter(),
 			}
 	};
 	public static readonly JsonSerializationOptions Default = new();
