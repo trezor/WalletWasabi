@@ -57,7 +57,7 @@ public record ConstructionState : MultipartyTransactionState
 			throw new WabiSabiProtocolException(WabiSabiProtocolErrorCode.NonUniqueInputs);
 		}
 
-		return this with { Events = Events.Add(new InputAdded(coin)) };
+		return this with { Events = Events.Add(new InputAdded(new Coin(coin.Outpoint, coin.TxOut), coin.OwnershipProof)) };
 	}
 
 	public ConstructionState AddOutput(TxOut output)

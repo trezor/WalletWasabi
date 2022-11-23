@@ -27,7 +27,7 @@ public record SigningState : MultipartyTransactionState
 	public IEnumerable<Coin> UnsignedInputs => SortedInputs.Where((_, i) => !IsInputSigned(i));
 
 	[JsonIgnore]
-	public List<CoinWithOwnershipProof> SortedInputs => Inputs
+	public List<Coin> SortedInputs => Inputs
 			.OrderByDescending(x => x.Amount)
 			.ThenBy(x => x.Outpoint.ToBytes(), ByteArrayComparer.Comparer)
 			.ToList();
