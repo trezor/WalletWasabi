@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using WalletWasabi.Helpers;
+using Newtonsoft.Json;
 
 namespace WalletWasabi.Crypto.StrobeProtocol;
 
@@ -15,9 +16,16 @@ public sealed class Strobe128
 	// Let ˆr=r/8−2. This is the portion of the rate which is used for user data, measured in bytes.
 	private const byte SpongeRate = 166;
 
+	[JsonProperty("state")]
 	private readonly byte[] _state = new byte[25 * 8]; // this is the block size used by keccak-f1600.
+
+	[JsonProperty("position")]
 	private byte _position = 0;
+
+	[JsonProperty("beginPosition")]
 	private byte _beginPosition = 0;
+
+	[JsonProperty("currentFlags")]
 	private StrobeFlags _currentFlags = 0;
 
 	public Strobe128(string procotol)
@@ -32,6 +40,7 @@ public sealed class Strobe128
 		AddAssociatedMetaData(Encoding.UTF8.GetBytes(procotol), false);
 	}
 
+	[JsonConstructor]
 	private Strobe128(byte[] state, StrobeFlags flags, byte beginPosition, byte position)
 	{
 		Buffer.BlockCopy(state, 0, _state, 0, _state.Length);
