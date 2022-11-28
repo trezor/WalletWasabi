@@ -1,14 +1,16 @@
 using NBitcoin.Secp256k1;
 using WalletWasabi.Crypto.Groups;
+using Newtonsoft.Json;
 
 namespace WalletWasabi.WabiSabi.Crypto;
 
 public record IssuanceValidationData
 {
-	internal IssuanceValidationData(long value, Scalar r, GroupElement ma)
+	[JsonConstructor]
+	internal IssuanceValidationData(long value, Scalar randomness, GroupElement ma)
 	{
 		Value = value;
-		Randomness = r;
+		Randomness = randomness;
 		Ma = ma;
 	}
 

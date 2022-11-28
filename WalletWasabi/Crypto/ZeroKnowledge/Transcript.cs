@@ -8,6 +8,7 @@ using WalletWasabi.Crypto.StrobeProtocol;
 using WalletWasabi.Crypto.ZeroKnowledge.LinearRelation;
 using WalletWasabi.Helpers;
 using WalletWasabi.WabiSabi;
+using Newtonsoft.Json;
 
 namespace WalletWasabi.Crypto.ZeroKnowledge;
 
@@ -17,6 +18,7 @@ public sealed class Transcript
 {
 	private const int KeySizeInBytes = 32;
 
+	[JsonProperty("strobe")]
 	private Strobe128 _strobe;
 
 	private static readonly byte[] StatementTag = Encoding.UTF8.GetBytes("statement");
@@ -42,6 +44,7 @@ public sealed class Transcript
 	}
 
 	// Private constructor used for cloning.
+	[JsonConstructor]
 	private Transcript(Strobe128 strobe)
 	{
 		_strobe = strobe;
