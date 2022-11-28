@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using WalletWasabi.Logging;
 using WalletWasabi.Server;
+using WalletWasabi.WabiSabi.Models.Serialization;
 
 [assembly: ApiController]
 
@@ -26,12 +27,21 @@ public class Startup
 	{
 		services.AddLogging(logging => logging.AddFilter((s, level) => level >= Microsoft.Extensions.Logging.LogLevel.Warning));
 
+		services.AddControllers().AddNewtonsoftJson(x =>
+		{
+			x.SerializerSettings.Converters = JsonSerializationOptions.Default.Settings.Converters;
+		});
+
 		services.AddSingleton(new Global());
 		services.AddStartupTask<InitConfigStartupTask>();
 	}
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Global global)
 	{
+		app.UseRouting();
+
+		app.UseEndpoints(endpoints => endpoints.MapControllers());
+
 		var applicationLifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
 		applicationLifetime.ApplicationStopped.Register(() => OnShutdown(global));
 	}
