@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using Newtonsoft.Json;
 using WalletWasabi.WabiSabiClientLibrary.Models.DecomposeAmounts;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Models;
@@ -14,7 +16,7 @@ namespace WalletWasabi.WabiSabiClientLibrary.Models;
 public record DecomposeAmountsRequest(
 	decimal[] InternalAmounts,
 	decimal[] ExternalAmounts,
-	int InputSize,
+	[property: DefaultValue(58), JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)] int InputSize,
 	int OutputSize,
 	int AvailableVsize,
 	Constants Constants
