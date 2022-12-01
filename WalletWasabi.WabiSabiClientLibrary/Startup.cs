@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using WalletWasabi.Logging;
 using WalletWasabi.Server;
+using WalletWasabi.WabiSabiClientLibrary.Middlewares;
 using WalletWasabi.WabiSabi.Models.Serialization;
 
 [assembly: ApiController]
@@ -38,6 +39,10 @@ public class Startup
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Global global)
 	{
+#if (DEBUG)
+		app.UseMiddleware<RequestLoggerMiddleware>();
+#endif
+
 		app.UseRouting();
 
 		app.UseEndpoints(endpoints => endpoints.MapControllers());
