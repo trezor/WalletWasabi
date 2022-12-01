@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using WalletWasabi.Logging;
 using WalletWasabi.Server;
 
 namespace WalletWasabi.WabiSabiClientLibrary;
@@ -16,6 +17,7 @@ public static class Program
 		}
 		catch (Exception exception)
 		{
+			Logger.LogCritical(exception);
 		}
 	}
 
