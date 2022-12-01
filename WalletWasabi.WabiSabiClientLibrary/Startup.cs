@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using WalletWasabi.Logging;
 using WalletWasabi.Server;
 
 [assembly: ApiController]
@@ -22,6 +24,8 @@ public class Startup
 
 	public void ConfigureServices(IServiceCollection services)
 	{
+		services.AddLogging(logging => logging.AddFilter((s, level) => level >= Microsoft.Extensions.Logging.LogLevel.Warning));
+
 		services.AddSingleton(new Global());
 		services.AddStartupTask<InitConfigStartupTask>();
 	}
@@ -39,6 +43,7 @@ public class Startup
 
 	private Task CleanupAsync(Global global)
 	{
+		Logger.LogSoftwareStopped(nameof(WabiSabiClientLibrary));
 		return Task.CompletedTask;
 	}
 }

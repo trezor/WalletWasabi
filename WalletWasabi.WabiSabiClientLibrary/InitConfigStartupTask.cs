@@ -17,6 +17,22 @@ public class InitConfigStartupTask : IStartupTask
 
 	public Task ExecuteAsync(CancellationToken cancellationToken)
 	{
+		Logger.SetModes(LogMode.Console);
+		Logger.SetMinimumLevel(Logging.LogLevel.Info);
+		Logger.LogSoftwareStarted(nameof(WabiSabiClientLibrary));
 		return Task.CompletedTask;
+	}
+
+	private static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+	{
+		Logger.LogWarning(unobservedTaskExceptionEventArgs.Exception);
+	}
+
+	private static void CurrentDomain_UnhandledException(object? sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+	{
+		if (unhandledExceptionEventArgs.ExceptionObject is Exception exception)
+		{
+			Logger.LogWarning(exception);
+		}
 	}
 }
