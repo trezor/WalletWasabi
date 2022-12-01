@@ -1,0 +1,1 @@
+{"constants":{"feeRate":2000,"allowedOutputAmounts":{"min":5000,"max":134375000000}},"outputSize":43,"availableVsize":197,"internalAmounts":[999884],"externalAmounts":[164741,44223,58786,498414,522630,19538,353146,1942934,522630,39162,529761,9884,32584,41792,18727],"strategy":"minimum_cost"}
