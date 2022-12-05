@@ -9,7 +9,6 @@ namespace WalletWasabi.WabiSabiClientLibrary.Controllers;
 
 [ApiController]
 [ExceptionTranslateFilter]
-[Route("Cryptography")]
 [Produces("application/json")]
 public class Controller : ControllerBase, IDisposable
 {
@@ -52,19 +51,19 @@ public class Controller : ControllerBase, IDisposable
 		return DecomposeAmountsHelper.Decompose(request);
 	}
 
-	[HttpPost("create-request-for-zero-amount")]
+	[HttpPost("create-zero-amount-credential-request")]
 	public CreateZeroAmountCredentialRequestResponse CreateZeroAmountCredentialRequestAsync(CreateZeroAmountCredentialRequestRequest request)
 	{
 		return CredentialHelper.CreateZeroAmountCredentialRequest(request, _secureRandom);
 	}
 
-	[HttpPost("create-request")]
+	[HttpPost("create-credential-request")]
 	public CreateCredentialRequestResponse CreateCredentialRequestAsync(CreateCredentialRequestRequest request)
 	{
 		return CredentialHelper.CreateCredentialRequest(request, _secureRandom);
 	}
 
-	[HttpPost("handle-response")]
+	[HttpPost("handle-credential-response")]
 	public HandleCredentialResponseResponse HandleCredentialResponseAsync(HandleCredentialResponseRequest request)
 	{
 		return CredentialHelper.HandleCredentialResponse(request, _secureRandom);

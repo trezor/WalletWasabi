@@ -1,6 +1,4 @@
-using System.ComponentModel;
 using NBitcoin;
-using Newtonsoft.Json;
 using WalletWasabi.WabiSabi.Backend.Rounds;
 using WalletWasabi.WabiSabiClientLibrary.Models.SelectUtxoForRound;
 
@@ -18,6 +16,6 @@ public record SelectUtxoForRoundRequest(
 	int AnonScoreTarget,
 	UtxoSelectionParameters Constants,
 	int SemiPrivateThreshold,
-	[property: DefaultValue(0), JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)] Money LiquidityClue,
+	Money LiquidityClue,
 	bool ConsolidationMode = false
 );

@@ -1,5 +1,4 @@
 using NBitcoin;
-using Newtonsoft.Json;
 using System.Collections.Immutable;
 using WalletWasabi.WabiSabi.Models;
 
@@ -10,7 +9,7 @@ public record UtxoSelectionParameters(
 	MoneyRange AllowedOutputAmounts,
 	CoordinationFeeRate CoordinationFeeRate,
 	FeeRate MiningFeeRate,
-	[property: JsonProperty(PropertyName = "AllowedInputTypes")] ImmutableSortedSet<ScriptType> AllowedInputScriptTypes)
+	ImmutableSortedSet<ScriptType> AllowedInputScriptTypes)
 {
 	public static UtxoSelectionParameters FromRoundParameters(RoundParameters roundParameters) =>
 		new(
