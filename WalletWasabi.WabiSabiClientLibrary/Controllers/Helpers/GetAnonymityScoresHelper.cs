@@ -10,13 +10,13 @@ using WalletWasabi.Blockchain.Transactions;
 using WalletWasabi.Extensions;
 using WalletWasabi.Helpers;
 using WalletWasabi.WabiSabiClientLibrary.Models;
-using WalletWasabi.WabiSabiClientLibrary.Models.AnalyzeTransactions;
+using WalletWasabi.WabiSabiClientLibrary.Models.GetAnonymityScores;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
 
-public class AnalyzeTransactionsHelper
+public class GetAnonymityScoresHelper
 {
-	public static AnalyzeTransactionsResponse AnalyzeTransactions(AnalyzeTransactionsRequest request)
+	public static GetAnonymityScoresResponse GetAnonymityScores(GetAnonymityScoresRequest request)
 	{
 		TransactionLabelProvider labelProvider = new();
 		BlockchainAnalyzer analyser = new();
@@ -29,7 +29,7 @@ public class AnalyzeTransactionsHelper
 
 		}
 
-		return new AnalyzeTransactionsResponse(labelProvider.GetAnonymitySets().ToArray());
+		return new GetAnonymityScoresResponse(labelProvider.GetAnonymitySets().ToArray());
 	}
 
 	private class TransactionLabelProvider

@@ -12,7 +12,7 @@ namespace WalletWasabi.WabiSabiClientLibrary.Models;
 /// <param name="OutputSize">Virtual size of an output.</param>
 /// <param name="AvailableVsize">Available virtual size.</param>
 /// <param name="Constants"></param>
-public record DecomposeAmountsRequest(
+public record GetOutputAmountsRequest(
 	decimal[] InternalAmounts,
 	decimal[] ExternalAmounts,
 	int InputSize,

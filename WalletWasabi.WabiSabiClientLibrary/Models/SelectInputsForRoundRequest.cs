@@ -1,6 +1,6 @@
 using NBitcoin;
 using WalletWasabi.WabiSabi.Backend.Rounds;
-using WalletWasabi.WabiSabiClientLibrary.Models.SelectUtxoForRound;
+using WalletWasabi.WabiSabiClientLibrary.Models.SelectInputsForRound;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Models;
 
@@ -11,7 +11,7 @@ namespace WalletWasabi.WabiSabiClientLibrary.Models;
 /// <param name="AnonScoreTarget">Required anonymity score target.</param>
 /// <param name="Constants">Parameters affecting UTXOs selection.</param>
 /// <param name="ConsolidationMode">This option will likely be removed. We expect value to be <c>false</c>.</param>
-public record SelectUtxoForRoundRequest(
+public record SelectInputsForRoundRequest(
 	Utxo[] Utxos,
 	int AnonScoreTarget,
 	UtxoSelectionParameters Constants,

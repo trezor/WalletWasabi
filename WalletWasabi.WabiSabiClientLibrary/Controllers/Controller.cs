@@ -26,9 +26,9 @@ public class Controller : ControllerBase, IDisposable
 	}
 
 	[HttpPost("get-anonymity-scores")]
-	public AnalyzeTransactionsResponse CreateRequestAsync(AnalyzeTransactionsRequest request)
+	public GetAnonymityScoresResponse GetAnonymityScores(GetAnonymityScoresRequest request)
 	{
-		return AnalyzeTransactionsHelper.AnalyzeTransactions(request);
+		return GetAnonymityScoresHelper.GetAnonymityScores(request);
 	}
 
 	/// <summary>
@@ -36,9 +36,9 @@ public class Controller : ControllerBase, IDisposable
 	/// </summary>
 	/// <seealso cref="CoinJoinClient.SelectCoinsForRound"/>
 	[HttpPost("select-inputs-for-round")]
-	public SelectUtxoForRoundResponse SelectUtxoForRound(SelectUtxoForRoundRequest request)
+	public SelectInputsForRoundResponse SelectInputsForRound(SelectInputsForRoundRequest request)
 	{
-		return SelectUtxoForRoundHelper.Select(request);
+		return SelectInputsForRoundHelper.SelectInputsForRound(request);
 	}
 
 	/// <summary>
@@ -46,27 +46,27 @@ public class Controller : ControllerBase, IDisposable
 	/// registered by other participants, decompose the amounts registered by the participant into output amounts.
 	/// </summary>
 	[HttpPost("get-outputs-amounts")]
-	public DecomposeAmountsResponse DecomposeAmounts(DecomposeAmountsRequest request)
+	public GetOutputAmountsResponse GetOutputAmounts(GetOutputAmountsRequest request)
 	{
-		return DecomposeAmountsHelper.Decompose(request);
+		return GetOutputAmountsHelper.GetOutputAmounts(request);
 	}
 
 	[HttpPost("get-zero-credential-requests")]
-	public CreateZeroAmountCredentialRequestResponse CreateZeroAmountCredentialRequestAsync(CreateZeroAmountCredentialRequestRequest request)
+	public GetZeroCredentialRequestsResponse GetZeroCredentialRequests(GetZeroCredentialRequestsRequest request)
 	{
-		return CredentialHelper.CreateZeroAmountCredentialRequest(request, _secureRandom);
+		return CredentialHelper.GetZeroAmountCredentialRequests(request, _secureRandom);
 	}
 
 	[HttpPost("get-real-credential-requests")]
-	public CreateCredentialRequestResponse CreateCredentialRequestAsync(CreateCredentialRequestRequest request)
+	public GetRealCredentialRequestsResponse GetRealCredentialRequests(GetRealCredentialRequestsRequest request)
 	{
-		return CredentialHelper.CreateCredentialRequest(request, _secureRandom);
+		return CredentialHelper.GetRealCredentialRequests(request, _secureRandom);
 	}
 
 	[HttpPost("get-credentials")]
-	public HandleCredentialResponseResponse HandleCredentialResponseAsync(HandleCredentialResponseRequest request)
+	public GetCredentialsResponse GetCredentials(GetCredentialsRequest request)
 	{
-		return CredentialHelper.HandleCredentialResponse(request, _secureRandom);
+		return CredentialHelper.GetCredentials(request, _secureRandom);
 	}
 
 	[HttpPost("init-liquidity-clue")]

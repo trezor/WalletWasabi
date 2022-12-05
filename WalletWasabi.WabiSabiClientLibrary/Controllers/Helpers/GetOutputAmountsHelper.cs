@@ -7,9 +7,9 @@ using WalletWasabi.WabiSabi.Models;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
 
-public class DecomposeAmountsHelper
+public class GetOutputAmountsHelper
 {
-	public static DecomposeAmountsResponse Decompose(DecomposeAmountsRequest request)
+	public static GetOutputAmountsResponse GetOutputAmounts(GetOutputAmountsRequest request)
 	{
 		AmountDecomposer decomposer = new(request.FeeRate, request.AllowedOutputAmounts, request.OutputSize, request.InputSize, request.AvailableVsize);
 
@@ -19,6 +19,6 @@ public class DecomposeAmountsHelper
 		IEnumerable<Money> response = decomposer.Decompose(myInputCoinEffectiveValues, othersInputCoinEffectiveValues);
 		long[] result = response.Select(x => x.Satoshi).ToArray();
 
-		return new DecomposeAmountsResponse(result);
+		return new GetOutputAmountsResponse(result);
 	}
 }

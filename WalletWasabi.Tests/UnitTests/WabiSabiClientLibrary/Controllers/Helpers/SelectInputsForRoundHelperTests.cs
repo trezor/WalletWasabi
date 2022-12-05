@@ -11,17 +11,17 @@ using Xunit;
 namespace WalletWasabi.Tests.UnitTests.WabiSabiClientLibrary.Controllers.Helpers;
 
 /// <summary>
-/// Tests for <see cref="SelectUtxoForRoundHelper"/>
+/// Tests for <see cref="SelectInputsForRoundHelper"/>
 /// </summary>
-public class SelectUtxoForRoundHelperTests
+public class SelectInputsForRoundHelperTests 
 {
 	[Fact]
 	public void NoUtxoTest()
 	{
 		Utxo[] utxos = Array.Empty<Utxo>();
 
-		SelectUtxoForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
-		SelectUtxoForRoundResponse response = SelectUtxoForRoundHelper.Select(request);
+		SelectInputsForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
+		SelectInputsForRoundResponse response = SelectInputsForRoundHelper.SelectInputsForRound(request);
 		Assert.Empty(response.Indices);
 	}
 
@@ -43,8 +43,8 @@ public class SelectUtxoForRoundHelperTests
 			new(new OutPoint(new uint256("6a8cb2d81062ef93ae5d58b5cbe78d5fc5159f609e0d06f767d2f8eae5ead907"), 0), Amount: Money.Coins(0.015m), ScriptType.P2WPKH, AnonymitySet: 10, LastCoinjoinTimestamp: 1653421698),
 		};
 
-		SelectUtxoForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
-		SelectUtxoForRoundResponse response = SelectUtxoForRoundHelper.Select(request);
+		SelectInputsForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
+		SelectInputsForRoundResponse response = SelectInputsForRoundHelper.SelectInputsForRound(request);
 
 		Array.Sort(response.Indices);
 
@@ -68,8 +68,8 @@ public class SelectUtxoForRoundHelperTests
 			new(new OutPoint(new uint256("f35481573468b5e4f4a4fce6afb2c3efb5e7f9b18ad5413e45ce07a1de315d7c"), 1), Amount: Money.Coins(0.01m), ScriptType.P2WPKH, AnonymitySet: 90, LastCoinjoinTimestamp: 1653421698),
 		};
 
-		SelectUtxoForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
-		SelectUtxoForRoundResponse response = SelectUtxoForRoundHelper.Select(request);
+		SelectInputsForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
+		SelectInputsForRoundResponse response = SelectInputsForRoundHelper.SelectInputsForRound(request);
 		Assert.Empty(response.Indices);
 	}
 

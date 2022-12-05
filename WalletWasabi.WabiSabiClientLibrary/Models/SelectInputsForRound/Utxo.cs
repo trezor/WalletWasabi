@@ -2,7 +2,7 @@ using NBitcoin;
 using Newtonsoft.Json;
 using WalletWasabi.Blockchain.TransactionOutputs;
 
-namespace WalletWasabi.WabiSabiClientLibrary.Models.SelectUtxoForRound;
+namespace WalletWasabi.WabiSabiClientLibrary.Models.SelectInputsForRound;
 
 /// <summary>
 /// Represents a single UTXO.

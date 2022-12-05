@@ -6,13 +6,13 @@ using WalletWasabi.Blockchain.TransactionOutputs;
 using WalletWasabi.Crypto.Randomness;
 using WalletWasabi.WabiSabi.Client;
 using WalletWasabi.WabiSabiClientLibrary.Models;
-using WalletWasabi.WabiSabiClientLibrary.Models.SelectUtxoForRound;
+using WalletWasabi.WabiSabiClientLibrary.Models.SelectInputsForRound;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
 
-public class SelectUtxoForRoundHelper
+public class SelectInputsForRoundHelper
 {
-	public static SelectUtxoForRoundResponse Select(SelectUtxoForRoundRequest request, WasabiRandom? rnd = null)
+	public static SelectInputsForRoundResponse SelectInputsForRound(SelectInputsForRoundRequest request, WasabiRandom? rnd = null)
 	{
 		rnd ??= SecureRandom.Instance;
 		ImmutableList<Utxo> coins = CoinJoinClient.SelectCoinsForRound<Utxo>(request.Utxos, request.Constants, request.ConsolidationMode, request.AnonScoreTarget, request.SemiPrivateThreshold, request.LiquidityClue, rnd);
@@ -24,6 +24,6 @@ public class SelectUtxoForRoundHelper
 		// Find corresponding indices for the found coins.
 		int[] indices = coins.Select(c => coinIndices[c]).ToArray();
 
-		return new SelectUtxoForRoundResponse(indices);
+		return new SelectInputsForRoundResponse(indices);
 	}
 }

@@ -3,7 +3,7 @@ using WalletWasabi.Crypto;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Models;
 
-public record CreateCredentialRequestRequest(
+public record GetRealCredentialRequestsRequest(
 	CredentialIssuerParameters CredentialIssuerParameters,
 	long MaxCredentialValue,
 	long[] AmountsToRequest,

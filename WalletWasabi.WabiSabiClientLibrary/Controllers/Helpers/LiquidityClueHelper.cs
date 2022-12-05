@@ -11,7 +11,6 @@ using WalletWasabi.Extensions;
 using WalletWasabi.Helpers;
 using WalletWasabi.WabiSabi.Client;
 using WalletWasabi.WabiSabiClientLibrary.Models;
-using WalletWasabi.WabiSabiClientLibrary.Models.AnalyzeTransactions;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
 
