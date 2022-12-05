@@ -28,7 +28,7 @@ public class CredentialHelper
 	public static HandleCredentialResponseResponse HandleCredentialResponse(HandleCredentialResponseRequest request, SecureRandom secureRandom)
 	{
 		WabiSabiClient wabiSabiClient = new(request.CredentialIssuerParameters, secureRandom, request.MaxAmountCredentialValue);
-		IEnumerable<Credential> credentials = wabiSabiClient.HandleResponse(request.RegistrationResponse, request.RegistrationValidationData);
+		IEnumerable<Credential> credentials = wabiSabiClient.HandleResponse(request.CredentialsResponse, request.CredentialsValidationData);
 		return new HandleCredentialResponseResponse(credentials.ToArray());
 	}
 }

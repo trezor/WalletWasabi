@@ -6,6 +6,6 @@ namespace WalletWasabi.WabiSabiClientLibrary.Models;
 public record HandleCredentialResponseRequest(
 	long MaxAmountCredentialValue,
 	CredentialIssuerParameters CredentialIssuerParameters,
-	CredentialsResponse RegistrationResponse,
-	CredentialsResponseValidation RegistrationValidationData
+	CredentialsResponse CredentialsResponse,
+	CredentialsResponseValidation CredentialsValidationData
 );
