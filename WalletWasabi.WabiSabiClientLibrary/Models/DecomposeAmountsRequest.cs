@@ -1,4 +1,5 @@
-using WalletWasabi.WabiSabiClientLibrary.Models.DecomposeAmounts;
+using NBitcoin;
+using WalletWasabi.WabiSabi.Models;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Models;
 
@@ -17,5 +18,6 @@ public record DecomposeAmountsRequest(
 	int InputSize,
 	int OutputSize,
 	int AvailableVsize,
-	Constants Constants
+	FeeRate FeeRate,
+	MoneyRange AllowedOutputAmounts
 );
