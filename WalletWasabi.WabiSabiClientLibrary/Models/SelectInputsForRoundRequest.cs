@@ -1,5 +1,6 @@
+using System.Collections.Immutable;
 using NBitcoin;
-using WalletWasabi.WabiSabi.Backend.Rounds;
+using WalletWasabi.WabiSabi.Models;
 using WalletWasabi.WabiSabiClientLibrary.Models.SelectInputsForRound;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Models;
@@ -12,9 +13,13 @@ namespace WalletWasabi.WabiSabiClientLibrary.Models;
 /// <param name="Constants">Parameters affecting UTXOs selection.</param>
 /// <param name="ConsolidationMode">This option will likely be removed. We expect value to be <c>false</c>.</param>
 public record SelectInputsForRoundRequest(
+	MoneyRange AllowedInputAmounts,
+	MoneyRange AllowedOutputAmounts,
+	CoordinationFeeRate CoordinationFeeRate,
+	FeeRate MiningFeeRate,
+	ImmutableSortedSet<ScriptType> AllowedInputTypes,
 	Utxo[] Utxos,
 	int AnonScoreTarget,
-	UtxoSelectionParameters Constants,
 	int SemiPrivateThreshold,
 	Money LiquidityClue,
 	bool ConsolidationMode = false
