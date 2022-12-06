@@ -18,6 +18,6 @@ public record GetOutputAmountsRequest(
 	int InputSize,
 	int OutputSize,
 	int AvailableVsize,
-	FeeRate FeeRate,
+	FeeRate MiningFeeRate,
 	MoneyRange AllowedOutputAmounts
 );

@@ -17,7 +17,7 @@ public class GetOutputAmountsHelperTests
 			OutputSize: 50,
 			InputSize: 58,
 			AvailableVsize: 10_000,
-			FeeRate: new FeeRate(100L),
+			MiningFeeRate: new FeeRate(100L),
 			AllowedOutputAmounts: new MoneyRange(Min: 10L, Max: 10_000L)
 		);
 

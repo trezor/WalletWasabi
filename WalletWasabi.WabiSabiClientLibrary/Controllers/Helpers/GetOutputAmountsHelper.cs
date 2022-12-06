@@ -11,7 +11,7 @@ public class GetOutputAmountsHelper
 {
 	public static GetOutputAmountsResponse GetOutputAmounts(GetOutputAmountsRequest request)
 	{
-		AmountDecomposer decomposer = new(request.FeeRate, request.AllowedOutputAmounts, request.OutputSize, request.InputSize, request.AvailableVsize);
+		AmountDecomposer decomposer = new(request.MiningFeeRate, request.AllowedOutputAmounts, request.OutputSize, request.InputSize, request.AvailableVsize);
 
 		IEnumerable<Money> myInputCoinEffectiveValues = request.InternalAmounts.Select(x => Money.FromUnit(x, MoneyUnit.Satoshi));
 		IEnumerable<Money> othersInputCoinEffectiveValues = request.ExternalAmounts.Select(x => Money.FromUnit(x, MoneyUnit.Satoshi));
