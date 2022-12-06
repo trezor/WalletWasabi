@@ -5,7 +5,7 @@ using WalletWasabi.WabiSabi.Backend.Rounds;
 using WalletWasabi.WabiSabi.Models;
 using WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
 using WalletWasabi.WabiSabiClientLibrary.Models;
-using WalletWasabi.WabiSabiClientLibrary.Models.SelectUtxoForRound;
+using WalletWasabi.WabiSabiClientLibrary.Models.SelectInputsForRound;
 using Xunit;
 
 namespace WalletWasabi.Tests.UnitTests.WabiSabiClientLibrary.Controllers.Helpers;
@@ -13,14 +13,14 @@ namespace WalletWasabi.Tests.UnitTests.WabiSabiClientLibrary.Controllers.Helpers
 /// <summary>
 /// Tests for <see cref="SelectInputsForRoundHelper"/>
 /// </summary>
-public class SelectInputsForRoundHelperTests 
+public class SelectInputsForRoundHelperTests
 {
 	[Fact]
 	public void NoUtxoTest()
 	{
 		Utxo[] utxos = Array.Empty<Utxo>();
 
-		SelectInputsForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
+		SelectInputsForRoundRequest request = MakeRequest(utxos);
 		SelectInputsForRoundResponse response = SelectInputsForRoundHelper.SelectInputsForRound(request);
 		Assert.Empty(response.Indices);
 	}
@@ -43,7 +43,7 @@ public class SelectInputsForRoundHelperTests
 			new(new OutPoint(new uint256("6a8cb2d81062ef93ae5d58b5cbe78d5fc5159f609e0d06f767d2f8eae5ead907"), 0), Amount: Money.Coins(0.015m), ScriptType.P2WPKH, AnonymitySet: 10, LastCoinjoinTimestamp: 1653421698),
 		};
 
-		SelectInputsForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
+		SelectInputsForRoundRequest request = MakeRequest(utxos);
 		SelectInputsForRoundResponse response = SelectInputsForRoundHelper.SelectInputsForRound(request);
 
 		Array.Sort(response.Indices);
@@ -68,16 +68,21 @@ public class SelectInputsForRoundHelperTests
 			new(new OutPoint(new uint256("f35481573468b5e4f4a4fce6afb2c3efb5e7f9b18ad5413e45ce07a1de315d7c"), 1), Amount: Money.Coins(0.01m), ScriptType.P2WPKH, AnonymitySet: 90, LastCoinjoinTimestamp: 1653421698),
 		};
 
-		SelectInputsForRoundRequest request = new(utxos, AnonScoreTarget: 50, Constants: MakeDefaultConstants(), SemiPrivateThreshold: 2, LiquidityClue: Money.Zero);
+		SelectInputsForRoundRequest request = MakeRequest(utxos);
 		SelectInputsForRoundResponse response = SelectInputsForRoundHelper.SelectInputsForRound(request);
 		Assert.Empty(response.Indices);
 	}
 
-	private static UtxoSelectionParameters MakeDefaultConstants()
+	private static SelectInputsForRoundRequest MakeRequest(Utxo[] utxos)
 		=> new(
+			Utxos: utxos,
+			AnonScoreTarget: 50,
 			AllowedInputAmounts: new MoneyRange(Money.Coins(0.01m), Money.Coins(0.05m)),
 			AllowedOutputAmounts: new MoneyRange(Money.Coins(0.01m), Money.Coins(0.05m)),
-			AllowedInputScriptTypes: (new ScriptType[] { ScriptType.P2WPKH }).ToImmutableSortedSet(),
+			AllowedInputTypes: (new ScriptType[] { ScriptType.P2WPKH }).ToImmutableSortedSet(),
 			CoordinationFeeRate: CoordinationFeeRate.Zero,
-			MiningFeeRate: new FeeRate(5m));
+			MiningFeeRate: new FeeRate(5m),
+			LiquidityClue: Money.Zero,
+			SemiPrivateThreshold: 2
+		);
 }

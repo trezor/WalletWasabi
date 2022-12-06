@@ -1,7 +1,6 @@
 using NBitcoin;
 using WalletWasabi.WabiSabiClientLibrary.Controllers.Helpers;
 using WalletWasabi.WabiSabiClientLibrary.Models;
-using WalletWasabi.WabiSabiClientLibrary.Models.DecomposeAmounts;
 using WalletWasabi.WabiSabi.Models;
 using Xunit;
 
@@ -18,10 +17,9 @@ public class GetOutputAmountsHelperTests
 			OutputSize: 50,
 			InputSize: 58,
 			AvailableVsize: 10_000,
-			Constants: new Constants(
-				  FeeRate: new FeeRate(100L),
-				  AllowedOutputAmounts: new MoneyRange(Min: 10L, Max: 10_000L))
-					);
+			FeeRate: new FeeRate(100L),
+			AllowedOutputAmounts: new MoneyRange(Min: 10L, Max: 10_000L)
+		);
 
 		GetOutputAmountsResponse response = GetOutputAmountsHelper.GetOutputAmounts(request);
 		Assert.Equal(new long[] { 729, 261 }, response.OutputAmounts);
