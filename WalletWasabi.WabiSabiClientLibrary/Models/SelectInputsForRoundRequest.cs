@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using NBitcoin;
 using WalletWasabi.WabiSabi.Models;
@@ -17,7 +18,7 @@ public record SelectInputsForRoundRequest(
 	MoneyRange AllowedOutputAmounts,
 	CoordinationFeeRate CoordinationFeeRate,
 	FeeRate MiningFeeRate,
-	ImmutableSortedSet<ScriptType> AllowedInputTypes,
+	IEnumerable<ScriptType> AllowedInputTypes,
 	Utxo[] Utxos,
 	int AnonScoreTarget,
 	int SemiPrivateThreshold,
