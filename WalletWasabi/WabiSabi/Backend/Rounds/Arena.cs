@@ -19,6 +19,8 @@ using WalletWasabi.WabiSabi.Models;
 using WalletWasabi.Extensions;
 using WalletWasabi.Logging;
 using WalletWasabi.WabiSabi.Backend.DoSPrevention;
+using WalletWasabi.WabiSabi.Backend.Events;
+using WalletWasabi.Affiliation;
 
 namespace WalletWasabi.WabiSabi.Backend.Rounds;
 
@@ -47,6 +49,10 @@ public partial class Arena : PeriodicRunner
 	}
 
 	public event EventHandler<Transaction>? CoinJoinBroadcast;
+	public event EventHandler<RoundCreatedEventArgs>? RoundCreated;
+	public event EventHandler<CoinjoinTransactionCreatedEventArgs>? CoinjoinTransactionCreated;
+	public event EventHandler<RoundPhaseChangedEventArgs>? RoundPhaseChanged;
+	public event EventHandler<AffiliationAddedEventArgs>? AffiliationAdded;
 
 	public HashSet<Round> Rounds { get; } = new();
 	private IEnumerable<RoundState> RoundStates { get; set; } = Enumerable.Empty<RoundState>();
@@ -245,7 +251,7 @@ public partial class Arena : PeriodicRunner
 
 					coinjoin = await TryAddBlameScriptAsync(round, coinjoin, allReady, round.CoordinatorScript, cancellationToken).ConfigureAwait(false);
 
-					round.CoinjoinState = coinjoin.Finalize();
+					round.CoinjoinState = FinalizeTransaction(round.Id, coinjoin);
 
 					if (!allReady && phaseExpired)
 					{
@@ -636,15 +642,30 @@ public partial class Arena : PeriodicRunner
 	private void AddRound(Round round)
 	{
 		Rounds.Add(round);
+		RoundCreated?.SafeInvoke(this, new RoundCreatedEventArgs(round.Id, round.Parameters));
 	}
 
 	private void SetRoundPhase(Round round, Phase phase)
 	{
 		round.SetPhase(phase);
+		RoundPhaseChanged?.SafeInvoke(this, new RoundPhaseChangedEventArgs(round.Id, phase));
 	}
 
 	private void EndRound(Round round, EndRoundState endRoundState)
 	{
 		round.EndRound(endRoundState);
+		RoundPhaseChanged?.SafeInvoke(this, new RoundPhaseChangedEventArgs(round.Id, Phase.Ended));
+	}
+
+	private void NotifyAffiliation(uint256 roundId, Coin coin, AffiliationFlag affiliationFlag, bool isPayingZeroCoordinationFee)
+	{
+		AffiliationAdded.SafeInvoke(this, new AffiliationAddedEventArgs(roundId, coin, affiliationFlag, isPayingZeroCoordinationFee));
+	}
+
+	private SigningState FinalizeTransaction(uint256 roundId, ConstructionState constructionState)
+	{
+		SigningState signingState = constructionState.Finalize();
+		CoinjoinTransactionCreated?.SafeInvoke(this, new CoinjoinTransactionCreatedEventArgs(roundId, signingState.CreateTransaction()));
+		return signingState;
 	}
 }
