@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace WalletWasabi.Affiliation;
 
-public class AffiliationManager : BackgroundService, IDisposable
+public class AffiliationManager : BackgroundService, IAffiliationManager, IDisposable
 {
 	public AffiliationManager(Arena arena, IReadOnlyDictionary<AffiliationFlag, string> urls, string privateKeyHex, IHttpClientFactory httpClientFactory)
 	{
