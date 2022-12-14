@@ -76,13 +76,13 @@ public class Controller : ControllerBase, IDisposable
 	}
 
 	[HttpPost("update-liquidity-clue")]
-	public static UpdateLiquidityClueResponse UpdateLiquidityClue(UpdateLiquidityClueRequest request)
+	public UpdateLiquidityClueResponse UpdateLiquidityClue(UpdateLiquidityClueRequest request)
 	{
 		return LiquidityClueHelper.UpdateLiquidityClue(request);
 	}
 
 	[HttpPost("get-liquidity-clue")]
-	public static GetLiquidityClueResponse GetLiquidityClue(GetLiquidityClueRequest request)
+	public GetLiquidityClueResponse GetLiquidityClue(GetLiquidityClueRequest request)
 	{
 		return LiquidityClueHelper.GetLiquidityClue(request);
 	}
