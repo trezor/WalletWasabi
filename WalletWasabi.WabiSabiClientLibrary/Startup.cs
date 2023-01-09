@@ -48,6 +48,8 @@ public class Startup
 		services.AddControllers().AddNewtonsoftJson(x =>
 		{
 			x.SerializerSettings.Converters = JsonSerializationOptions.Default.Settings.Converters;
+			x.SerializerSettings.ContractResolver = JsonSerializationOptions.Default.Settings.ContractResolver;
+			x.SerializerSettings.MissingMemberHandling = JsonSerializationOptions.Default.Settings.MissingMemberHandling;
 		});
 
 		services.AddSingleton(new Global());
