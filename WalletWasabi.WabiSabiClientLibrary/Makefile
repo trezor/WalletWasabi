@@ -24,7 +24,7 @@ ifeq ($(RUNTIME),)
   endif
 endif
 
-DOTNETVER=6.0
+DOTNETVER=7.0
 CONFIGURATION ?= Release
 
 ifeq ($(shell echo $(RUNTIME) | cut -c 1-3),win)
