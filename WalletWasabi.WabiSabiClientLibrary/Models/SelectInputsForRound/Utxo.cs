@@ -2,6 +2,7 @@ using NBitcoin;
 using Newtonsoft.Json;
 using WalletWasabi.Blockchain.TransactionOutputs;
 using WalletWasabi.Extensions;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace WalletWasabi.WabiSabiClientLibrary.Models.SelectInputsForRound;
 
@@ -12,7 +13,7 @@ namespace WalletWasabi.WabiSabiClientLibrary.Models.SelectInputsForRound;
 /// <param name="Amount">Value of the UTXO in Bitcoin (not effective value).</param>
 /// <param name="ScriptType">UTXO's script type.</param>
 /// <param name="AnonymitySet">Anonymity set assigned to the UTXO.</param>
-public record Utxo(OutPoint Outpoint, Money Amount, [property: JsonProperty("ScriptPubKey")] string ScriptPubKeyHex, double AnonymitySet) : ISmartCoin
+public record Utxo(OutPoint Outpoint, Money Amount, [property: JsonProperty("scriptPubKey")] string ScriptPubKeyHex, double AnonymitySet) : ISmartCoin
 {
 	[JsonIgnore]
 	public uint Index => Outpoint.N;
@@ -24,5 +25,6 @@ public record Utxo(OutPoint Outpoint, Money Amount, [property: JsonProperty("Scr
 	public ScriptType ScriptType => ScriptPubKey.GetScriptType();
 
 	[JsonIgnore]
+	[ValidateNever]
 	public Script ScriptPubKey => Script.FromHex(ScriptPubKeyHex);
 }
