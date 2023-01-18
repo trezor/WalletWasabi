@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
@@ -30,6 +31,8 @@ public class RoundData
 			throw new Exception("Inconsistent data.");
 		}
 
-		return new(RoundParameters, Inputs.ToImmutableList(), transaction);
+		IEnumerable<AffiliateCoin> sortedInputs = transaction.Inputs.Select(x => Inputs.ToList().Find(y => x.PrevOut == y.Outpoint));
+
+		return new(RoundParameters, sortedInputs.ToImmutableList(), transaction);
 	}
 }
