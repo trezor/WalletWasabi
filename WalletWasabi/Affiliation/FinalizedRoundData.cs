@@ -28,7 +28,7 @@ public class FinalizedRoundData
 
 	private static Body GetAffiliationData(RoundParameters roundParameters, IEnumerable<AffiliateCoin> Inputs, NBitcoin.Transaction transaction, AffiliationFlag affiliationFlag)
 	{
-		IEnumerable<Input> inputs = Inputs.Select(x => Input.FromCoin(x, x.ZeroCoordinationFee, x.AffiliationFlag == affiliationFlag));
+		IEnumerable<Input> inputs = Inputs.Select(x => Input.FromCoin(x, x.IsNoFee, x.AffiliationFlag == affiliationFlag));
 		IEnumerable<Output> outputs = transaction.Outputs.Select<TxOut, Output>(x => Output.FromTxOut(x));
 
 		return new Body(inputs, outputs, roundParameters.Network.ToSlip44CoinType(), roundParameters.CoordinationFeeRate.Rate, roundParameters.CoordinationFeeRate.PlebsDontPayThreshold.Satoshi, roundParameters.AllowedInputAmounts.Min.Satoshi, GetUnixTimestamp());

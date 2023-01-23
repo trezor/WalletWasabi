@@ -12,27 +12,71 @@ public class RoundData
 {
 	public RoundData(RoundParameters roundParameters)
 	{
-		Inputs = new();
 		RoundParameters = roundParameters;
+		OutpointCoinPairs = new();
+		OutpointAffiliationPairs = new();
+		OutpointFeeExemptionPairs = new();
+
 	}
 
-	private ConcurrentBag<AffiliateCoin> Inputs { get; }
 	private RoundParameters RoundParameters { get; }
 
-	public void AddInput(Coin coin, AffiliationFlag affiliationFlag, bool zeroCoordinationFee)
+	private ConcurrentBag<Tuple<OutPoint, Coin>> OutpointCoinPairs { get; }
+	private ConcurrentBag<Tuple<OutPoint, AffiliationFlag>> OutpointAffiliationPairs { get; }
+	private ConcurrentBag<Tuple<OutPoint, bool>> OutpointFeeExemptionPairs { get; }
+
+	public void AddInputCoin(Coin coin)
 	{
-		Inputs.Add(new AffiliateCoin(coin, affiliationFlag, zeroCoordinationFee || RoundParameters.CoordinationFeeRate.GetFee(coin.Amount) == Money.Zero));
+		OutpointCoinPairs.Add(new Tuple<OutPoint, Coin>(coin.Outpoint, coin));
 	}
+
+	public void AddInputAffiliationFlag(Coin coin, AffiliationFlag affiliationFlag)
+	{
+		OutpointAffiliationPairs.Add(new Tuple<OutPoint, AffiliationFlag>(coin.Outpoint, affiliationFlag));
+	}
+
+	public void AddInputFeeExemption(Coin coin, bool feeExemption)
+	{
+		OutpointFeeExemptionPairs.Add(new Tuple<OutPoint, bool>(coin.Outpoint, feeExemption));
+	}
+
+	private Dictionary<OutPoint, TValue> GetDictionary<TValue>(IEnumerable<Tuple<OutPoint, TValue>> pairs, IEnumerable<OutPoint> outpoints, string name)
+	{
+		IEnumerable<IGrouping<OutPoint, Tuple<OutPoint, TValue>>> pairsGroupedByOutpoints = pairs.GroupBy(x => x.Item1);
+
+		foreach (IGrouping<OutPoint, Tuple<OutPoint, TValue>> pairGroup in pairsGroupedByOutpoints.Where(g => g.Count() > 1))
+		{
+			Logging.Logger.LogWarning($"Duplicate {name} for outpoint {Convert.ToHexString(pairGroup.Key.ToBytes())}.");
+		}
+
+		HashSet<OutPoint> pairsOutpoints = pairsGroupedByOutpoints.Select(g => g.Key).ToHashSet();
+
+		foreach (OutPoint outpoint in outpoints.Except(pairsOutpoints))
+		{
+			Logging.Logger.LogWarning($"Missing {name} for outpoint {Convert.ToHexString(outpoint.ToBytes())}.");
+		}
+
+		foreach (OutPoint outpoint in pairsOutpoints.Except((IEnumerable<OutPoint>)outpoints))
+		{
+			Logging.Logger.LogInfo($"Unnecessary {name} for outpoint {Convert.ToHexString(outpoint.ToBytes())}.");
+		}
+
+		Dictionary<OutPoint, TValue> valuesByOutpoints = pairsGroupedByOutpoints.ToDictionary(g => g.Key, g => g.First().Item2);
+		return valuesByOutpoints;
+	}
+
 
 	public FinalizedRoundData Finalize(NBitcoin.Transaction transaction)
 	{
-		if (!transaction.Inputs.Select(x => x.PrevOut).ToHashSet().SetEquals(Inputs.Select(x => x.Outpoint).ToHashSet()))
-		{
-			throw new Exception("Inconsistent data.");
-		}
+		HashSet<OutPoint> transactionOutpoints = transaction.Inputs.Select(x => x.PrevOut).ToHashSet();
+		Dictionary<OutPoint, AffiliationFlag> affiliationFlagsByOutpoints = GetDictionary(OutpointAffiliationPairs, transactionOutpoints, "affiliation flag");
+		Dictionary<OutPoint, bool> feeExemptionsByOutpoints = GetDictionary(OutpointFeeExemptionPairs, transactionOutpoints, "fee exemptoin");
+		Dictionary<OutPoint, Coin> coinByOutpoints = GetDictionary(OutpointCoinPairs, transactionOutpoints, "coin");
 
-		IEnumerable<AffiliateCoin> sortedInputs = transaction.Inputs.Select(x => Inputs.ToList().Find(y => x.PrevOut == y.Outpoint));
+		Func<Money, bool> isNoFee = amount => RoundParameters.CoordinationFeeRate.GetFee(amount) == Money.Zero;
 
-		return new(RoundParameters, sortedInputs.ToImmutableList(), transaction);
+		IEnumerable<AffiliateCoin> inputs = transaction.Inputs.Select(x => new AffiliateCoin(coinByOutpoints[x.PrevOut], affiliationFlagsByOutpoints.GetValueOrDefault(x.PrevOut, AffiliationFlag.Default), feeExemptionsByOutpoints.GetValueOrDefault(x.PrevOut, false) || isNoFee(coinByOutpoints[x.PrevOut].Amount)));
+
+		return new(RoundParameters, inputs.ToImmutableList(), transaction);
 	}
 }
