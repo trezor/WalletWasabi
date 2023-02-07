@@ -118,12 +118,15 @@ public class GetAnonymityScoresHelper
 		public List<TransactionLabel> InputTransactionLabels { get; }
 		public List<TransactionLabel> OutputTransactionLabels { get; }
 
+		private OutPointGenerator OutPointGenerator { get; }
+
 		public AnalyzedTransaction()
 			// Network is not used in Transaction.Create
 			: base(NBitcoin.Transaction.Create(Network), 0)
 		{
 			InputTransactionLabels = new List<TransactionLabel>();
 			OutputTransactionLabels = new List<TransactionLabel>();
+			OutPointGenerator = new();
 		}
 
 		public static AnalyzedTransaction FromTransaction(Tx transaction, TransactionLabelProvider transactionLabelProvider)
@@ -154,12 +157,22 @@ public class GetAnonymityScoresHelper
 				analyzedTransaction.AddExternalOutput(externalOutput.Value, externalOutput.ScriptPubKey);
 			}
 
+			if (analyzedTransaction.ForeignInputs.Count + analyzedTransaction.WalletInputs.Count != analyzedTransaction.Transaction.Inputs.Count)
+			{
+				throw new InvalidOperationException();
+			}
+
+			if (analyzedTransaction.ForeignOutputs.Count + analyzedTransaction.WalletOutputs.Count != analyzedTransaction.Transaction.Outputs.Count)
+			{
+				throw new InvalidOperationException();
+			}
+
 			return analyzedTransaction;
 		}
 
 		public void AddExternalInput()
 		{
-			Transaction.Inputs.Add(new OutPoint());
+			Transaction.Inputs.Add(OutPointGenerator.GenerateOutPoint());
 		}
 
 		public void AddExternalOutput(long amountInSatoshis, string scriptPubKey)
@@ -173,12 +186,16 @@ public class GetAnonymityScoresHelper
 			InputTransactionLabels.Add(label);
 
 			NBitcoin.Transaction previousTransaction = NBitcoin.Transaction.Create(Network);
+			previousTransaction.Inputs.Add(OutPointGenerator.GenerateOutPoint());
 			previousTransaction.Outputs.Add(new Money(amountInSatoshis), label.HdPubKey.PubKey.GetScriptPubKey(ScriptPubKeyType.TaprootBIP86));
 			SmartTransaction previousSmartTransaction = new SmartTransaction(previousTransaction, 0);
-
-			Transaction.Inputs.Add(new OutPoint());
 			SmartCoin smartCoin = new(previousSmartTransaction, 0, label.HdPubKey);
-			TryAddWalletInput(smartCoin);
+
+			Transaction.Inputs.Add(smartCoin.Outpoint);
+			if (!TryAddWalletInput(smartCoin))
+			{
+				throw new InvalidOperationException();
+			}
 		}
 
 		public void AddInternalOutput(long amountInSatoshis, TransactionLabel label)
@@ -187,9 +204,23 @@ public class GetAnonymityScoresHelper
 
 			Transaction.Outputs.Add(new Money(amountInSatoshis, MoneyUnit.Satoshi), label.HdPubKey.PubKey.GetScriptPubKey(ScriptPubKeyType.TaprootBIP86));
 			SmartCoin smartCoin = new(this, (uint)Transaction.Outputs.Count - 1, label.HdPubKey);
-			TryAddWalletOutput(smartCoin);
 		}
+
 	}
 
+	private class OutPointGenerator
+	{
+		private ulong Counter;
+
+		public OutPointGenerator()
+		{
+			Counter = 0;
+		}
+
+		public OutPoint GenerateOutPoint()
+		{
+			return new OutPoint(new uint256(Counter++), 0);
+		}
+	}
 }
 
