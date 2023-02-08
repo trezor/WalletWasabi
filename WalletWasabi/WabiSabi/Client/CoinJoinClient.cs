@@ -931,8 +931,16 @@ public class CoinJoinClient
 	private static double GetAnonLoss<TCoin>(IEnumerable<TCoin> coins)
 		where TCoin : ISmartCoin
 	{
+		if (coins.Count() <= 1)
+		{
+			return 0;
+		}
+
+		double p = 10;
+		double q = 0.8;
+
 		double minimumAnonScore = coins.Min(x => x.AnonymitySet);
-		return coins.Sum(x => (x.AnonymitySet - minimumAnonScore) * x.Amount.Satoshi) / coins.Sum(x => x.Amount.Satoshi);
+		return coins.GeneralizedWeightedAverage(x => x.AnonymitySet - minimumAnonScore, x => Math.Pow(x.Amount.Satoshi, q), p);
 	}
 
 	private static int GetRandomBiasedSameTxAllowance(WasabiRandom rnd, int percent)
