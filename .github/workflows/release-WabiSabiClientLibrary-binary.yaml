@@ -1,0 +1,53 @@
+name: "[Release] WabiSabiClientLibrary binary"
+
+on:
+  push:
+    branches:
+      - "release/**"
+
+jobs:
+  build_WabiSabiClientLibrary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Build linux-x64
+        run: |
+          cd ./WalletWasabi.WabiSabiClientLibrary
+          RUNTIME="linux-x64" make
+      - name: Build linux-arm64
+        run: |
+          cd ./WalletWasabi.WabiSabiClientLibrary
+          RUNTIME="linux-arm64" make
+      - name: Build osx-x64
+        run: |
+          cd ./WalletWasabi.WabiSabiClientLibrary
+          RUNTIME="osx-x64" make
+      - name: Build osx-arm64
+        run: |
+          cd ./WalletWasabi.WabiSabiClientLibrary
+          RUNTIME="osx-arm64" make
+      - name: Build win-x64
+        run: |
+          cd ./WalletWasabi.WabiSabiClientLibrary
+          RUNTIME="win-x64" make
+
+      - name: Rename binary files
+        run: |
+          mkdir release-bin/
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-x64
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-arm64
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/osx-x64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-osx-x64
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/osx-arm64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-osx-arm64
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/win-x64/publish/WalletWasabi.WabiSabiClientLibrary.exe ./release-bin/WabiSabiClientLibrary-win-x64.exe
+
+      - name: Create GitHub release
+        run: |
+           gh release create ${GITHUB_REF_NAME} --repo ${GITHUB_REPOSITORY} --title v${GITHUB_REF_NAME##*/} ./release-bin/WabiSabiClientLibrary-*
