@@ -19,31 +19,16 @@ jobs:
       - name: Build linux-x64
         run: |
           cd ./WalletWasabi.WabiSabiClientLibrary
-          RUNTIME="linux-x64" make
+          RUNTIME="linux-x64" CONFIGURATION="Debug" make
       - name: Build linux-arm64
         run: |
           cd ./WalletWasabi.WabiSabiClientLibrary
-          RUNTIME="linux-arm64" make
-      - name: Build osx-x64
-        run: |
-          cd ./WalletWasabi.WabiSabiClientLibrary
-          RUNTIME="osx-x64" make
-      - name: Build osx-arm64
-        run: |
-          cd ./WalletWasabi.WabiSabiClientLibrary
-          RUNTIME="osx-arm64" make
-      - name: Build win-x64
-        run: |
-          cd ./WalletWasabi.WabiSabiClientLibrary
-          RUNTIME="win-x64" make
+          RUNTIME="linux-arm64" CONFIGURATION="Debug" make
 
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
           name: WabiSabiClientLibrary-bin
           path: |
-            ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary
-            ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary
-            ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/osx-x64/publish/WalletWasabi.WabiSabiClientLibrary
-            ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/osx-arm64/publish/WalletWasabi.WabiSabiClientLibrary
-            ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/win-x64/publish/WalletWasabi.WabiSabiClientLibrary.exe
+            ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary
+            ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/net7.0/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary
