@@ -6,5 +6,5 @@ public class Global
 	{
 	}
 
-	public static int Version = 6;
+	public static int Version = 7;
 }
