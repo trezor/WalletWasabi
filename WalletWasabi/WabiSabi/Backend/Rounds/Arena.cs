@@ -229,6 +229,10 @@ public partial class Arena : PeriodicRunner
 					else
 					{
 						round.OutputRegistrationTimeFrame = TimeFrame.Create(Config.FailFastOutputRegistrationTimeout);
+						foreach (Alice alice in round.Alices)
+						{
+							NotifyInput(round.Id, alice.Coin, alice.IsCoordinationFeeExempted);
+						}
 						SetRoundPhase(round, Phase.OutputRegistration);
 					}
 				}
