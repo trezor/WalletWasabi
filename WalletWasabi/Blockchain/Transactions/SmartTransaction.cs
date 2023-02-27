@@ -45,7 +45,7 @@ public class SmartTransaction : IEquatable<SmartTransaction>
 		_outputValues = new Lazy<long[]>(() => Transaction.Outputs.Select(x => x.Value.Satoshi).ToArray(), true);
 		_isWasabi2Cj = new Lazy<bool>(() => Transaction.Outputs.Count >= 2 // Sanity check.
 					&& OutputValues.Count(x => BlockchainAnalyzer.StdDenoms.Contains(x)) > OutputValues.Length * 0.8 // Most of the outputs contains the denomination.
-					, true); // Outputs are ordered descending.
+					&& OutputValues.Zip(OutputValues.Skip(1)).All(p => p.First >= p.Second), true); // Outputs are ordered descending.
 	}
 
 	#endregion Constructors
