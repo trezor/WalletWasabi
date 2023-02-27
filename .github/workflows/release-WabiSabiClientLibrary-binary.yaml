@@ -50,6 +50,6 @@ jobs:
 
       - name: Create GitHub release
         run: |
-           gh release create ${GITHUB_REF_NAME} --repo ${GITHUB_REPOSITORY} --title "WabiSabiClientLibrary-${GITHUB_REF_NAME##*/}" ./release-bin/WabiSabiClientLibrary-*
+           gh release create ${GITHUB_REF_NAME} --target ${GITHUB_REF_NAME} --repo ${GITHUB_REPOSITORY} --title "WabiSabiClientLibrary-${GITHUB_REF_NAME##*/}" ./release-bin/WabiSabiClientLibrary-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
