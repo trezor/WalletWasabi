@@ -69,16 +69,18 @@ public class CoinjoinAnalyzer
 	/// </summary>
 	public static double ComputeAnonymityContribution(SmartCoin transactionOutput, HashSet<OutPoint>? relevantOutpoints = null)
 	{
+		const bool considerScriptTypes = true;
 		SmartTransaction transaction = transactionOutput.Transaction;
 		IEnumerable<WalletVirtualOutput> walletVirtualOutputs = transaction.WalletVirtualOutputs;
 		IEnumerable<ForeignVirtualOutput> foreignVirtualOutputs = transaction.ForeignVirtualOutputs;
 
 		Money amount = walletVirtualOutputs.Where(o => o.Coins.Select(c => c.Outpoint).Contains(transactionOutput.Outpoint)).First().Amount;
 		bool IsRelevantVirtualOutput(ForeignVirtualOutput output) => relevantOutpoints is null || relevantOutpoints.Intersect(output.OutPoints).Any();
+		bool HasRelevantScriptType(ForeignVirtualOutput output) => considerScriptTypes ? output.ScriptType == transactionOutput.ScriptType : true;
 
 		// Count the outputs that have the same value as our transactionOutput.
 		var equalValueWalletVirtualOutputCount = walletVirtualOutputs.Where(o => o.Amount == amount).Count();
-		var equalValueForeignRelevantVirtualOutputCount = foreignVirtualOutputs.Where(o => o.Amount == amount).Where(IsRelevantVirtualOutput).Count();
+		var equalValueForeignRelevantVirtualOutputCount = foreignVirtualOutputs.Where(o => o.Amount == amount && HasRelevantScriptType(o)).Where(IsRelevantVirtualOutput).Count();
 
 		// The anonymity set should increase by the number of equal-valued foreign outputs.
 		// If we have multiple equal-valued wallet outputs, then we divide the increase evenly between them.
