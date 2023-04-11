@@ -39,7 +39,7 @@ jobs:
           cd ./WalletWasabi.WabiSabiClientLibrary
           RUNTIME="win-x64" make
 
-      - name: Rename binary files
+      - name: Rename release binary files
         run: |
           mkdir release-bin/
           mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-x64
@@ -48,8 +48,24 @@ jobs:
           mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/osx-arm64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-osx-arm64
           mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/win-x64/publish/WalletWasabi.WabiSabiClientLibrary.exe ./release-bin/WabiSabiClientLibrary-win-x64.exe
 
+      ## Build linux DEBUG binaries for coinjoin-backend docker image
+      - name: Build DEBUG linux-x64
+        run: |
+          cd ./WalletWasabi.WabiSabiClientLibrary
+          RUNTIME="linux-x64" CONFIGURATION="Debug" make
+      - name: Build DEBUG linux-arm64
+        run: |
+          cd ./WalletWasabi.WabiSabiClientLibrary
+          RUNTIME="linux-arm64" CONFIGURATION="Debug" make
+
+      - name: Rename release DEBUG binary files
+        run: |
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-x64-debug
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary.xml ./release-bin/WalletWasabi.WabiSabiClientLibrary.xml
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-arm64-debug
+
       - name: Create GitHub release
         run: |
-           gh release create ${GITHUB_REF_NAME} --target ${GITHUB_REF_NAME} --repo ${GITHUB_REPOSITORY} --title "WabiSabiClientLibrary-${GITHUB_REF_NAME##*/}" ./release-bin/WabiSabiClientLibrary-*
+           gh release create ${GITHUB_REF_NAME} --target ${GITHUB_REF_NAME} --repo ${GITHUB_REPOSITORY} --title "WabiSabiClientLibrary-${GITHUB_REF_NAME##*/}" ./release-bin/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
