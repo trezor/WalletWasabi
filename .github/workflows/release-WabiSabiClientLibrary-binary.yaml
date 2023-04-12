@@ -60,9 +60,9 @@ jobs:
 
       - name: Rename release DEBUG binary files
         run: |
-          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-x64-debug
-          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary.xml ./release-bin/WalletWasabi.WabiSabiClientLibrary.xml
-          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Release/net7.0/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-arm64-debug
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-x64-debug
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/net7.0/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary.xml ./release-bin/WalletWasabi.WabiSabiClientLibrary.xml
+          mv ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/net7.0/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary ./release-bin/WabiSabiClientLibrary-linux-arm64-debug
 
       - name: Create GitHub release
         run: |
