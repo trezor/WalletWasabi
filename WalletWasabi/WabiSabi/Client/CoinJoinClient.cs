@@ -24,7 +24,7 @@ namespace WalletWasabi.WabiSabi.Client;
 
 public class CoinJoinClient
 {
-	private const int MaxInputsRegistrableByWallet = 10; // how many
+	private const int MaxInputsRegistrableByWallet = 20; // how many
 	private const int MaxWeightedAnonLoss = 3; // Maximum tolerable WeightedAnonLoss.
 	private Money MinimumOutputAmountSanity { get; } = Money.Coins(0.0001m); // ignore rounds with too big minimum denominations
 	private TimeSpan ExtraPhaseTimeoutMargin { get; } = TimeSpan.FromMinutes(2);
