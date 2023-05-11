@@ -33,7 +33,7 @@ public class GetAnonymityScoresHelper
 		return new GetAnonymityScoresResponse(addressAnonymityCollection.ToArray());
 	}
 
-	private class AddressAnonymityCollection
+	internal class AddressAnonymityCollection
 	{
 		public HashSet<string> AddressHashSet { get; }
 		public List<AddressAnonymity> AddressAnonymityList { get; }
@@ -67,7 +67,7 @@ public class GetAnonymityScoresHelper
 		}
 	}
 
-	private class TransactionLabelProvider
+	internal class TransactionLabelProvider
 	{
 		private Dictionary<string, TransactionLabel> AddressToTransactionLabel { get; }
 
@@ -101,7 +101,7 @@ public class GetAnonymityScoresHelper
 		}
 	}
 
-	private class TransactionLabel
+	internal class TransactionLabel
 	{
 		public HdPubKey HdPubKey { get; }
 
@@ -111,7 +111,7 @@ public class GetAnonymityScoresHelper
 		}
 	}
 
-	private class AnalyzedTransaction : SmartTransaction
+	internal class AnalyzedTransaction : SmartTransaction
 	{
 		static private Network Network { get; } = Network.Main;
 
