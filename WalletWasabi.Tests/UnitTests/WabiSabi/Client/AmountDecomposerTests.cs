@@ -5,6 +5,7 @@ using WalletWasabi.Extensions;
 using WalletWasabi.Helpers;
 using WalletWasabi.Tests.Helpers;
 using WalletWasabi.WabiSabi;
+using WalletWasabi.WabiSabi.Backend;
 using WalletWasabi.WabiSabi.Client;
 using WalletWasabi.WabiSabi.Models;
 using Xunit;
@@ -93,5 +94,33 @@ public class AmountDecomposerTests
 		var prevOut = BitcoinFactory.CreateOutPoint();
 		var txOut = new TxOut(Money.Satoshis(amount), scriptPubKey);
 		return new Coin(prevOut, txOut);
+	}
+
+	[Fact]
+	public void SelectTooSmallUtxoTest()
+	{
+		Random random = new Random(0);
+
+		MoneyRange moneyRange = new(Min: 5000, Max: 4300000000000);
+		FeeRate feeRate = new(20m);
+		int MaxVsizeAllocationPerAlice = 249;
+
+		IEnumerable<Money> internalAmounts = (new long[] { 6561 }).Select(x => EffectiveValue(Money.Satoshis(x), Constants.P2trInputVirtualSize, feeRate));
+		IEnumerable<Money> externalAmounts = (new long[] { 262144, 10000, 2097152, 20000, 1062882, 262144, 28697814, 531441, 354294, 1594323 }).Select(x => EffectiveValue(Money.Satoshis(x), Constants.P2trInputVirtualSize, feeRate));
+
+		var amountDecomposer = new AmountDecomposer(feeRate, moneyRange, (MaxVsizeAllocationPerAlice - Constants.P2trInputVirtualSize) * internalAmounts.Count(), true, random);
+		var outputAmounts = amountDecomposer.Decompose(internalAmounts, externalAmounts).Select(x => x.Amount.Satoshi);
+
+		foreach (var outputAmount in outputAmounts)
+		{
+			Console.WriteLine(outputAmount.ToString());
+			Assert.True(outputAmount >= moneyRange.Min);
+		}
+	}
+
+	private Money EffectiveValue(Money amount, int virtualSize, FeeRate feeRate)
+	{
+		var miningFee = feeRate.GetFee(virtualSize);
+		return amount - miningFee;
 	}
 }
