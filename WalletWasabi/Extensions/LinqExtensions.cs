@@ -109,6 +109,45 @@ public static class LinqExtensions
 				.Select(result => new T[] { item }.Concat(result)))
 	};
 
+	// Written by ChatGPT
+	public static IEnumerable<IEnumerable<T>> CombinationsWithoutRepetitionIterative<T>(this IEnumerable<T> input, int ofLength)
+	{
+		int inputCount = input.Count();
+		if (ofLength <= 0 || inputCount < ofLength)
+		{
+			yield break;
+		}
+
+		// Stores the indices of the selected elements.
+		int[] indices = Enumerable.Range(0, ofLength).ToArray();
+
+		while (indices[0] < inputCount - ofLength + 1)
+		{
+			// Yield the current combination.
+			yield return indices.Select(i => input.ElementAt(i));
+
+			// Find the rightmost adjustable element.
+			int adjustableIndex = ofLength - 1;
+			while (adjustableIndex >= 0 && indices[adjustableIndex] == inputCount - ofLength + adjustableIndex)
+			{
+				adjustableIndex--;
+			}
+
+			if (adjustableIndex < 0)
+			{
+				// The indices have wrapped around, so we are done.
+				yield break;
+			}
+
+			// Increment the adjustable element and adjust the following elements.
+			indices[adjustableIndex]++;
+			for (int i = adjustableIndex + 1; i < ofLength; i++)
+			{
+				indices[i] = indices[i - 1] + 1;
+			}
+		}
+	}
+
 	public static IEnumerable<IEnumerable<T>> CombinationsWithoutRepetition<T>(
 		this IEnumerable<T> items,
 		int ofLength,
