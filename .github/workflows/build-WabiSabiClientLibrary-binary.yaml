@@ -19,9 +19,6 @@ jobs:
       - name: Build linux-x64
         run: |
           dotnet publish WalletWasabi.WabiSabiClientLibrary --self-contained --configuration Debug --runtime linux-x64
-      - name: Build linux-arm64
-        run: |
-          dotnet publish WalletWasabi.WabiSabiClientLibrary --self-contained --configuration Debug --runtime linux-arm64
 
       - name: Upload binaries
         uses: actions/upload-artifact@v3
@@ -30,5 +27,3 @@ jobs:
           path: |
             ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary
             ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/linux-x64/publish/WalletWasabi.WabiSabiClientLibrary.xml
-            ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary
-            ./WalletWasabi.WabiSabiClientLibrary/bin/Debug/linux-arm64/publish/WalletWasabi.WabiSabiClientLibrary.xml

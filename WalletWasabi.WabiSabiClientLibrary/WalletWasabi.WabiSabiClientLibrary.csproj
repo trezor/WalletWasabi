@@ -23,7 +23,8 @@
 
   <!-- Publish options -->
   <PropertyGroup>
-    <PublishSingleFile>true</PublishSingleFile>
+    <PublishAot>true</PublishAot>
+    <StripSymbols>true</StripSymbols>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
