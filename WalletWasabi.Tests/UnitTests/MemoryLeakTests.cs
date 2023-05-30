@@ -11,20 +11,19 @@ public class MemoryLeakTests
 	[Fact]
 	public void CombinationsWithoutRepetitionRecursiveMemoryLeakTest()
 	{
-		TestCombinationsWithoutRepetition(LinqExtensions.CombinationsWithoutRepetition);
+		TestMemoryLeak(() => CombinationsWithoutRepetitionWrapper(LinqExtensions.CombinationsWithoutRepetition));
 	}
 
 	[Fact]
 	public void CombinationsWithoutRepetitionIterativeMemoryLeakTest()
 	{
-		TestCombinationsWithoutRepetition(LinqExtensions.CombinationsWithoutRepetitionIterative);
+		TestMemoryLeak(() => CombinationsWithoutRepetitionWrapper(LinqExtensions.CombinationsWithoutRepetitionIterative));
 	}
 
-	private void TestCombinationsWithoutRepetition(CombinationsWithoutRepetitionDelegate<int> function)
+	private void TestMemoryLeak(Action action)
 	{
 		var memoryBefore = GetMemoryInMiB();
-		var combinations = function(Enumerable.Range(0, 20), 10).ToArray();
-		Assert.Equal(combinations.Count(), 184756); // Sanity check
+		action();
 		var memoryAfter = GetMemoryInMiB();
 		if (memoryAfter > memoryBefore * 1.1)
 		{
@@ -33,6 +32,12 @@ public class MemoryLeakTests
 			Console.WriteLine($"Memory difference: {memoryAfter - memoryBefore} MiB");
 			Assert.True(false);
 		}
+	}
+
+	private static void CombinationsWithoutRepetitionWrapper(CombinationsWithoutRepetitionDelegate<int> combinationsWithoutRepetitionFunction)
+	{
+		var combinations = combinationsWithoutRepetitionFunction(Enumerable.Range(0, 20), 10).ToArray();
+		Assert.Equal(combinations.Count(), 184756); // Sanity check
 	}
 
 	private static float GetMemoryInMiB()
