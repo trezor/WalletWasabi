@@ -24,8 +24,8 @@ public class MemoryLeakTests
 	{
 		var memoryBefore = GetMemoryInMiB();
 		var combinations = function(Enumerable.Range(0, 20), 10).ToArray();
-		var memoryAfter = GetMemoryInMiB();
 		Assert.Equal(combinations.Count(), 184756); // Sanity check
+		var memoryAfter = GetMemoryInMiB();
 		if (memoryAfter > memoryBefore * 1.1)
 		{
 			Console.WriteLine($"Memory before: {memoryBefore} MiB");
