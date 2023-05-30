@@ -148,6 +148,23 @@ public static class LinqExtensions
 		}
 	}
 
+	// Written by ChatGPT
+	public static IEnumerable<IEnumerable<T>> CombinationsWithoutRepetitionStatementful<T>(this IEnumerable<T> input, int ofLength)
+	{
+		if (ofLength <= 0)
+		{
+			return Enumerable.Empty<IEnumerable<T>>();
+		}
+		if (ofLength == 1)
+		{
+			return input.Select(item => new[] { item });
+		}
+		return input.SelectMany((item, i) => input
+			.Skip(i + 1)
+			.CombinationsWithoutRepetition(ofLength - 1)
+			.Select(result => new T[] { item }.Concat(result)));
+	}
+
 	public static IEnumerable<IEnumerable<T>> CombinationsWithoutRepetition<T>(
 		this IEnumerable<T> items,
 		int ofLength,

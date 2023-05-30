@@ -20,6 +20,12 @@ public class MemoryLeakTests
 		TestMemoryLeak(() => CombinationsWithoutRepetitionWrapper(LinqExtensions.CombinationsWithoutRepetitionIterative));
 	}
 
+	[Fact]
+	public void CombinationsWithoutRepetitionStatementfulMemoryLeakTest()
+	{
+		TestMemoryLeak(() => CombinationsWithoutRepetitionWrapper(LinqExtensions.CombinationsWithoutRepetitionStatementful));
+	}
+
 	private void TestMemoryLeak(Action action)
 	{
 		var memoryBefore = GetMemoryInMiB();
