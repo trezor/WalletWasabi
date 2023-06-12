@@ -47,11 +47,9 @@ public class CoinJoinCoinSelector
 			SecureRandom.Instance);
 
 	/// <param name="liquidityClue">Weakly prefer not to select inputs over this.</param>
-	public ImmutableList<TCoin> SelectCoinsForRound<TCoin>(IEnumerable<TCoin> coins, UtxoSelectionParameters parameters, Money liquidityClue, WasabiRandom? selectorRnd = null)
+	public ImmutableList<TCoin> SelectCoinsForRound<TCoin>(IEnumerable<TCoin> coins, UtxoSelectionParameters parameters, Money liquidityClue)
 		where TCoin : class, ISmartCoin, IEquatable<TCoin>
 	{
-		selectorRnd ??= Rnd;
-
 		liquidityClue = liquidityClue > Money.Zero
 			? liquidityClue
 			: Constants.MaximumNumberOfBitcoinsMoney;
@@ -186,10 +184,10 @@ public class CoinJoinCoinSelector
 		Logger.LogDebug($"Remaining largest non-private coins: {string.Join(", ", remainingLargestNonPrivateCoins.Select(x => x.Amount.ToString(false, true)).ToArray())} BTC.");
 
 		// Bias selection towards larger numbers.
-		var selectedNonPrivateCoin = remainingLargestNonPrivateCoins.RandomElement(selectorRnd); // Select randomly at first just to have a starting value.
+		var selectedNonPrivateCoin = remainingLargestNonPrivateCoins.RandomElement(Rnd); // Select randomly at first just to have a starting value.
 		foreach (var coin in remainingLargestNonPrivateCoins.OrderByDescending(x => x.Amount))
 		{
-			if (selectorRnd.GetInt(1, 101) <= 50)
+			if (Rnd.GetInt(1, 101) <= 50)
 			{
 				selectedNonPrivateCoin = coin;
 				break;
@@ -245,7 +243,7 @@ public class CoinJoinCoinSelector
 			percent = 80;
 		}
 
-		int sameTxAllowance = GetRandomBiasedSameTxAllowance(selectorRnd, percent);
+		int sameTxAllowance = GetRandomBiasedSameTxAllowance(Rnd, percent);
 
 		List<TCoin> winner = new()
 		{

@@ -22,8 +22,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: Enumerable.Empty<SmartCoin>(),
 			UtxoSelectionParameters.FromRoundParameters(CreateMultipartyTransactionParameters(), InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(5));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Empty(coins);
 	}
@@ -43,8 +42,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(CreateMultipartyTransactionParameters(), InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(5));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Empty(coins);
 	}
@@ -68,8 +66,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(roundParams, InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(5));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Empty(coins);
 	}
@@ -96,8 +93,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(roundParams, InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(5));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Empty(coins);
 	}
@@ -124,8 +120,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(roundParams, InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(5));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.NotEmpty(coins);
 	}
@@ -147,8 +142,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(CreateMultipartyTransactionParameters(), InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(5));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Contains(smallerAnonCoin, coins);
 		Assert.Equal(10, coins.Count);
@@ -169,8 +163,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(CreateMultipartyTransactionParameters(), InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(1));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Single(coins);
 	}
@@ -192,8 +185,7 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(CreateMultipartyTransactionParameters(), InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(1));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Equal(2, coins.Count);
 	}
@@ -214,17 +206,9 @@ public class CoinJoinCoinSelectionTests
 		var coins = coinJoinCoinSelector.SelectCoinsForRound(
 			coins: coinsToSelectFrom,
 			UtxoSelectionParameters.FromRoundParameters(CreateMultipartyTransactionParameters(), InsecureRandom.Instance),
-			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney,
-			selectorRnd: ConfigureRng(1));
+			liquidityClue: Constants.MaximumNumberOfBitcoinsMoney);
 
 		Assert.Equal(2, coins.Count);
-	}
-
-	private static WasabiRandom ConfigureRng(int returnValue)
-	{
-		var mockWasabiRandom = new Mock<WasabiRandom>();
-		mockWasabiRandom.Setup(r => r.GetInt(It.IsAny<int>(), It.IsAny<int>())).Returns(returnValue);
-		return mockWasabiRandom.Object;
 	}
 
 	private static RoundParameters CreateMultipartyTransactionParameters()
