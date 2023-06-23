@@ -145,6 +145,7 @@ public class Startup
 		// https://www.tpeczek.com/2017/10/exploring-head-method-behavior-in.html
 		// https://github.com/tpeczek/Demo.AspNetCore.Mvc.CosmosDB/blob/master/Demo.AspNetCore.Mvc.CosmosDB/Middlewares/HeadMethodMiddleware.cs
 		app.UseMiddleware<HeadMethodMiddleware>();
+		app.UseMiddleware<RequestHeaderLoggerMiddleware>();
 
 		app.UseResponseCompression();
 
