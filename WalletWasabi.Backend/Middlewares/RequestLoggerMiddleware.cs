@@ -29,6 +29,7 @@ public class RequestLoggerMiddleware
 		{
 			Logger.LogInfo($"Header: {header.Key}: {header.Value}");
 		}
+		Logger.LogInfo($"Request body: {await GetRequestBodyAsync(httpRequest)}");
 	}
 
 	private static async Task<string> GetRequestBodyAsync(HttpRequest httpRequest)
