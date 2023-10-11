@@ -81,7 +81,7 @@ public class AmountDecomposer
 		var myInputs = myInputCoinEffectiveValues.ToArray();
 		var myInputSum = myInputs.Sum();
 		var smallestScriptType = Math.Min(ScriptType.P2WPKH.EstimateOutputVsize(), ScriptType.Taproot.EstimateOutputVsize());
-		var maxNumberOfOutputsAllowed = Math.Min(AvailableVsize / smallestScriptType, 10); // The absolute max possible with the smallest script type.				
+		var maxNumberOfOutputsAllowed = Math.Min(AvailableVsize / smallestScriptType, 10); // The absolute max possible with the smallest script type.
 
 		// If my input sum is smaller than the smallest denomination, then participation in a coinjoin makes no sense.
 		if ((denoms.Min(x => x.EffectiveCost) ?? long.MaxValue) > myInputSum)
