@@ -26,4 +26,7 @@ public record Utxo(OutPoint Outpoint, Money Amount, [property: JsonProperty("Scr
 	[JsonIgnore]
 	[ValidateNever]
 	public Script ScriptPubKey => Script.FromHex(ScriptPubKeyHex);
+
+	[JsonIgnore]
+	public bool IsSufficientlyDistancedFromExternalKeys => true; //See ISmartCoin interface implementation for rationale
 }
