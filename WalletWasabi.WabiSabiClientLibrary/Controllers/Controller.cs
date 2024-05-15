@@ -13,14 +13,23 @@ namespace WalletWasabi.WabiSabiClientLibrary.Controllers;
 [Produces("application/json")]
 public class Controller : ControllerBase, IDisposable
 {
-	private readonly WasabiRandom _random;
 	private readonly Global _global;
+#if ALLOW_COINJOINING
+	private readonly WasabiRandom _random;
+#endif
 
+#if ALLOW_COINJOINING
 	public Controller(Global global, WasabiRandom random)
 	{
 		_random = random;
 		_global = global;
 	}
+#else
+	public Controller(Global global)
+	{
+		_global = global;
+	}
+#endif
 
 	[HttpPost("get-version")]
 	public GetVersionResponse GetVersionAsync()
@@ -34,6 +43,7 @@ public class Controller : ControllerBase, IDisposable
 		return GetAnonymityScoresHelper.GetAnonymityScores(request);
 	}
 
+#if ALLOW_COINJOINING
 	/// <summary>
 	/// Given a set of unspent transaction outputs, choose a subset of the outputs that are best to register in a single CoinJoin round according to the given strategy.
 	/// </summary>
@@ -89,6 +99,7 @@ public class Controller : ControllerBase, IDisposable
 	{
 		return LiquidityClueHelper.GetLiquidityClue(request);
 	}
+#endif
 
 	public void Dispose()
 	{

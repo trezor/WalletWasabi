@@ -19,12 +19,14 @@ public class IntegrationsTest
 	}
 
 	[Theory]
+	[ClassData(typeof(GetAnonymityScoresTestVectors))]
+#if ALLOW_COINJOINING
 	[ClassData(typeof(GetZeroCredentialRequestsTestVectors))]
 	[ClassData(typeof(GetRealCredentialRequestsTestVectors))]
 	[ClassData(typeof(GetCredentialsVectors))]
 	[ClassData(typeof(GetOutpusAmountsTestVectors))]
 	[ClassData(typeof(SelectInputsForRoundTestVectors))]
-	[ClassData(typeof(GetAnonymityScoresTestVectors))]
+#endif
 	public async Task TestPostAsync([System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "xUnit1026")] string name, string method, string requestContentString, int expectedStatusCode, string expectedResponseContentString)
 	{
 		HttpClient client = _factory.CreateClient();
@@ -39,6 +41,7 @@ public class IntegrationsTest
 		Assert.Equal(expectedResponseContentString, responseContentString);
 	}
 
+#if ALLOW_COINJOINING
 	[Fact]
 	public async Task TestCredentialSerialNumberUniquenessAsync()
 	{
@@ -57,6 +60,7 @@ public class IntegrationsTest
 			Assert.True(isUnique);
 		}
 	}
+#endif
 
 }
 
